@@ -1,0 +1,89 @@
+/* HERO */
+.hero {
+  text-align: center;
+}
+.hero__title {
+  font-size: clamp(40px, 6vw, 72px);
+  line-height: 1.2;
+  letter-spacing: -0.3px;
+  font-weight: 700;
+  margin: 0 0 16px;
+}
+.hero__subtitle {
+  max-width: 920px;
+  margin: 0 auto;
+  color: var(--text-muted);
+  font-size: 28px;
+  line-height: 1.6;
+}
+
+.section--no-border {
+  border-top: none;
+}
+
+/* HOW IT WORKS */
+.how__title {
+  text-align: center;
+  font-size: clamp(24px, 3vw, 40px);
+  line-height: 1.25;
+  font-weight: 700;
+  margin: 0 0 32px;
+}
+.how__grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+  align-items: stretch;
+}
+
+/* Card specifics (extends .card from globals) */
+.feature {
+  display: grid;
+  justify-items: center;
+  text-align: center;
+  border-radius: 22px;
+  background: var(--surface);
+  gap: 12px;
+  padding: 32px;
+  border: 1px solid var(--border);
+}
+.feature__iconWrap {
+  height: 48px;
+}
+.feature__icon {
+  width: 65px;
+  height: 65px;
+  color: var(--accent);
+}
+.feature__title {
+  margin: 4px 0 0;
+  font-size: 26px;
+  font-weight: 700;
+}
+.feature__text {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 16px;
+  line-height: 1.6;
+  max-width: 38ch;
+}
+
+@media (max-width: 1024px) {
+  .hero__title {
+    font-size: 48px;
+  }
+  .how__grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+@media (max-width: 640px) {
+  .hero__title {
+    font-size: 36px;
+  }
+  .how__grid {
+    grid-template-columns: 1fr;
+  }
+  .feature {
+    padding: 24px;
+  }
+}

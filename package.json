@@ -4,12 +4,14 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
+    "dev": "vite --port 3000 --open",
     "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview"
   },
   "dependencies": {
+    "lucide-react": "^0.544.0",
+    "normalize.css": "^8.0.1",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
     "react-router-dom": "^7.9.1"

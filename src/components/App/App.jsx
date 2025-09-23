@@ -1,8 +1,11 @@
+import Header from "../Header/Header";
+import Home from "../Home/Home";
+
 export default function App() {
   return (
-    <div>
-      <h1>StudioPulse</h1>
-      <p>Vite + React scaffold is up.</p>
-    </div>
+    <>
+      <Header />
+      <Home />
+    </>
   );
 }
