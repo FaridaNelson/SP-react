@@ -1,0 +1,135 @@
+.practice {
+  padding: 56px 0;
+}
+
+.practice__title {
+  margin: 0 0 8px;
+  text-align: center;
+  font-size: clamp(32px, 4vw, 60px);
+  font-weight: 500;
+}
+.practice__lead {
+  margin: 0 auto 28px;
+  text-align: center;
+  color: var(--text-muted);
+  max-width: 900px;
+  font-size: clamp(18px, 2.4vw, 22px);
+}
+
+/* orange banner */
+.practice__banner {
+  background: var(--accent, #ff6a00);
+  color: #111;
+  border-radius: 16px;
+  padding: 28px 20px;
+  text-align: center;
+  margin: 16px 0 28px;
+}
+
+.practice__trophy {
+  width: 60px;
+  height: 60px;
+  stroke-width: 2;
+  color: #fff;
+  margin-bottom: 8px;
+}
+
+.practice__bannerTitle {
+  margin: 10px 0;
+  font: 700 28px/1.2 system-ui, -apple-system, "SF Pro", Inter, Arial,
+    sans-serif;
+  color: var(--text);
+}
+
+.practice__bannerText {
+  margin: 0 auto;
+  max-width: 900px;
+  opacity: 0.95;
+  color: var(--text);
+  font-size: clamp(18px, 2.4vw, 21px);
+  line-height: 2;
+}
+
+/* three cards */
+.practice__grid {
+  list-style: none;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: clamp(16px, 2.5vw, 28px);
+  margin: 28px 0 8px;
+}
+.practice__card {
+  background: var(--surface);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  list-style: none;
+  color: var(--text);
+  border-radius: 16px;
+  padding: 22px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+}
+.practice__cardIcon {
+  width: 60x;
+  height: 60px;
+  background: transparent;
+  display: grid;
+  place-items: center;
+  margin: 10px 0 12px;
+}
+
+.practice__cardIcon svg {
+  width: 60px;
+  height: 60px;
+  color: var(--accent);
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.practice__cardTitle {
+  margin: 0 0 10px;
+  font-size: 20px;
+  font-weight: 700;
+}
+.practice__points {
+  list-style: none;
+  padding: 0;
+  margin: 12ps 0 0;
+  color: var(--text-muted);
+  line-height: 1.6;
+}
+
+.practice__points li {
+  margin: 6px 0;
+}
+
+.practice__quote {
+  margin: 32px 0 0;
+  background: var(--panel, #15202b);
+  border-radius: 16px;
+  padding: clamp(18px, 4vw, 28px);
+  text-align: center;
+}
+.practice__quote blockquote {
+  margin: 0 0 8px;
+  font-style: italic;
+  font-size: clamp(18px, 2.4vw, 28px);
+  color: var(--text);
+}
+.practice__quote figcaption {
+  color: var(--text-muted);
+}
+
+@media (max-width: 960px) {
+  .practice__grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+@media (max-width: 560px) {
+  .practice__grid {
+    grid-template-columns: 1fr;
+  }
+}

@@ -14,20 +14,17 @@
   transform: translateY(10px);
 }
 
-.header__container {
-  max-width: 1280px;
-  margin: 0;
-  padding: 16px 80px;
-  display: flex;
-  align-items: center;
-  gap: 16px;
-}
-
 .header__logo {
   display: block;
   background: none;
-  height: 140px;
-  width: auto;
+  height: auto;
+  width: 155px;
+}
+
+.header__navbtns {
+  display: flex;
+  align-items: center;
+  gap: 20px;
 }
 
 .header__user {
@@ -37,11 +34,38 @@
   gap: 12px;
 }
 
-.header__username {
-  color: var(--text);
+.header__username,
+.header__authbtn {
+  color: var(--text-muted);
   opacity: 0.9;
-  font-size: 16px;
-  line-height: 1;
+  font-size: 28px;
+  line-height: 1.15;
+}
+
+.header__authbtn {
+  background: transparent;
+  border: 0;
+  padding: 0;
+  margin: 0;
+  font-family: inherit;
+  font-weight: 600;
+  line-height: 1.15;
+  font-size: 28px;
+  cursor: pointer;
+}
+
+.header__authbtn:hover {
+  color: var(--text);
+}
+
+.header__authbtn:focus-visible {
+  outline: 2px solid var(--text-muted);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+header .header__navbtns > .header__authbtn {
+  font-size: 28px;
 }
 
 .header__avatar {
@@ -56,24 +80,17 @@
 
 @media (min-width: 1440px) {
   .header__logo {
-    height: 200px;
+    width: 155px;
   }
 }
-@media (max-width: 640ps) {
+@media (max-width: 640px) {
   .header__logo {
-    height: 36px;
+    width: 110px;
   }
 }
 
-.header__nav {
-  margin-left: auto;
-}
-.header__user {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-.header__username {
+.header__username,
+.header__authbtn {
   color: var(--text-muted);
-  font-size: 28px;
+  font-size: 18px;
 }

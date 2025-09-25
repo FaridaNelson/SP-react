@@ -1,0 +1,20 @@
+.sitefooter {
+  margin-top: 32px;
+  padding: 22px 0 28px;
+  border-top: 1px solid
+    color-mix(in oklab, var(--text, #e8eef5) 12%, transparent);
+  background: var(--bg);
+}
+.sitefooter__row {
+  display: flex;
+  justify-content: center;
+}
+.sitefooter__text {
+  color: var(--text-muted);
+  margin: 0;
+  font-size: clamp(14px, 1.8vw, 18px);
+}
+.sitefooter__by {
+  color: var(--text);
+  font-weight: 700;
+}
