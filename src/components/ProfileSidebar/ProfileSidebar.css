@@ -1,0 +1,77 @@
+.profileNav {
+  position: sticky;
+  top: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  align-self: start;
+}
+
+.profileNav__group {
+  background: var(--surface, #15202b);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 14px;
+}
+
+.profileNav__title {
+  margin: 0 0 8px;
+  font-size: 16px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.profileNav__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.profileNav__item {
+  margin: 0;
+}
+
+.profileNav__link {
+  width: 100%;
+  text-align: left;
+  background: transparent;
+  border: 0;
+  color: var(--text);
+  padding: 8px 10px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.profileNav__link:hover {
+  background: color-mix(in oklab, var(--text) 10%, transparent);
+}
+
+.profileNav__spacer {
+  flex: 1;
+}
+
+.profileNav__tools {
+  position: sticky;
+  bottom: 16px;
+  background: var(--surface, #15202b);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 14px;
+}
+
+.profileNav__note {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 14px;
+}
+
+@media (max-width: 720px) {
+  .profileNav {
+    position: static;
+  }
+  .profileNav__tools {
+    display: none;
+  }
+}

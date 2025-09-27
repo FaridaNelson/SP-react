@@ -1,7 +1,12 @@
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import logoUrl from "../../images/StudioPulse-Logo-BW.svg";
 import "./Header.css";
 
-export default function Header({ user, onSignIn, onSignUp }) {
+export default function Header({ user, onSignIn, onSignUp, onSignOutRequest }) {
+  const { pathname } = useLocation();
+  const navigate = useNavigate();
+  const onProfile = pathname.startsWith("/profile");
+
   const displayName = user?.name.trim() || "User Name";
 
   const initials =
@@ -14,18 +19,28 @@ export default function Header({ user, onSignIn, onSignUp }) {
   return (
     <header className="header">
       <div className="container header__row">
-        <a href="/" className="header__brand" aria-label="StudioPulse Home">
+        <Link to="/" className="header__brand" aria-label="StudioPulse Home">
           <img src={logoUrl} alt="StudioPulse" className="header__logo" />
-        </a>
+        </Link>
 
         <div className="header__user">
           {user ? (
-            <div className="header__usersection">
+            <button
+              type="button"
+              className="header__userbtn header__usersection"
+              onClick={() => {
+                if (onProfile) {
+                  onSignOutRequest?.();
+                } else {
+                  navigate("/profile");
+                }
+              }}
+            >
               <span className="header__username">{displayName}</span>
               <div className="header__avatar" aria-hidden="true">
                 {initials}
               </div>
-            </div>
+            </button>
           ) : (
             <div className="header__navbtns">
               <button

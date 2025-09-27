@@ -1,0 +1,20 @@
+.assignment-card {
+  background: var(--surface, #15202b);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 16px;
+  cursor: pointer;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+.assignment-card:hover {
+  background: color-mix(in oklab, var(--text) 10%, transparent);
+  border-color: color-mix(in oklab, var(--text) 24%, transparent);
+}
+.assignment-card__title {
+  margin: 0 0 6px;
+  font-size: 18px;
+}
+.assignment-card__hint {
+  margin: 0;
+  color: var(--text-muted);
+}

@@ -7,7 +7,9 @@
 }
 .sitefooter__row {
   display: flex;
-  justify-content: center;
+  flex-direction: row-reverse;
+  justify-content: space-between;
+  align-items: center;
 }
 .sitefooter__text {
   color: var(--text-muted);
@@ -17,4 +19,51 @@
 .sitefooter__by {
   color: var(--text);
   font-weight: 700;
+}
+
+.sitefooter__nav {
+  display: flex;
+  align-items: center;
+}
+
+.sitefooter__link {
+  all: unset;
+  display: inline-block;
+  color: var(--text-muted);
+  /* 30% of --accent + 70% transparent = 30% opacity */
+  background-color: color-mix(in oklab, var(--accent) 30%, transparent);
+  cursor: pointer;
+  font-size: 18px;
+  padding: 8px 12px;
+  border-radius: 12px;
+  line-height: 1;
+  text-decoration: none;
+  transition: background-color 1s ease, color 1s ease;
+}
+
+.sitefooter__link:hover {
+  color: var(--text);
+  background-color: var(--accent);
+}
+
+.sitefooter__link:visited .sitefooter__link,
+.sitefooter__link:link {
+  color: var(--text-muted);
+  text-decoration: none;
+}
+
+.sitefooter__link:hover,
+.sitefooter__link:focus-visible {
+  color: var(--text);
+  background-color: var(--accent);
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.sitefooter__link--disabled,
+.sitefooter__link[aria-disabled="true"] {
+  pointer-events: none;
+  opacity: 0.5;
+  cursor: default;
+  outline: none;
 }

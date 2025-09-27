@@ -1,11 +1,13 @@
 import Modal from "../Modal/Modal";
 import "./LoginModal.css";
 
-export default function LoginModal({ open, onClose, onSwitch }) {
+export default function LoginModal({ open, onClose, onSwitch, onSuccess }) {
   const submit = (e) => {
     e.preventDefault();
-    // TODO: auth
-    onClose();
+    const fd = new FormData(e.currentTarget);
+    const email = fd.get("email");
+    // TODO: replace with real auth; name pulled from server
+    onSuccess?.({ name: "Farida Nelson", email });
   };
 
   return (

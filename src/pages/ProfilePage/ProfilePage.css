@@ -1,0 +1,29 @@
+.profile {
+  padding: 24px 0 48px;
+}
+
+:root {
+  --toolbar-safe-space: calc(96px + env(safe-area-inset-bottom, 0px));
+}
+
+.profile__title {
+  margin: 0 0 16px;
+}
+
+.profile__body {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  gap: 24px;
+  align-items: start;
+}
+
+@media (max-width: 720px) {
+  .profile__body {
+    grid-template-columns: 1fr;
+  }
+}
+
+.profile__modal-body {
+  padding: 8px 2px;
+  color: var(--text);
+}

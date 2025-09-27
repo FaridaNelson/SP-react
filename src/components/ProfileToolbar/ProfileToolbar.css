@@ -1,0 +1,46 @@
+.profileToolbar {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 16px;
+  z-index: 60;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  background: color-mix(in oklab, var(--surface) 50%, transparent);
+  border: 1px solid var(--border);
+  padding: 8px 16px;
+  margin: 0 auto;
+  width: 100%;
+  max-width: calc(100% - 32px);
+  border-radius: 12px;
+}
+
+.profileToolbar__inner {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+
+.profileToolbar__btn {
+  font-size: 18px;
+  background-color: #ff6b00;
+  opacity: 0.5;
+  color: var(--text);
+  border: 0;
+  padding: 10px 14px;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+.profileToolbar__btn:hover {
+  opacity: 1;
+}
+
+@media (max-width: 560px) {
+  .profileToolbar__inner {
+    gap: 8px;
+  }
+  .profileToolbar__btn {
+    font-size: 14px;
+  }
+}

@@ -1,0 +1,19 @@
+.sslice__wrap {
+  width: 100%;
+  height: min(72vh, 640px);
+  border-radius: 12px;
+  overflow: hidden;
+  background: #111;
+}
+
+.sslice__frame {
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+.sslice__loading,
+.sslice__error {
+  color: var(--text);
+  padding: 12px;
+}

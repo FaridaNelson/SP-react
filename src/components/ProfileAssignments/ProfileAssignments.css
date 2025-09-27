@@ -1,0 +1,22 @@
+.assignments__title {
+  margin: 0 0 12px;
+  font-size: clamp(20px, 2.6vw, 28px);
+}
+
+.assignments__grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+}
+
+@media (max-width: 1024px) {
+  .assignments__grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 720px) {
+  .assignments__grid {
+    grid-template-columns: 1fr;
+  }
+}

@@ -19,6 +19,7 @@
   background: none;
   height: auto;
   width: 155px;
+  cursor: pointer;
 }
 
 .header__navbtns {
@@ -32,6 +33,23 @@
   display: flex;
   align-items: center;
   gap: 12px;
+}
+
+.header__userbtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  background: transparent;
+  border: 0;
+  padding: 0;
+  color: inherit;
+  font: inherit;
+}
+
+.header__userbrn:disabled {
+  cursor: default;
+  opacity: 0.6;
 }
 
 .header__username,
