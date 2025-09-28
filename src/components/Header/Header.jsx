@@ -53,7 +53,10 @@ export default function Header({ user, onSignIn, onSignUp, onSignOutRequest }) {
               <button
                 type="button"
                 className="header__authbtn"
-                onClick={onSignUp}
+                onClick={() => {
+                  console.log("signUp clicked");
+                  onSignUp?.();
+                }}
               >
                 Sign Up
               </button>

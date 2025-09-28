@@ -1,5 +1,6 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Routes, Route, useNavigate, useLocation } from "react-router-dom";
+
 import Header from "../Header/Header";
 import Footer from "../Footer/Footer";
 
@@ -12,23 +13,51 @@ import ProfileLayout from "../../layouts/ProfileLayout";
 
 import LoginModal from "../LoginModal/LoginModal";
 import RegisterModal from "../RegisterModal/RegisterModal";
-
 import NotFound from "../../pages/NotFound";
 import ConfirmationModal from "../ConfirmationModal/ConfirmationModal";
+import ProtectedRoute from "../ProtectedRoute";
+
+import { api } from "../../lib/api.js";
 
 export default function App() {
   const [authMode, setAuthMode] = useState(null);
-  const [user, setUser] = useState({
-    name: "Farida Nelson",
-    email: "faridanelson@gmail.com",
-    _id: "mock123",
-  });
+  const [user, setUser] = useState(null);
   const [confirmSignOutOpen, setConfirmSignOutOpen] = useState(false);
   const navigate = useNavigate();
   const { pathname } = useLocation();
   const hideFooter = pathname.startsWith("/profile");
 
-  const closeAuth = () => setAuthMode(null);
+  useEffect(() => {
+    (async () => {
+      try {
+        // Uses the API helper (talks to :4000 directly)
+        const { user } = await api("/api/auth/me");
+        setUser(user || null);
+      } catch {
+        setUser(null);
+      }
+    })();
+  }, []);
+
+  async function handleRegister({ name, email, password }) {
+    const data = await api("/api/auth/signup", {
+      method: "POST",
+      body: { name, email, password },
+    });
+    setUser(data.user);
+    setAuthMode(null);
+    navigate("/profile");
+  }
+
+  async function handleLogin({ email, password }) {
+    const data = await api("/api/auth/login", {
+      method: "POST",
+      body: { email, password },
+    });
+    setUser(data.user);
+    setAuthMode(null);
+    navigate("/profile");
+  }
 
   return (
     <>
@@ -38,6 +67,7 @@ export default function App() {
         onSignUp={() => setAuthMode("signup")}
         onSignOutRequest={() => setConfirmSignOutOpen(true)}
       />
+
       <Routes>
         <Route element={<DefaultLayout />}>
           <Route path="/" element={<HomePage />} />
@@ -45,16 +75,10 @@ export default function App() {
           <Route path="*" element={<NotFound />} />
         </Route>
 
-        <Route
-          element={
-            <ProfileLayout
-              user={user}
-              onSignIn={() => setAuthMode("signin")}
-              onSignUp={() => setAuthMode("signup")}
-            />
-          }
-        >
-          <Route path="/profile" element={<ProfilePage user={user} />} />
+        <Route element={<ProtectedRoute isAuthed={!!user} />}>
+          <Route element={<ProfileLayout />}>
+            <Route path="/profile" element={<ProfilePage user={user} />} />
+          </Route>
         </Route>
       </Routes>
 
@@ -66,22 +90,29 @@ export default function App() {
         message="Are you sure you want to sign out?"
         confirmText="Sign out"
         cancelText="Stay signed in"
-        onConfirm={() => {
+        onConfirm={async () => {
+          try {
+            await api("/api/auth/logout", { method: "POST" }); // ← fixed (leading slash + api helper)
+          } catch {}
           setUser(null);
           setConfirmSignOutOpen(false);
-          Navigate("/");
+          navigate("/", { replace: true });
         }}
         onCancel={() => setConfirmSignOutOpen(false)}
       />
+
       <LoginModal
         open={authMode === "signin"}
-        onClose={closeAuth}
+        onClose={() => setAuthMode(null)}
         onSwitch={() => setAuthMode("signup")}
+        onSubmit={handleLogin}
       />
+
       <RegisterModal
         open={authMode === "signup"}
-        onClose={closeAuth}
+        onClose={() => setAuthMode(null)}
         onSwitch={() => setAuthMode("signin")}
+        onSubmit={handleRegister}
       />
     </>
   );

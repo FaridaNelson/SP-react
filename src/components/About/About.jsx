@@ -2,7 +2,7 @@ import "./About.css";
 
 export default function About() {
   return (
-    <section id="about" className="about" aria-labeledby="about-title">
+    <section id="about" className="about" aria-labelledby="about-title">
       <div className="container">
         <h2 id="about-title" className="about__title">
           About StudioPulse
