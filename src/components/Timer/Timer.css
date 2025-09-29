@@ -1,0 +1,14 @@
+@import "../Metronome/Metronome.css"; /* reuse tool styles */
+
+.timer__display {
+  font: 700 28px/1.2 ui-sans-serif, system-ui;
+  color: var(--text);
+}
+
+.tool__select {
+  padding: 6px 8px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--surface);
+  color: var(--text);
+}

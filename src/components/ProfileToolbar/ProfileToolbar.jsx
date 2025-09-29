@@ -1,8 +1,6 @@
 import "./ProfileToolbar.css";
 
-export default function ProfileToolbar({ tools = [], onPick }) {
-  if (!tools.length) return null;
-
+export default function ProfileToolbar({ tools, onPick }) {
   return (
     <div className="profileToolbar" role="toolbar" aria-label="Tools">
       <div className="container profileToolbar__inner">
@@ -13,7 +11,7 @@ export default function ProfileToolbar({ tools = [], onPick }) {
             className="profileToolbar__btn"
             onClick={() => onPick?.(t)}
           >
-            {t}
+            {t.title}
           </button>
         ))}
       </div>

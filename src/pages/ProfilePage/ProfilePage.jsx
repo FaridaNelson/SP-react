@@ -1,4 +1,6 @@
-import { useState } from "react";
+import { useState, Suspense } from "react";
+import { getToolComponent } from "../../registry/tools.js";
+import DailySightReadingSlice from "../../components/DailySightReadingSlice/DailySightReadingSlice";
 import "./ProfilePage.css";
 
 import Modal from "../../components/Modal/Modal";
@@ -12,13 +14,18 @@ export default function ProfilePage({ user }) {
   const [showReminders, setShowReminders] = useState(true);
   const [active, setActive] = useState(null);
 
+  const handleSidebarSelect = (item, source) =>
+    setActive({ key: item.key, title: item.title, source });
+
+  const handleOpenAssignment = (item) =>
+    setActive({ key: item.key, title: item.title, source: "current" });
+
+  const handlePickTool = (tool) =>
+    setActive({ key: tool.key, title: tool.title, source: "tool" });
+
   return (
     <main className="profile" aria-labelledby="profile-title">
       <div className="container">
-        <h1 id="profile-title" className="profile__title">
-          Profile
-        </h1>
-
         {/* Reminders - replace with real data when hooked up with the backend */}
         {showReminders && (
           <ProfileReminders
@@ -34,22 +41,19 @@ export default function ProfilePage({ user }) {
           <ProfileSidebar
             current={CURRENT_ASSIGNMENT}
             history={HISTORY}
-            onSelect={(title, source) => setActive({ title, source })}
+            onSelect={handleSidebarSelect}
           />
           <ProfileAssignments
             title="Your Current Assignment"
             items={CURRENT_ASSIGNMENT}
-            onOpen={(title) => setActive({ title, source: "current" })}
+            onOpen={handleOpenAssignment}
           />
         </div>
       </div>
 
       <div className="profile__toolbar-spacer" aria-hidden="true" />
-      {/* Sticky Tools on the mobile */}
-      <ProfileToolbar
-        tools={TOOLS}
-        onPick={(title) => setActive({ title, source: "tool" })}
-      />
+
+      <ProfileToolbar tools={TOOLS} onPick={handlePickTool} />
 
       {/* Shared modal for all items */}
       <Modal
@@ -58,16 +62,36 @@ export default function ProfilePage({ user }) {
         title={active ? active.title : ""}
       >
         <div className="profile__modal-body">
-          {active?.title === "Daily Sight-Reading" ? (
-            <DailySightReadingSlice />
+          {active?.source === "tool" ? (
+            (() => {
+              const Tool = getToolComponent(active.key);
+              return Tool ? (
+                <Suspense fallback={<p>Loading tool…</p>}>
+                  <Tool />
+                </Suspense>
+              ) : (
+                <p>Unknown tool.</p>
+              );
+            })()
+          ) : active?.source === "current" && active.key === "sight-reading" ? (
+            <DailySightReadingSlice
+              sliceId="r7RTc"
+              useApi={false}
+              showControls={false}
+              meta={{
+                title: "Slice Title",
+                artist: "ABRSM",
+                description: "ABRSM Piano Sight Reading",
+              }}
+            />
           ) : (
+            // default assignment view
             <div>
               <p>
                 <strong>Section:</strong> {active?.source}
               </p>
               <p>
-                TODO: populate this popup with details for
-                <em>{active?.title}</em>.
+                Details for <em>{active?.title}</em> coming soon.
               </p>
             </div>
           )}

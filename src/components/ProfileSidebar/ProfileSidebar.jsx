@@ -5,37 +5,40 @@ export default function ProfileSidebar({
   history = [],
   onSelect,
 }) {
+  const renderList = (items, source) => (
+    <ul className="profileNav__list" role="list">
+      {items.map((item, i) => {
+        // Normalize: support strings or objects
+        const obj =
+          typeof item === "string"
+            ? { key: `s-${source}-${i}`, title: item }
+            : item;
+
+        return (
+          <li key={obj.key} className="profileNav__item">
+            <button
+              type="button"
+              className="profileNav__link"
+              onClick={() => onSelect?.(obj, source)}
+            >
+              {obj.title}
+            </button>
+          </li>
+        );
+      })}
+    </ul>
+  );
+
   return (
     <aside className="profileNav" aria-label="Profile sections">
       <div className="profileNav__group">
         <h3 className="profileNav__title">Your Assignment:</h3>
-        <ul className="profileNav__list" role="list">
-          {current.map((t) => (
-            <li key={t} className="profileNav__item">
-              <button
-                className="profileNav__link"
-                onClick={() => onSelect?.(t, "current")}
-              >
-                {t}
-              </button>
-            </li>
-          ))}
-        </ul>
+        {renderList(current, "current")}
       </div>
+
       <div className="profileNav__group">
         <h3 className="profileNav__title">History:</h3>
-        <ul className="profileNav__list" role="list">
-          {history.map((t) => (
-            <li key={t} className="profileNav__item">
-              <button
-                className="profileNav__link"
-                onClick={() => onSelect?.(t, "history")}
-              >
-                {t}
-              </button>
-            </li>
-          ))}
-        </ul>
+        {renderList(history, "history")}
       </div>
     </aside>
   );

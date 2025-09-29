@@ -1,16 +1,31 @@
 import "./AssignmentCard.css";
 
-export default function AssignmentCard({ title, onClick }) {
+export default function AssignmentCard({ item, title, onClick }) {
+  // Normalize props: support either a string title or an object item
+  const obj =
+    item && typeof item === "object"
+      ? item
+      : { title: title ?? (typeof item === "string" ? item : "") };
+
+  const handleClick = () => onClick?.(obj);
+  const handleKeyDown = (e) => {
+    if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault(); // prevent page scroll on Space
+      handleClick();
+    }
+  };
+
   return (
     <article
       className="assignment-card"
-      onClick={onClick}
       role="button"
       tabIndex={0}
-      onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && onClick?.()}
+      onClick={handleClick}
+      onKeyDown={handleKeyDown}
+      aria-label={obj.title}
     >
-      <h3 className="assignment-card__title">{title}</h3>
-      <p className="assignment-card__hit">Click to view details</p>
+      <h3 className="assignment-card__title">{obj.title}</h3>
+      <p className="assignment-card__hint">Click to view details</p>
     </article>
   );
 }

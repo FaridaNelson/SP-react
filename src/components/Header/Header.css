@@ -47,7 +47,7 @@
   font: inherit;
 }
 
-.header__userbrn:disabled {
+.header__userbtn:disabled {
   cursor: default;
   opacity: 0.6;
 }
@@ -58,6 +58,12 @@
   opacity: 0.9;
   font-size: 28px;
   line-height: 1.15;
+  transition: color 0.2s ease;
+}
+
+.header__userbtn:hover .header__username,
+.header__usersection:hover .header__username {
+  color: var(--text);
 }
 
 .header__authbtn {
@@ -70,9 +76,11 @@
   line-height: 1.15;
   font-size: 28px;
   cursor: pointer;
+  color: var(-text);
 }
 
-.header__authbtn:hover {
+.header__authbtn:hover,
+.header__userbtn:hover {
   color: var(--text);
 }
 
@@ -107,8 +115,7 @@ header .header__navbtns > .header__authbtn {
   }
 }
 
-.header__username,
-.header__authbtn {
-  color: var(--text-muted);
-  font-size: 18px;
+.header__userbtn:hover,
+.header__usersection:hover {
+  color: var(--text);
 }

@@ -9,11 +9,7 @@ export default function ProfileAssignments({ title, items = [], onOpen }) {
       </h2>
       <div className="assignments__grid">
         {items.map((item) => (
-          <AssignmentCard
-            key={item}
-            title={item}
-            onClick={() => onOpen?.(item)}
-          />
+          <AssignmentCard key={item.key} item={item} onClick={onOpen} />
         ))}
       </div>
     </section>
