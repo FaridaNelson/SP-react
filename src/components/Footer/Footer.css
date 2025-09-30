@@ -24,6 +24,7 @@
 .sitefooter__nav {
   display: flex;
   align-items: center;
+  justify-content: space-around;
 }
 
 .sitefooter__link {
@@ -33,7 +34,7 @@
   /* 30% of --accent + 70% transparent = 30% opacity */
   background-color: color-mix(in oklab, var(--accent) 30%, transparent);
   cursor: pointer;
-  font-size: 18px;
+  font-size: 22px;
   padding: 8px 12px;
   border-radius: 12px;
   line-height: 1;

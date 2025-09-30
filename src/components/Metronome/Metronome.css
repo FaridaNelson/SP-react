@@ -36,5 +36,5 @@
 }
 
 .tool__btn:hover {
-  background: color-mix(in oklab, var(--accent) 28%, transparent);
+  background: var(--accent);
 }

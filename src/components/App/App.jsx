@@ -27,10 +27,13 @@ export default function App() {
   const { pathname } = useLocation();
   const hideFooter = pathname.startsWith("/profile");
 
+  const openSignUp = () => setAuthMode("signup");
+  const openSignIn = () => setAuthMode("signin");
+  const closeAuth = () => setAuthMode(null);
+
   useEffect(() => {
     (async () => {
       try {
-        // Uses the API helper (talks to :4000 directly)
         const { user } = await api("/api/auth/me");
         setUser(user || null);
       } catch {
@@ -45,7 +48,7 @@ export default function App() {
       body: { name, email, password },
     });
     setUser(data.user);
-    setAuthMode(null);
+    closeAuth();
     navigate("/profile");
   }
 
@@ -55,7 +58,7 @@ export default function App() {
       body: { email, password },
     });
     setUser(data.user);
-    setAuthMode(null);
+    closeAuth();
     navigate("/profile");
   }
 
@@ -63,15 +66,15 @@ export default function App() {
     <>
       <Header
         user={user}
-        onSignIn={() => setAuthMode("signin")}
-        onSignUp={() => setAuthMode("signup")}
+        onSignIn={openSignIn}
+        onSignUp={openSignUp}
         onSignOutRequest={() => setConfirmSignOutOpen(true)}
       />
 
       <Routes>
-        <Route element={<DefaultLayout />}>
-          <Route path="/" element={<HomePage />} />
-          <Route path="/about" element={<AboutPage />} />
+        <Route element={<DefaultLayout onSignUp={openSignUp} />}>
+          <Route path="/" element={<HomePage onSignUp={openSignUp} />} />
+          <Route path="/about" element={<AboutPage onSignUp={openSignUp} />} />
           <Route path="*" element={<NotFound />} />
         </Route>
 
@@ -82,7 +85,7 @@ export default function App() {
         </Route>
       </Routes>
 
-      {!hideFooter && <Footer />}
+      {!hideFooter && <Footer onSignUp={openSignUp} />}
 
       <ConfirmationModal
         isOpen={confirmSignOutOpen}
@@ -92,7 +95,7 @@ export default function App() {
         cancelText="Stay signed in"
         onConfirm={async () => {
           try {
-            await api("/api/auth/logout", { method: "POST" }); // ← fixed (leading slash + api helper)
+            await api("/api/auth/logout", { method: "POST" });
           } catch {}
           setUser(null);
           setConfirmSignOutOpen(false);
@@ -103,15 +106,15 @@ export default function App() {
 
       <LoginModal
         open={authMode === "signin"}
-        onClose={() => setAuthMode(null)}
-        onSwitch={() => setAuthMode("signup")}
+        onClose={closeAuth}
+        onSwitch={openSignUp}
         onSubmit={handleLogin}
       />
 
       <RegisterModal
         open={authMode === "signup"}
-        onClose={() => setAuthMode(null)}
-        onSwitch={() => setAuthMode("signin")}
+        onClose={closeAuth}
+        onSwitch={openSignIn}
         onSubmit={handleRegister}
       />
     </>

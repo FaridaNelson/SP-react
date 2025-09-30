@@ -123,6 +123,42 @@
   color: var(--text-muted);
 }
 
+.practice__signup-container {
+  display: flex;
+  justify-content: center;
+  padding: 50px;
+}
+
+.practice__signup-btn {
+  all: unset;
+  display: inline-block;
+  color: var(--text-muted);
+  /* 30% of --accent + 70% transparent = 30% opacity */
+  background-color: color-mix(in oklab, var(--accent) 30%, transparent);
+  cursor: pointer;
+  font-size: 28px;
+  padding: 15px 20px;
+  width: 100%;
+  text-align: center;
+  border-radius: 12px;
+  line-height: 1;
+  text-decoration: none;
+  transition: background-color 1s ease, color 1s ease;
+}
+
+.practice__signup-btn:hover {
+  color: var(--text);
+  background-color: var(--accent);
+}
+
+.practice__signup-btn:hover,
+.practice__signup-btn:focus-visible {
+  color: var(--text);
+  background-color: var(--accent);
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
 @media (max-width: 960px) {
   .practice__grid {
     grid-template-columns: 1fr 1fr;

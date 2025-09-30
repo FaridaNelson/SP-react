@@ -1,7 +1,7 @@
 import { Trophy, Clock, Target, Zap } from "lucide-react";
 import "./ConsistentPractice.css";
 
-export default function ConsistentPractice() {
+export default function ConsistentPractice({ onSignUp }) {
   return (
     <section className="practice" aria-labelledby="practice-title">
       <div className="container">
@@ -85,6 +85,17 @@ export default function ConsistentPractice() {
             Start your learning journey with StudioPulse today
           </figcaption>
         </figure>
+        <div className="practice__signup-container">
+          <button
+            type="button"
+            className="practice__signup-btn"
+            onClick={() => {
+              onSignUp?.();
+            }}
+          >
+            Sign Up
+          </button>
+        </div>
       </div>
     </section>
   );

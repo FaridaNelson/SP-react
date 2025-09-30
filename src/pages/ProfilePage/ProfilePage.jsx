@@ -1,6 +1,7 @@
-import { useState, Suspense } from "react";
+import { useState, useMemo, Suspense } from "react";
 import { getToolComponent } from "../../registry/tools.js";
 import DailySightReadingSlice from "../../components/DailySightReadingSlice/DailySightReadingSlice";
+import WindowManager from "../../components/WindowManager/WindowManager.jsx";
 import "./ProfilePage.css";
 
 import Modal from "../../components/Modal/Modal";
@@ -14,14 +15,38 @@ export default function ProfilePage({ user }) {
   const [showReminders, setShowReminders] = useState(true);
   const [active, setActive] = useState(null);
 
+  const [openWins, setOpenWins] = useState([]);
+  const addWin = (key) =>
+    setOpenWins((s) => (s.includes(key) ? s : [...s, key]));
+  const closeWin = (key) => setOpenWins((s) => s.filter((x) => x !== key));
+
   const handleSidebarSelect = (item, source) =>
     setActive({ key: item.key, title: item.title, source });
 
   const handleOpenAssignment = (item) =>
     setActive({ key: item.key, title: item.title, source: "current" });
 
-  const handlePickTool = (tool) =>
-    setActive({ key: tool.key, title: tool.title, source: "tool" });
+  const handlePickTool = (tool) => addWin(tool.key);
+
+  const windows = useMemo(() => {
+    return openWins.map((id) => {
+      const Comp = getToolComponent(id);
+      return {
+        id,
+        title:
+          TOOLS.find((t) => t.key === id)?.title ??
+          id.charAt(0).toUpperCase() + id.slice(1),
+        render: () =>
+          Comp ? (
+            <Suspense fallback={<p>Loading {id}...</p>}>
+              <Comp />
+            </Suspense>
+          ) : (
+            <p>Unknown tool.</p>
+          ),
+      };
+    });
+  }, [openWins]);
 
   return (
     <main className="profile" aria-labelledby="profile-title">
@@ -57,7 +82,7 @@ export default function ProfilePage({ user }) {
 
       {/* Shared modal for all items */}
       <Modal
-        open={!!active}
+        open={!!active && active.source !== "tool"}
         onClose={() => setActive(null)}
         title={active ? active.title : ""}
       >
@@ -97,6 +122,8 @@ export default function ProfilePage({ user }) {
           )}
         </div>
       </Modal>
+
+      <WindowManager windows={windows} onCloseWindow={closeWin} />
     </main>
   );
 }

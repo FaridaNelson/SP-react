@@ -1,5 +1,5 @@
 .about {
-  padding: 56pcx 0;
+  padding: 56px 0;
 }
 
 .about__title {
@@ -13,6 +13,7 @@
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: clamp(16px, 3vw, 28px);
+  margin-bottom: 30px;
 }
 
 .about__card {
@@ -38,8 +39,66 @@
   line-height: 1.7;
 }
 
+.about__triangle-container {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  margin: 0 auto;
+}
+
+.about__triangle {
+  padding: 64px 0;
+}
+
+.about__h2 {
+  font-size: clamp(28px, 2.6vw, 40px);
+  margin: 20px 0 16px;
+  text-align: center;
+}
+
+.about__lead {
+  font-size: 1.05rem;
+  color: var(--text);
+  max-width: 75ch;
+}
+
+.about__triangle-media {
+  margin: 24px 0;
+  display: grid;
+  place-items: center;
+  border-radius: 20px;
+}
+
+.about__triangle-body {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 24px;
+}
+
+.about__triangle-body_text {
+  display: flex;
+  flex-direction: column;
+  min-width: 280px;
+  flex: 1 1 360px;
+}
+
+.about__list {
+  margin: 16px 0;
+  padding-left: 1.2rem;
+  line-height: 1.6;
+}
+
+.about__h3 {
+  margin-top: 24px;
+}
+
 @media (max-width: 800px) {
   .about__grid {
     grid-template-columns: 1fr;
+  }
+  .about__triangle-media img {
+    max-width: 100%;
+    height: auto;
   }
 }
