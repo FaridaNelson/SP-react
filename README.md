@@ -26,9 +26,9 @@ The app will welcome the students on the **Homepage** with instructions how to n
 
 - Under the Nav-Bar there will be an **outlined section with Reminders** (for instance: Your next class is scheduled for \_**\_, or Your assignment is due \_\_**), that can be closed by pushing the ‘x’ button on the top right of the section
 
-- **Left Side-Bar** with links to: 1. **Current Homework assignment:** separate links for: Scales, Piece A, Piece B, Piece C, Sight Reading, Theory; 2. **Tools:** Calendar, Metronome, Timer; 3. **History:** Practice log, Repertoire, Performing history.
+- **Left Side-Bar** with links to: 1. **Current Homework assignment:** separate links for: Scales, Piece A, Piece B, Piece C, Sight Reading, Aural Training; 2. **Tools:** Calendar, Metronome, Timer; 3. **History:** Practice log, Repertoire, Performing history.
 
-- **Body** (to the right of the SideBar) will contain **The Current Assignment Summary** with pushable links that will open a detailed description of the separate elements of the Summary (for example: Scales, Piece A, Piece B, Piece C, Sight Reading, Theory). This detailed description will have current and target tempos for each element, sound quality and dynamics assignment, notes on articulation and , may have links to YouTube instructional videos Students will be checking off tasks in the **task list** at the bottom of every detailed description section.
+- **Body** (to the right of the SideBar) will contain **The Current Assignment Summary** with pushable links that will open a detailed description of the separate elements of the Summary (for example: Scales, Piece A, Piece B, Piece C, Sight Reading, Aural Training). This detailed description will have current and target tempos for each element, sound quality and dynamics assignment, notes on articulation and , may have links to YouTube instructional videos Students will be checking off tasks in the **task list** at the bottom of every detailed description section.
 
 - The students will be able to leave comments for the teacher in the **chat**. Also they will be able to upload a picture or a short video of their homework.
 

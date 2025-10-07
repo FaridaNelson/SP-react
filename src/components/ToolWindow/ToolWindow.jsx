@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { Rnd } from "react-rnd";
 import { createPortal } from "react-dom";
 import "./ToolWindow.css";
@@ -15,29 +15,33 @@ function useLocalState(key, initial) {
     }
   });
 
-  const set = (next) => {
-    setValue((prev) => {
-      const v = typeof next === "function" ? next(prev) : next;
-      try {
-        localStorage.setItem(key, JSON.stringify(v));
-      } catch {}
-      return v;
-    });
-  };
+  // ONE definition of `set`, memoized
+  const set = useCallback(
+    (next) => {
+      setValue((prev) => {
+        const v = typeof next === "function" ? next(prev) : next;
+        try {
+          localStorage.setItem(key, JSON.stringify(v));
+        } catch {}
+        return v;
+      });
+    },
+    [key]
+  );
 
   return [value, set];
 }
 
 export default function ToolWindow({
-  id, // unique id e.g. "metronome" | "timer"
+  id,
   title,
   children,
   isMinimized = false,
   onMinimize,
   onClose,
-  onFocus, // bring to front
+  onFocus,
   zIndex = 1000,
-  bounds = "window", // keep inside viewport
+  bounds = "window",
 }) {
   const [frame, setFrame] = useLocalState(`toolwin:${id}:frame`, DEFAULT);
   const nodeRef = useRef(null);
@@ -58,7 +62,7 @@ export default function ToolWindow({
     fit();
     window.addEventListener("resize", fit);
     return () => window.removeEventListener("resize", fit);
-  }, [setFrame]);
+  }, []); // run once on mount
 
   const headerId = `${id}-title`;
 
@@ -85,7 +89,7 @@ export default function ToolWindow({
       style={{ zIndex, position: "fixed" }}
       minWidth={260}
       minHeight={140}
-      enableUserSelectHack={false} // keep rest of page selectable
+      enableUserSelectHack={false}
     >
       <section
         role="dialog"

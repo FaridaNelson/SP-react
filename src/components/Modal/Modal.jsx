@@ -2,7 +2,13 @@ import { useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
 import "./Modal.css";
 
-export default function Modal({ open, onClose, title, children }) {
+export default function Modal({
+  open,
+  onClose,
+  title,
+  children,
+  panelClassName = "",
+}) {
   const panelRef = useRef(null);
 
   useEffect(() => {
@@ -30,7 +36,7 @@ export default function Modal({ open, onClose, title, children }) {
   return createPortal(
     <div className="modal" onClick={handleOverlayClick}>
       <div
-        className="modal__panel"
+        className={`modal__panel ${panelClassName}`}
         role="dialog"
         aria-modal="true"
         aria-labelledby="modal-title"

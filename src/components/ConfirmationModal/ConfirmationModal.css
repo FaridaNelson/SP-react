@@ -8,10 +8,11 @@
 }
 .confirm-modal__content {
   background: var(--surface);
-  width: min(480px, 92vw);
+  width: min(520px, 92vw);
   padding: 20px;
   border-radius: 12px;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  position: relative;
 }
 .confirm-modal__title {
   margin: 0 0 8px;

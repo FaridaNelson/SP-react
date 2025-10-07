@@ -1,0 +1,37 @@
+.teacher__grid {
+  display: grid;
+  gap: 24px;
+  grid-template-columns: 1fr 360px;
+  align-items: start;
+}
+.teacher__card {
+  background: var(--surface, #111827);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+  padding: 16px;
+}
+.teacher__span {
+  grid-column: 1 / -1;
+}
+.teacher__table {
+  width: 100%;
+  border-collapse: collapse;
+}
+.teacher__table th,
+.teacher__table td {
+  padding: 8px 10px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+.teacher__table input {
+  width: 100%;
+  padding: 6px 8px;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  background: rgba(255, 255, 255, 0.06);
+  color: inherit;
+}
+.teacher__actions {
+  margin-top: 12px;
+  display: flex;
+  gap: 8px;
+}

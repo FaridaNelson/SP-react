@@ -1,0 +1,34 @@
+.brk {
+  display: grid;
+  gap: 10px;
+}
+
+.brk__row {
+  display: grid;
+  grid-template-columns: 140px 1fr 56px;
+  gap: 10px;
+  align-items: center;
+}
+
+.brk__label {
+  color: var(--text, #eaeef3);
+  font-weight: 600;
+}
+
+.brk__barwrap {
+  height: 12px;
+  border-radius: 999px;
+  background: color-mix(in oklab, var(--accent) 12%, transparent);
+  overflow: hidden;
+}
+
+.brk__bar {
+  height: 100%;
+  background: var(--accent, #6aa9ff);
+  border-radius: inherit;
+}
+
+.brk__val {
+  text-align: right;
+  color: var(--text-muted, #b8c2d1);
+}

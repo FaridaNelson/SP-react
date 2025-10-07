@@ -1,0 +1,27 @@
+.parent__head {
+  margin: 12px 0 24px;
+}
+
+.parent__grid {
+  display: grid;
+  gap: 24px;
+  grid-template-columns: 340px 1fr;
+  align-items: start;
+}
+
+.parent__card {
+  background: var(--surface, #111827);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+  padding: 16px;
+}
+
+.parent__h2 {
+  margin: 0 0 12px;
+}
+
+@media (max-width: 900px) {
+  .parent__grid {
+    grid-template-columns: 1fr;
+  }
+}

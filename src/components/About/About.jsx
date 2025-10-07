@@ -28,6 +28,8 @@ export default function About({ onOpenSignUp }) {
               picture of progress. By uniting structured homework with
               interactive sight-reading (via Soundslice) and lightweight
               assessment, we boost exam readiness and long-term musicianship.
+              The core philosophy of StudioPulse revolves around what we call
+              “The Triangle of Success.”
             </p>
           </article>
         </div>

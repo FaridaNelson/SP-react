@@ -15,7 +15,7 @@ export const CURRENT_ASSIGNMENT = [
       description: "ABRSM Piano Sight Reading",
     },
   },
-  { key: "theory", title: "Theory" },
+  { key: "aural-training", title: "AuralTraining" },
 ];
 
 export const HISTORY = [

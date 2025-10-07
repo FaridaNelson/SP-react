@@ -6,8 +6,14 @@ export default function Header({ user, onSignIn, onSignUp, onSignOutRequest }) {
   const { pathname } = useLocation();
   const navigate = useNavigate();
   const onProfile = pathname.startsWith("/profile");
-
+  const onDashboard = /^(\/profile|\/teacher|\/parent)/.test(pathname);
   const displayName = user?.name.trim() || "User Name";
+
+  const roleToPath = {
+    student: "/profile",
+    teacher: "/teacher",
+    parent: "/parent",
+  };
 
   const initials =
     displayName
@@ -29,10 +35,11 @@ export default function Header({ user, onSignIn, onSignUp, onSignOutRequest }) {
               type="button"
               className="header__userbtn header__usersection"
               onClick={() => {
-                if (onProfile) {
+                if (onDashboard) {
                   onSignOutRequest?.();
                 } else {
-                  navigate("/profile");
+                  const dest = roleToPath[user?.role] || "/profile";
+                  navigate(dest);
                 }
               }}
             >
