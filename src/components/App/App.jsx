@@ -73,6 +73,36 @@ export default function App() {
     parent: "/parent",
   };
 
+  // test effect
+  useEffect(() => {
+    console.log("App sees API_BASE =", import.meta.env.VITE_API_BASE);
+
+    (async () => {
+      try {
+        const health = await api("http://34.127.56.224:4000/api/health", {
+          auth: false,
+        });
+        console.log("Health OK:", health);
+      } catch (e) {
+        console.error("Health ERROR:", e?.message, e);
+      }
+
+      try {
+        const me = await api("http://34.127.56.224:4000/api/auth/me", {
+          auth: false,
+        });
+        console.log("ME OK:", me);
+      } catch (e) {
+        // Expect 401 if no token; I want to see network reachability
+        console.warn(
+          "ME expected error (likely 401 without token):",
+          e?.status,
+          e?.message
+        );
+      }
+    })();
+  }, []);
+
   useEffect(() => {
     if (!booted || !user) return;
     const target = firstDashboardPath(user);

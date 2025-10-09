@@ -14,17 +14,9 @@ export default function Modal({
   useEffect(() => {
     if (!open) return;
 
-    const onKey = (e) => e.key === "Escape" && onClose();
-    document.addEventListener("keydown", onKey);
-
-    //lock background scroll
-    const prevOverflow = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-
-    return () => {
-      document.removeEventListener("keydown", onKey);
-      document.body.style.overflow = prevOverflow;
-    };
+    const onKey = (e) => e.key === "Escape" && onClose?.();
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
   }, [open, onClose]);
 
   if (!open) return null;
