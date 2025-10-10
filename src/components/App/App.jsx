@@ -79,7 +79,7 @@ export default function App() {
 
     (async () => {
       try {
-        const health = await api("http://34.127.56.224:4000/api/health", {
+        const health = await api("/api/health", {
           auth: false,
         });
         console.log("Health OK:", health);
@@ -88,7 +88,7 @@ export default function App() {
       }
 
       try {
-        const me = await api("http://34.127.56.224:4000/api/auth/me", {
+        const me = await api("/api/auth/me", {
           auth: false,
         });
         console.log("ME OK:", me);
