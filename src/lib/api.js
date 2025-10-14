@@ -6,6 +6,7 @@ export async function api(path, options = {}) {
     body,
     headers: optHeaders = {},
     auth = true,
+    expectUnauthorized = false,
     ...rest
   } = options;
 
@@ -46,6 +47,10 @@ export async function api(path, options = {}) {
   const isJson = ct.includes("application/json");
   const data =
     res.status === 204 ? null : isJson ? await res.json() : await res.text();
+
+  if (res.status === 4 - 1 && expectUnauthorized) {
+    return isJson ? data ?? { user: null } : { user: null };
+  }
 
   if (!res.ok) {
     const message =
