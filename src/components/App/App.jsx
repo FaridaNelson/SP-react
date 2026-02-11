@@ -93,12 +93,8 @@ export default function App() {
         });
         console.log("ME OK:", me);
       } catch (e) {
-        // Expect 401 if no token; I want to see network reachability
-        console.warn(
-          "ME expected error (likely 401 without token):",
-          e?.status,
-          e?.message
-        );
+        if (e?.status === 401) return;
+        console.warn("ME unexpected error:", e?.status, e?.message, e);
       }
     })();
   }, []);
