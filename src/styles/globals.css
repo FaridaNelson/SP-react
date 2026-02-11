@@ -1,0 +1,75 @@
+html,
+body,
+#root {
+  height: 100%;
+  width: auto;
+}
+
+:root {
+  --toolbar-safe-space: calc(80px + env(safe-area-inset-bottom, 0px));
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font: 16px/1.5 system-ui, -apple-system, "SF Pro", Inter, Arial, sans-serif;
+}
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 80px;
+}
+.section {
+  padding: 45px 0;
+  border-top: 1px solid color-mix(in oklab, var(--text) 12%, transparent);
+}
+
+.section--tightTop {
+  padding-top: 40px;
+}
+
+.section--no-border {
+  border-top: none;
+}
+
+.grid-3 {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+}
+.grid-4 {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 24px;
+}
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+}
+
+@media (max-width: 1024px) {
+  .container {
+    padding: 0 32px;
+  }
+  .section {
+    padding: 72px 0;
+  }
+  .grid-3 {
+    grid-template-columns: 1fr 1fr;
+  }
+  .grid-4 {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+@media (max-width: 640px) {
+  .grid-3,
+  .grid-4 {
+    grid-template-columns: 1fr;
+  }
+  .section {
+    padding: 56px 0;
+  }
+}

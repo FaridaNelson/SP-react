@@ -1,0 +1,63 @@
+.modal {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  overflow: auto;
+  padding: max(24px, env(safe-area-inset-top)) 24px 24px;
+  z-index: 1000;
+  background: color-mix(in oklab, #000 60%, transparent);
+  overscroll-behavior: contain;
+  touch-action: none;
+}
+
+.modal__panel {
+  width: min(960px, 100%);
+  max-height: min(92vh, 1000px);
+  display: flex;
+  flex-direction: column;
+  background: var(--surface);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4);
+  padding: 24px 28px;
+  overflow: hidden;
+}
+
+.modal__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 0 16px;
+  border-bottom: 1px solid var(--border);
+}
+
+.modal__title {
+  margin: 0;
+  font-size: 25px;
+  font-weight: 700;
+}
+
+.modal__close {
+  background: none;
+  border: 0;
+  color: var(--text);
+  font-size: 25px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.modal__body {
+  padding: 20px 0;
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: auto;
+}
+
+@media (min-height: 700px) {
+  .modal {
+    align-items: center;
+  }
+}

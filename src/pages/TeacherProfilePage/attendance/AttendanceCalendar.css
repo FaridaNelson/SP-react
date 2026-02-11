@@ -1,0 +1,161 @@
+.attCal {
+  --cell: 84px;
+  --gap: 8px;
+  width: fit-content;
+  margin-inline: auto;
+}
+
+.attCal__legend {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px 12px;
+  margin: 8px 0 12px;
+}
+
+.attCal__grid {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: var(--gap);
+  justify-content: center;
+  max-width: calc(7 * var(--cell) + 6 * var(--gap));
+  margin-inline: auto;
+}
+
+.attCal__grid--header {
+  display: grid;
+  grid-template-columns: repeat(7, var(--cell));
+  gap: var(--gap);
+  justify-content: center;
+  margin-bottom: 6px;
+}
+
+.attCal__grid,
+.attCal__grid--header {
+  display: grid !important;
+  grid-template-columns: repeat(7, var(--cell)) !important;
+  gap: var(--gap);
+  justify-content: center;
+}
+
+.attCal__grid--header .attCal__cell {
+  height: 28px;
+  line-height: 28px;
+  text-align: center;
+  border: 0;
+  background: transparent;
+  color: var(--text-muted);
+  padding: 0;
+}
+
+.attCal__cell {
+  position: relative;
+  width: var(--cell);
+  height: var(--cell);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 8px;
+  background: var(--surface, #fff);
+  overflow: hidden;
+}
+
+.attCal__cell.is-other {
+  opacity: 0.45;
+}
+
+.attCal__date {
+  position: absolute;
+  top: 6px;
+  right: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1;
+}
+
+.attCal__dots {
+  position: absolute;
+  left: 8px;
+  bottom: 8px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+.attCal__controls {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  margin-bottom: 30px;
+}
+
+.attCal__controls-actions {
+  grid-column: 1;
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.attCal__title {
+  grid-column: 2 / 3;
+  text-align: center;
+  font-weight: 700;
+  font-size: 22px;
+}
+
+.is-red {
+  background: #e74c3c;
+  padding: 8px;
+}
+.is-green {
+  background: #2ecc71;
+  padding: 8px;
+}
+.is-orange {
+  background: #f39c12;
+  padding: 8px;
+}
+.is-blue {
+  background: #3498db;
+  padding: 8px;
+}
+.is-future {
+  background: #95a5ae;
+  padding: 8px;
+}
+
+.attCal__cell:hover {
+  box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.15) inset;
+  cursor: pointer;
+}
+
+.attCal__cell:focus-within,
+.attCal__cell:focus {
+  outline: 2px solid #3498db;
+  outline-offset: 2px;
+}
+
+.modal__panel--wide {
+  width: min(680px, 100%);
+  padding: 28px;
+}
+
+.btn--attCal {
+  padding: 12px;
+  width: auto;
+}
+
+@media (max-width: 640px) {
+  .attCal__grid {
+    gap: 6px;
+  }
+  .attCal__cell {
+    border-radius: 6px;
+  }
+  .attCal__date {
+    font-size: 11px;
+  }
+}

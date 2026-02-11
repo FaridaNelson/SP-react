@@ -1,0 +1,91 @@
+.tsi__head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.tsi__grid {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: 260px 1fr;
+}
+
+.tsi__card {
+  background: var(--surface);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+  padding: 16px;
+}
+
+.tsi__actions {
+  display: flex;
+  justify-content: space-around;
+  gap: 20px;
+}
+
+.btn {
+  padding: 14px;
+  font-size: 20px;
+  border-radius: 10px;
+  border: none;
+  background: color-mix(in oklab, var(--accent) 18%, transparent);
+}
+
+/* Info card container */
+.tsi__infocard {
+  background: var(--surface, #fff);
+  border: 1px solid var(--border, #e5e7eb);
+  border-radius: 16px;
+  padding: 14px 16px;
+  margin-bottom: 14px;
+
+  display: grid;
+  gap: 10px;
+}
+
+/* Rows inside the info card */
+.tsi__inforow {
+  display: grid;
+  grid-template-columns: 180px 1fr;
+  gap: 12px;
+  align-items: center;
+}
+
+.tsi__label {
+  font-weight: 600;
+  color: var(--text, #111827);
+}
+
+.tsi__value {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.tsi__text {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tsi__copybtn {
+  padding: 6px 10px;
+  border-radius: 10px;
+  border: none;
+  background: var(--accent);
+  opacity: 50%;
+  cursor: pointer;
+}
+
+.tsi__copybtn:hover {
+  opacity: 1;
+}
+
+@media (max-width: 640px) {
+  .tsi__inforow {
+    grid-template-columns: 1fr;
+    align-items: start;
+  }
+}

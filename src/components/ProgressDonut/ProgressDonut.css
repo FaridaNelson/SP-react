@@ -1,0 +1,37 @@
+.donut {
+  position: relative;
+  display: grid;
+  place-items: center;
+}
+
+.donut__center {
+  position: absolute;
+  text-align: center;
+}
+
+.donut__value {
+  font-size: 40px;
+  font-weight: 800;
+  color: var(--text, #eaeef3);
+}
+
+.donut__label {
+  font-size: 14px;
+  color: var(--text-muted, #b8c2d1);
+}
+
+.donut__bg {
+  fill: none;
+  stroke: color-mix(in oklab, var(--accent, #6aa9ff) 16%, transparent);
+}
+
+.donut__fg {
+  fill: none;
+  stroke: var(--accent, #6aa9ff);
+  stroke-linecap: round;
+  transition: stroke-dasharray 0.3s ease;
+}
+
+.donut__track {
+  stroke: #eee;
+}

@@ -1,0 +1,104 @@
+.about {
+  padding: 56px 0;
+}
+
+.about__title {
+  margin: 0 0 24px;
+  text-align: center;
+  font-size: clamp(28px, 4vw, 48px);
+  font-weight: 800;
+}
+
+.about__grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: clamp(16px, 3vw, 28px);
+  margin-bottom: 30px;
+}
+
+.about__card {
+  background: var(--surface);
+  color: var(--text);
+  border-radius: 16px;
+  padding: clamp(18px, 3vw, 24px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+}
+
+.about__heading {
+  margin: 0 0 10px;
+  font: 700 20px/1.2 system-ui, -apple-system, "SF Pro", Inter, Arial,
+    sans-serif;
+  color: var(--text);
+  border-left: 4px solid var(--accent);
+  padding-left: 10px;
+}
+
+.about__text {
+  margin: 0;
+  color: var(--text-muted);
+  line-height: 1.7;
+}
+
+.about__triangle-container {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  margin: 0 auto;
+}
+
+.about__triangle {
+  padding: 64px 0;
+}
+
+.about__h2 {
+  font-size: clamp(28px, 2.6vw, 40px);
+  margin: 20px 0 16px;
+  text-align: center;
+}
+
+.about__lead {
+  font-size: 1.05rem;
+  color: var(--text);
+  max-width: 75ch;
+}
+
+.about__triangle-media {
+  margin: 24px 0;
+  display: grid;
+  place-items: center;
+  border-radius: 20px;
+}
+
+.about__triangle-body {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 24px;
+}
+
+.about__triangle-body_text {
+  display: flex;
+  flex-direction: column;
+  min-width: 280px;
+  flex: 1 1 360px;
+}
+
+.about__list {
+  margin: 16px 0;
+  padding-left: 1.2rem;
+  line-height: 1.6;
+}
+
+.about__h3 {
+  margin-top: 24px;
+}
+
+@media (max-width: 800px) {
+  .about__grid {
+    grid-template-columns: 1fr;
+  }
+  .about__triangle-media img {
+    max-width: 100%;
+    height: auto;
+  }
+}

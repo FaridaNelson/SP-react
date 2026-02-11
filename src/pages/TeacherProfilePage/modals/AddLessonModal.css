@@ -1,0 +1,25 @@
+.lessonForm .row {
+  display: grid;
+  grid-template-columns: 140px 1fr;
+  gap: 12px;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.lessonForm .actions {
+  display: flex;
+  gap: 12px;
+  justify-content: space-between;
+  margin-top: 36px;
+}
+
+.lessonForm input,
+.lessonForm select {
+  width: 100%;
+}
+.lessonForm__grid {
+  display: grid;
+  gap: 24px;
+  grid-template-columns: 1fr 1fr;
+  align-items: start;
+}

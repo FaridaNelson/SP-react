@@ -1,0 +1,174 @@
+/* Container */
+.scoreForm {
+  display: grid;
+  color: var(--text, #111827);
+  gap: 16px;
+}
+
+/* Simple row (for Date) */
+.scoreForm__row {
+  display: grid;
+  grid-template-columns: 140px 1fr;
+  gap: 12px;
+  align-items: center;
+}
+
+.scoreForm__label {
+  font-weight: 600;
+  color: var(--text, #111827);
+}
+
+/* Fieldset groups */
+.scoreForm__fieldset {
+  border: 1px solid var(--border, #e5e7eb);
+  border-radius: 16px;
+  padding: 16px 16px 18px;
+  overflow: hidden;
+  background: var(--surface, #ffffff);
+}
+
+.scoreForm__legend {
+  font-weight: 700;
+  font-size: 0.95rem;
+  padding: 0;
+  color: var(--text, #111827);
+}
+
+/* Grid of fields within each group */
+.scoreForm__grid {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  margin-top: 12px;
+}
+
+.scoreForm__grid label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.scoreForm__sublabel {
+  font-size: 0.85rem;
+  color: var(--text-muted, #6b7280);
+}
+
+.scoreForm__input {
+}
+
+/* Make long text areas span the full width of the group */
+.scoreForm__col {
+  grid-column: 1 / -1;
+}
+
+/* Inputs */
+.scoreForm input[type="date"],
+.scoreForm input[type="number"],
+.scoreForm textarea {
+  width: 100%;
+  border: 1px solid var(--border, #e5e7eb);
+  background: var(--surface, #fff);
+  color: var(--text, #111827);
+  border-radius: 12px;
+  padding: 10px 12px;
+  font: inherit;
+  outline: none;
+  align-self: center;
+  transition: border-color 120ms ease, box-shadow 120ms ease;
+}
+
+.scoreForm textarea {
+  resize: vertical;
+  min-height: 60px;
+}
+
+/* Focus states */
+.scoreForm input:focus,
+.scoreForm textarea:focus {
+  border-color: var(--primary, #6366f1);
+  box-shadow: 0 0 0 3px
+    color-mix(in srgb, var(--primary, #6366f1) 25%, transparent);
+}
+
+/* Actions */
+.scoreForm__actions {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+  margin-top: 4px;
+}
+
+.btn {
+  appearance: none;
+  border: none;
+  background: var(--btn-bg, #fff);
+  color: var(--text, #111827);
+  padding: 10px 14px;
+  font-weight: 600;
+  border-radius: 12px;
+  cursor: pointer;
+}
+
+.btn:hover {
+  background: var(--accent);
+}
+
+.btn:active {
+  transform: translateY(1px);
+}
+
+.btn--primary {
+  border-color: var(--primary, #6366f1);
+  background: var(--primary, #6366f1);
+  color: #fff;
+}
+
+.btn--primary:hover {
+  filter: brightness(0.98);
+}
+
+/* Small tweaks for the Date row input */
+.scoreForm__row input[type="date"] {
+  max-width: 260px;
+}
+
+/* Responsive */
+@media (max-width: 920px) {
+  .scoreForm__grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 640px) {
+  .scoreForm__row {
+    grid-template-columns: 1fr;
+  }
+  .scoreForm__grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Optional dark mode if your app uses it */
+@media (prefers-color-scheme: dark) {
+  .scoreForm__fieldset {
+    background: #0f172a;
+    border-color: #1f2937;
+  }
+  .scoreForm input[type="date"],
+  .scoreForm input[type="number"],
+  .scoreForm textarea {
+    background: #0b1220;
+    color: #e5e7eb;
+    border-color: #1f2937;
+  }
+  .btn {
+    background: #111827;
+    border-color: #1f2937;
+    color: #e5e7eb;
+  }
+  .btn--primary {
+    background: #6366f1;
+    border-color: #6366f1;
+    color: #fff;
+  }
+}

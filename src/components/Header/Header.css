@@ -1,0 +1,121 @@
+.header {
+  background: var(--bg);
+}
+
+.header__row {
+  display: flex;
+  align-items: center;
+  padding-block: 20px;
+}
+
+.header__brand {
+  display: inline-flex;
+  align-items: center;
+  transform: translateY(10px);
+}
+
+.header__logo {
+  display: block;
+  background: none;
+  height: auto;
+  width: 155px;
+  cursor: pointer;
+}
+
+.header__navbtns {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.header__user {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.header__userbtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  background: transparent;
+  border: 0;
+  padding: 0;
+  color: inherit;
+  font: inherit;
+}
+
+.header__userbtn:disabled {
+  cursor: default;
+  opacity: 0.6;
+}
+
+.header__username,
+.header__authbtn {
+  color: var(--text-muted);
+  opacity: 0.9;
+  font-size: 28px;
+  line-height: 1.15;
+  transition: color 0.2s ease;
+}
+
+.header__userbtn:hover .header__username,
+.header__usersection:hover .header__username {
+  color: var(--text);
+}
+
+.header__authbtn {
+  background: transparent;
+  border: 0;
+  padding: 0;
+  margin: 0;
+  font-family: inherit;
+  font-weight: 600;
+  line-height: 1.15;
+  font-size: 28px;
+  cursor: pointer;
+  color: var(-text);
+}
+
+.header__authbtn:hover,
+.header__userbtn:hover {
+  color: var(--text);
+}
+
+.header__authbtn:focus-visible {
+  outline: 2px solid var(--text-muted);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+header .header__navbtns > .header__authbtn {
+  font-size: 28px;
+}
+
+.header__avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 999px;
+  background: var(--accent);
+  color: #111;
+  font: 700 14px/36px ui-sans-serif, system-ui;
+  text-align: center;
+}
+
+@media (min-width: 1440px) {
+  .header__logo {
+    width: 155px;
+  }
+}
+@media (max-width: 640px) {
+  .header__logo {
+    width: 110px;
+  }
+}
+
+.header__userbtn:hover,
+.header__usersection:hover {
+  color: var(--text);
+}

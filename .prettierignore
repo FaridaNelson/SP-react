@@ -1,0 +1,57 @@
+# dependencies
+node_modules/
+pnpm-lock.yaml
+yarn.lock
+package-lock.json
+
+# builds / outputs
+dist/
+build/
+*.local
+out/
+.next/
+storybook-static/
+.esbuild/
+.rollup.cache/
+.parcel-cache/
+.vite/
+.cache/
+.tmp/
+
+# tests & coverage
+coverage/
+*.snap
+
+# logs
+logs
+*.log
+npm-debug.log*
+
+# env & local config
+.env
+.env.*
+*.local
+
+# static assets & vendor (keep Prettier off third-party or generated files)
+public/assets/
+public/*.min.*
+static/
+vendor/
+*.min.js
+*.min.css
+*.min.html
+
+# reports & screenshots
+reports/
+cypress/videos/
+cypress/screenshots/
+
+# OS / IDE
+.DS_Store
+.idea/
+.vscode/*
+!.vscode/settings.json
+!.vscode/extensions.json
+
+# Environment variables
+.env

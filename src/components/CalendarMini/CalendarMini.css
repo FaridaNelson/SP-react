@@ -1,0 +1,95 @@
+.cal {
+  display: grid;
+  gap: 12px;
+}
+
+.cal__nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.cal__title {
+  font: 600 18px/1.2 ui-sans-serif, system-ui;
+}
+
+.cal__btn {
+  all: unset;
+  cursor: pointer;
+  padding: 6px 10px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: color-mix(in oklab, var(--accent) 18%, transparent);
+}
+
+.cal__grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 6px;
+}
+
+.cal__grid--header .cal__cell {
+  text-align: center;
+  color: var(--text-muted);
+}
+
+.cal__cell {
+  position: relative;
+  padding: 10px 8px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--surface);
+  color: var(--text);
+  min-height: 44px;
+}
+
+.cal__cell.is-other {
+  opacity: 0.5;
+}
+
+.cal__cell.is-sel {
+  outline: 2px solid var(--accent);
+}
+
+.cal__date {
+  font-size: 12px;
+}
+
+.cal__dot {
+  position: absolute;
+  right: 8px;
+  bottom: 6px;
+  width: 6px;
+  height: 6px;
+  border-radius: 999px;
+  background: var(--accent);
+}
+
+.cal__panel {
+  border-top: 1px solid var(--border);
+  padding-top: 8px;
+}
+
+.cal__paneltitle {
+  margin: 0 0 6px;
+  font: 600 14px/1.2 ui-sans-serif, system-ui;
+}
+
+.cal__empty {
+  color: var(--text-muted);
+  margin: 6px 0;
+}
+
+.cal__form {
+  display: flex;
+  gap: 8px;
+}
+
+.cal__input {
+  flex: 1;
+  padding: 6px 8px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--surface);
+  color: var(--text);
+}

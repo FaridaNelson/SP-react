@@ -1,0 +1,21 @@
+<!-- favicon.svg -->
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64" role="img" aria-labelledby="title desc">
+  <title id="title">StudioPulse Favicon</title>
+  <desc id="desc">Rounded blue tile with an orange pulse line for music practice progress.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#0EA5E9"></stop>
+      <stop offset="100%" stop-color="#2563EB"></stop>
+    </linearGradient>
+  </defs>
+
+  <!-- background tile -->
+  <rect x="2" y="2" width="60" height="60" rx="14" fill="url(#bg)"></rect>
+  <!-- subtle border for contrast on light/dark tabs -->
+  <rect x="2.5" y="2.5" width="59" height="59" rx="13.5" fill="none" stroke="rgba(255,255,255,0.25)"></rect>
+
+  <!-- pulse line (thick ghost stroke for glow) -->
+  <path d="M8 36 H20 L26 28 L31 42 L38 20 L44 36 H56" fill="none" stroke="#FF7A18" stroke-width="9" stroke-linecap="round" stroke-linejoin="round" opacity="0.25"></path>
+  <!-- pulse line (primary) -->
+  <path d="M8 36 H20 L26 28 L31 42 L38 20 L44 36 H56" fill="none" stroke="#FF7A18" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
