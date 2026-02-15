@@ -13,11 +13,18 @@ const DEFAULT_ITEMS = [
 export function useProgress(studentId, { scope = "teacher" } = {}) {
   const [items, setItems] = useState(DEFAULT_ITEMS);
   const [isLoading, setIsLoading] = useState(true);
+
+  // NEW: history state
+  const [history, setHistory] = useState([]);
+  const [historyLoading, setHistoryLoading] = useState(false);
+
   const base =
     scope === "parent" ? "/api/parent/students" : "/api/teacher/students";
 
+  // Load snapshot progress
   useEffect(() => {
     let alive = true;
+
     if (!studentId) {
       setItems(DEFAULT_ITEMS);
       setIsLoading(false);
@@ -31,7 +38,6 @@ export function useProgress(studentId, { scope = "teacher" } = {}) {
         setIsLoading(true);
         const data = await api(`${base}/${studentId}/progress`);
         if (!alive) return;
-        // expect: { items: [{id,label,weight,score}] }
         setItems(data?.items?.length ? data.items : DEFAULT_ITEMS);
       } catch {
         if (alive) setItems(DEFAULT_ITEMS);
@@ -43,7 +49,7 @@ export function useProgress(studentId, { scope = "teacher" } = {}) {
     return () => {
       alive = false;
     };
-  }, [studentId]);
+  }, [studentId, base]);
 
   const saveScores = useCallback(
     async (nextItems) => {
@@ -55,11 +61,56 @@ export function useProgress(studentId, { scope = "teacher" } = {}) {
           body: { items: nextItems },
         });
       } catch {
-        // TODO: handle rollback or toast
+        // TODO: toast/rollback
       }
     },
-    [studentId, base]
+    [studentId, base],
   );
 
-  return { items, setItems, saveScores, isLoading };
+  // NEW: fetch history on demand (button click)
+  const fetchHistory = useCallback(async () => {
+    if (!studentId) return;
+    setHistoryLoading(true);
+    try {
+      const data = await api(`${base}/${studentId}/scores`);
+      // accept either { items: [...] } or [...]
+      setHistory(Array.isArray(data) ? data : (data?.items ?? []));
+    } catch {
+      setHistory([]);
+    } finally {
+      setHistoryLoading(false);
+    }
+  }, [studentId, base]);
+
+  // NEW: add entries from AddScoreModal (bulk)
+  const addScoreEntries = useCallback(
+    async (entries) => {
+      if (!studentId) return;
+
+      // optimistic prepend for immediate UI
+      setHistory((prev) => [...entries, ...prev]);
+
+      await api(`${base}/${studentId}/scores`, {
+        method: "POST",
+        body: { entries },
+      });
+
+      // refresh history after save (keeps server timestamps as truth)
+      await fetchHistory();
+    },
+    [studentId, base, fetchHistory],
+  );
+
+  return {
+    items,
+    setItems,
+    saveScores,
+    isLoading,
+
+    // NEW exports
+    history,
+    historyLoading,
+    fetchHistory,
+    addScoreEntries,
+  };
 }
