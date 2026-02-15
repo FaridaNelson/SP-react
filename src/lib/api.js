@@ -25,7 +25,9 @@ export async function api(path, options = {}) {
   }
 
   // Authorization
-  if (auth && !headers.Authorization) {
+  const isDev = import.meta.env.DEV;
+
+  if (auth && isDev && !headers.Authorization) {
     const token = localStorage.getItem("token");
     if (token) headers.Authorization = `Bearer ${token}`;
   }
@@ -48,8 +50,8 @@ export async function api(path, options = {}) {
   const data =
     res.status === 204 ? null : isJson ? await res.json() : await res.text();
 
-  if (res.status === 4 - 1 && expectUnauthorized) {
-    return isJson ? data ?? { user: null } : { user: null };
+  if (res.status === 401 && expectUnauthorized) {
+    return isJson ? (data ?? { user: null }) : { user: null };
   }
 
   if (!res.ok) {

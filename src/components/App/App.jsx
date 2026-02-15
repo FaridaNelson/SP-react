@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import {
   Routes,
   Route,
@@ -73,28 +73,30 @@ export default function App() {
     parent: "/parent",
   };
 
+  const ran = useRef(false);
+
   // test effect
   useEffect(() => {
-    console.log("App sees API_BASE =", import.meta.env.VITE_API_BASE);
-
     (async () => {
       try {
-        const health = await api("/api/health", {
-          auth: false,
-        });
+        const health = await api("/api/health", { auth: false });
         console.log("Health OK:", health);
       } catch (e) {
         console.error("Health ERROR:", e?.message, e);
       }
 
       try {
-        const me = await api("/api/auth/me", {
-          auth: false,
-        });
-        console.log("ME OK:", me);
+        // IMPORTANT: let api() include cookies / auth
+        const me = await api("/api/auth/me", { expectUnauthorized: true }); // remove auth:false
+
+        // only log if actually authed - avoid 401 noise on every page load when not authed
+        if (me?.user) {
+          console.log("ME OK:", me);
+        } else {
+          // logged out: do nothing
+        }
       } catch (e) {
-        if (e?.status === 401) return;
-        console.warn("ME unexpected error:", e?.status, e?.message, e);
+        console.warn("ME unexpected error:", e?.status, e?.message);
       }
     })();
   }, []);

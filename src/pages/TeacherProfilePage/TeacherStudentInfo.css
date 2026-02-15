@@ -83,6 +83,87 @@
   opacity: 1;
 }
 
+.tsi__historyBar {
+  margin-top: 20px;
+}
+
+.tsi__historyCards {
+  display: grid;
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.tsi__historyNotesWrap {
+  margin-top: 6px;
+  opacity: 0.95;
+  font-size: 0.95rem;
+  line-height: 1.25rem;
+}
+
+.tsi__historyNote {
+  margin-top: 4px;
+  justify-content: space-between;
+}
+
+.tsi__lessonCard {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 14px;
+  padding: 12px 14px;
+}
+
+.tsi__lessonCardHead {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  padding-bottom: 8px;
+  margin-bottom: 8px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.tsi__lessonTitle {
+  margin: 0;
+  font-size: 16px;
+}
+
+.tsi__lessonMeta {
+  opacity: 0.75;
+  font-size: 12px;
+}
+
+.tsi__lessonEntries {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: 10px;
+}
+
+.tsi__lessonEntry {
+  background: rgba(0, 0, 0, 0.18);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  padding: 10px 12px;
+}
+
+.tsi__entryMain {
+  line-height: 1.35;
+}
+
+.tsi__entryTime {
+  margin-top: 6px;
+  font-size: 12px;
+  opacity: 0.7;
+}
+
+.tsi__entryNotes {
+  margin-top: 8px;
+  font-size: 13px;
+  opacity: 0.9;
+  display: grid;
+  gap: 4px;
+}
+
 @media (max-width: 640px) {
   .tsi__inforow {
     grid-template-columns: 1fr;

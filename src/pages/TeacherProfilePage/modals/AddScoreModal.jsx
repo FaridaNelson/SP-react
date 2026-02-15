@@ -11,6 +11,34 @@ const ELEMENTS = [
   { id: "auralTraining", label: "AuralTraining" },
 ];
 
+const ELEMENTS_BY_ID = Object.fromEntries(ELEMENTS.map((e) => [e.id, e.label]));
+
+function toEntries({ date, form }) {
+  return Object.entries(form)
+    .map(([elementId, v]) => {
+      const hasAny =
+        v?.score != null ||
+        v?.tempoCurrent != null ||
+        v?.tempoGoal != null ||
+        (v?.dynamics && v.dynamics.trim()) ||
+        (v?.articulation && v.articulation.trim());
+
+      if (!hasAny) return null;
+
+      return {
+        lessonDate: date, // "YYYY-MM-DD" (backend can parse)
+        elementId,
+        elementLabel: ELEMENTS_BY_ID[elementId] || elementId,
+        score: v.score ?? undefined,
+        tempoCurrent: v.tempoCurrent ?? undefined,
+        tempoGoal: v.tempoGoal ?? undefined,
+        dynamics: v.dynamics?.trim() || undefined,
+        articulation: v.articulation?.trim() || undefined,
+      };
+    })
+    .filter(Boolean);
+}
+
 export default function AddScoreModal({ open, onClose, onSubmit }) {
   const [date, setDate] = useState(() => new Date().toISOString().slice(0, 10));
   const [form, setForm] = useState({}); // key by element id
@@ -20,9 +48,16 @@ export default function AddScoreModal({ open, onClose, onSubmit }) {
       ...prev,
       [id]: { ...(prev[id] || {}), [field]: value },
     }));
+
   function handleSubmit(e) {
     e.preventDefault();
-    onSubmit?.({ date, ...form });
+    const entries = toEntries({ date, form });
+    if (entries.length === 0) {
+      // show a UI message instead of submitting empty data
+      console.warn("No score fileds filled");
+      return;
+    }
+    onSubmit?.(entries);
   }
 
   return (
