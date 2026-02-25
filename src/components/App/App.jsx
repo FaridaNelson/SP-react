@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 import {
   Routes,
   Route,
@@ -56,7 +56,11 @@ export default function App() {
 
   const navigate = useNavigate();
   const { pathname } = useLocation();
-  const hideFooter = pathname.startsWith("/profile");
+  const isTeacherView = pathname.startsWith("/teacher");
+  const isParentView = pathname.startsWith("/parent");
+
+  const hideHeader = isTeacherView || isParentView;
+  const hideFooter = isTeacherView || isParentView;
 
   // CTA helpers
   const openRolePicker = () => setAuthMode("role");
@@ -65,15 +69,6 @@ export default function App() {
     setAuthMode(null);
     setPendingRole(null);
   };
-
-  // role → path mapping
-  const roleToPath = {
-    student: "/profile",
-    teacher: "/teacher",
-    parent: "/parent",
-  };
-
-  const ran = useRef(false);
 
   // test effect
   useEffect(() => {
@@ -114,17 +109,12 @@ export default function App() {
 
   useEffect(() => {
     (async () => {
-      const token = localStorage.getItem("token");
-      if (!token) {
-        setUser(null);
-        setBooted(true);
-        return;
-      }
       try {
-        const { user } = await api("/api/auth/me");
+        const { user } = await api("/api/auth/me", {
+          expectUnauthorized: true,
+        });
         setUser(user || null);
       } catch {
-        localStorage.removeItem("token");
         setUser(null);
       } finally {
         setBooted(true);
@@ -174,12 +164,14 @@ export default function App() {
 
   return (
     <>
-      <Header
-        user={user}
-        onSignIn={openSignIn}
-        onSignUp={openRolePicker}
-        onSignOutRequest={() => setConfirmSignOutOpen(true)}
-      />
+      {!hideHeader && (
+        <Header
+          user={user}
+          onSignIn={openSignIn}
+          onSignUp={openRolePicker}
+          onSignOutRequest={() => setConfirmSignOutOpen(true)}
+        />
+      )}
 
       <Routes>
         <Route element={<DefaultLayout onSignUp={openRolePicker} />}>
@@ -217,6 +209,7 @@ export default function App() {
                 allowedRoles={["teacher", "admin"]}
                 element={
                   <TeacherDashboard
+                    user={user}
                     selectedStudentId={selectedStudentId}
                     onSelectStudent={setSelectedStudentId}
                   />

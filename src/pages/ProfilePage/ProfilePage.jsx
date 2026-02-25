@@ -1,6 +1,5 @@
 import { useState, useMemo, Suspense } from "react";
 import { getToolComponent } from "../../registry/tools.js";
-import DailySightReadingSlice from "../../components/DailySightReadingSlice/DailySightReadingSlice";
 import WindowManager from "../../components/WindowManager/WindowManager.jsx";
 import "./ProfilePage.css";
 
@@ -99,16 +98,17 @@ export default function ProfilePage({ user }) {
               );
             })()
           ) : active?.source === "current" && active.key === "sight-reading" ? (
-            <DailySightReadingSlice
-              sliceId="r7RTc"
-              useApi={false}
-              showControls={false}
-              meta={{
-                title: "Slice Title",
-                artist: "ABRSM",
-                description: "ABRSM Piano Sight Reading",
-              }}
-            />
+            <div className="profile__placeholder">
+              <h3>Sight Reading</h3>
+              <p>
+                Sight Reading materials will live inside StudioPulse (no
+                third-party embed).
+              </p>
+              <p>
+                Coming next: PDFs, audio demos, and a timer/metronome—all built
+                in.
+              </p>
+            </div>
           ) : (
             // default assignment view
             <div>

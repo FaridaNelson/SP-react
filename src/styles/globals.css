@@ -13,7 +13,14 @@ body {
   margin: 0;
   background: var(--bg);
   color: var(--text);
-  font: 16px/1.5 system-ui, -apple-system, "SF Pro", Inter, Arial, sans-serif;
+  font-family: var(--font-sans);
+  font:
+    16px/1.5 system-ui,
+    -apple-system,
+    "SF Pro",
+    Inter,
+    Arial,
+    sans-serif;
 }
 .container {
   max-width: 1200px;

@@ -10,6 +10,7 @@ export async function api(path, options = {}) {
     ...rest
   } = options;
 
+  console.log("API_BASE:", API_BASE);
   const isAbsolute = /^https?:\/\//i.test(path);
   const url = isAbsolute ? path : `${API_BASE}${path}`;
 
@@ -24,10 +25,7 @@ export async function api(path, options = {}) {
     headers["Content-Type"] = "application/json";
   }
 
-  // Authorization
-  const isDev = import.meta.env.DEV;
-
-  if (auth && isDev && !headers.Authorization) {
+  if (auth && !headers.Authorization) {
     const token = localStorage.getItem("token");
     if (token) headers.Authorization = `Bearer ${token}`;
   }

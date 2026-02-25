@@ -37,7 +37,9 @@ export default function AttendanceCalendar({ open, onClose, student }) {
           student: { id: payload.id, name: payload.name },
         });
       }
-    } catch {}
+    } catch (e) {
+      console.error(e);
+    }
   }, []);
 
   return (

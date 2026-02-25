@@ -1,0 +1,51 @@
+.brandTag {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 14px;
+  border-radius: 999px;
+  border: 1px solid rgba(198, 164, 74, 0.35);
+  background: rgba(198, 164, 74, 0.22);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.25);
+}
+
+.brandTag__text {
+  font-family: var(--font-sans);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-size: 12px;
+  color: #e8d49a;
+}
+
+.brandTag__text strong {
+  font-weight: 700;
+}
+
+.brandTag__pulse {
+  flex-shrink: 0;
+  vertical-align: middle;
+}
+
+.brandTag__line {
+  stroke: var(--gold-light, #e8d49a);
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  opacity: 0.5;
+}
+
+.brandTag__zig {
+  stroke: var(--gold-light, #e8d49a);
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* Optional smaller variant */
+.brandTag--compact {
+  padding: 8px 12px;
+  gap: 8px;
+}
+.brandTag--compact .brandTag__text {
+  font-size: 11px;
+}

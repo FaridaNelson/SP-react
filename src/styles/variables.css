@@ -2,6 +2,8 @@
   --bg: #111316;
   --surface: #273246;
   --surface-cta: #ff6b00;
+  --font-sans: "DM Sans", system-ui, -apple-system, sans-serif;
+  --font-serif: "Cormorant Garamond", Georgia, serif;
   --border: #3a465c;
   --text: #f1f5f9;
   --text-muted: #b8c2cc;
@@ -12,4 +14,26 @@
   --gap-3: 24px;
   --gap-4: 32px;
   --gap-5: 48px;
+
+  /* ===== Exam / refined design tokens ===== */
+
+  --cream: #faf7f2;
+  --warm-white: #fdf9f4;
+
+  --ink: #1c1a17;
+  --ink-soft: #3d3a34;
+  --ink-muted: #7a766d;
+
+  --gold: #c9a84c;
+  --gold-light: #e8d49a;
+  --gold-pale: #f5edd0;
+
+  --rose: #d4806a;
+  --sage: #7a9e87;
+  --sage-pale: #ebf3ee;
+
+  --border-soft: rgba(28, 26, 23, 0.1);
+
+  --sidebar-w: 300px;
+  --topbar-h: 64px;
 }
