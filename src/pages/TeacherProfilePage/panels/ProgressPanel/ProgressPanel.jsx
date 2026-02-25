@@ -11,7 +11,7 @@ import {
   mergeIntoProgressItems,
 } from "./scoreMath";
 import ScalesCard from "./ScalesCard";
-import SightreadingCard from "./SightReadingCard";
+import SightreadingCard from "./SightreadingCard";
 import AuralCard from "./AuralCard";
 import { upsertLesson, getLatestLesson } from "../../../../lib/lessons";
 
