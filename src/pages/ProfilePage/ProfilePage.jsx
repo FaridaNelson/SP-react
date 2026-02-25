@@ -1,51 +1,21 @@
-import { useState, useMemo, Suspense } from "react";
-import { getToolComponent } from "../../registry/tools.js";
-import WindowManager from "../../components/WindowManager/WindowManager.jsx";
+import { useState, Suspense } from "react";
 import "./ProfilePage.css";
 
 import Modal from "../../components/Modal/Modal";
 import ProfileReminders from "../../components/ProfileReminders/ProfileReminders";
 import ProfileSidebar from "../../components/ProfileSidebar/ProfileSidebar";
 import ProfileAssignments from "../../components/ProfileAssignments/ProfileAssignments";
-import ProfileToolbar from "../../components/ProfileToolbar/ProfileToolbar";
-import { CURRENT_ASSIGNMENT, HISTORY, TOOLS } from "../../constants/profile";
+import { CURRENT_ASSIGNMENT, HISTORY } from "../../constants/profile";
 
 export default function ProfilePage({ user }) {
   const [showReminders, setShowReminders] = useState(true);
   const [active, setActive] = useState(null);
-
-  const [openWins, setOpenWins] = useState([]);
-  const addWin = (key) =>
-    setOpenWins((s) => (s.includes(key) ? s : [...s, key]));
-  const closeWin = (key) => setOpenWins((s) => s.filter((x) => x !== key));
 
   const handleSidebarSelect = (item, source) =>
     setActive({ key: item.key, title: item.title, source });
 
   const handleOpenAssignment = (item) =>
     setActive({ key: item.key, title: item.title, source: "current" });
-
-  const handlePickTool = (tool) => addWin(tool.key);
-
-  const windows = useMemo(() => {
-    return openWins.map((id) => {
-      const Comp = getToolComponent(id);
-      return {
-        id,
-        title:
-          TOOLS.find((t) => t.key === id)?.title ??
-          id.charAt(0).toUpperCase() + id.slice(1),
-        render: () =>
-          Comp ? (
-            <Suspense fallback={<p>Loading {id}...</p>}>
-              <Comp />
-            </Suspense>
-          ) : (
-            <p>Unknown tool.</p>
-          ),
-      };
-    });
-  }, [openWins]);
 
   return (
     <main className="profile" aria-labelledby="profile-title">
@@ -74,11 +44,7 @@ export default function ProfilePage({ user }) {
           />
         </div>
       </div>
-
       <div className="profile__toolbar-spacer" aria-hidden="true" />
-
-      <ProfileToolbar tools={TOOLS} onPick={handlePickTool} />
-
       {/* Shared modal for all items */}
       <Modal
         open={!!active && active.source !== "tool"}
@@ -121,9 +87,7 @@ export default function ProfilePage({ user }) {
             </div>
           )}
         </div>
-      </Modal>
-
-      <WindowManager windows={windows} onCloseWindow={closeWin} />
+      </Modal>{" "}
     </main>
   );
 }
