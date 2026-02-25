@@ -5,7 +5,10 @@ import ProgressDonut from "../../components/ProgressDonut/ProgressDonut";
 import AssignmentBreakdown from "../../components/AssignmentBreakdown/AssignmentBreakdown";
 import "./ParentProfilePage.css";
 
-export default function ParentProfilePage({ studentId, user }) {
+export default function ParentProfilePage({ studentId }) {
+  const { items, isLoading } = useProgress(studentId, { scope: "parent" });
+  const readiness = useMemo(() => computeReadiness(items), [items]);
+
   if (!studentId) {
     return (
       <main className="container parent">
@@ -16,9 +19,6 @@ export default function ParentProfilePage({ studentId, user }) {
       </main>
     );
   }
-
-  const { items, isLoading } = useProgress(studentId, { scope: "parent" });
-  const readiness = useMemo(() => computeReadiness(items), [items]);
 
   if (isLoading)
     return (

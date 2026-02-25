@@ -17,22 +17,35 @@ export default function AddStudentModal({ open, onClose, onSubmit }) {
     setForm((f) => ({ ...f, [k]: v }));
   }
 
-  const handleSubmit = async (e) => {
+  const handleAddStudent = async (e) => {
     e.preventDefault();
     setErr("");
     setBusy(true);
+
+    const payload = {
+      name: form.studentName.trim(),
+      email: form.studentEmail.trim(),
+      instrument: form.instrument.trim(),
+      grade: Number(form.grade),
+      parent: {
+        name: form.parentName.trim(),
+        email: form.parentEmail.trim(),
+      },
+    };
+
     try {
-      await onSubmit?.({
-        name: form.studentName.trim(),
-        email: form.studentEmail.trim(),
-        instrument: form.instrument.trim(),
-        grade: Number(form.grade) || null,
-        parent: {
-          name: form.parentName.trim(),
-          email: form.parentEmail.trim(),
-        },
+      const created = await onSubmit?.(payload); // <-- parent will do the API call
+      // optional: reset form so next add starts clean
+      setForm({
+        studentName: "",
+        studentEmail: "",
+        instrument: "",
+        grade: "",
+        parentName: "",
+        parentEmail: "",
       });
-      onClose?.();
+      onClose?.(); // parent also closes; safe to keep
+      return created;
     } catch (e) {
       setErr(e?.message || "Failed to add student");
     } finally {
@@ -42,7 +55,7 @@ export default function AddStudentModal({ open, onClose, onSubmit }) {
 
   return (
     <Modal open={open} onClose={onClose} title="Add a student">
-      <form className="authForm" onSubmit={handleSubmit}>
+      <form className="authForm" onSubmit={handleAddStudent}>
         <h4 style={{ margin: "8px 0" }}>Student Information</h4>
         <input
           className="input"
@@ -59,20 +72,26 @@ export default function AddStudentModal({ open, onClose, onSubmit }) {
           onChange={(e) => set("studentEmail", e.target.value)}
           required
         />
-        <input
+        <select
           className="input"
-          placeholder="Instrument (e.g., Piano)"
           value={form.instrument}
           onChange={(e) => set("instrument", e.target.value)}
-        />
+          required
+        >
+          <option value="">Select instrument</option>
+          <option value="Piano">Piano</option>
+          <option value="Voice">Voice</option>
+          <option value="Guitar">Guitar</option>
+        </select>
         <input
           className="input"
           type="number"
           min={1}
-          max={12}
-          placeholder="Grade (number)"
+          max={8}
+          placeholder="Grade (1-8)"
           value={form.grade}
           onChange={(e) => set("grade", e.target.value)}
+          required
         />
 
         <h4 style={{ margin: "16px 0 8px" }}>Parent Information</h4>

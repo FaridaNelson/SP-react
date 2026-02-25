@@ -5,7 +5,6 @@ import "./Header.css";
 export default function Header({ user, onSignIn, onSignUp, onSignOutRequest }) {
   const { pathname } = useLocation();
   const navigate = useNavigate();
-  const onProfile = pathname.startsWith("/profile");
   const onDashboard = /^(\/profile|\/teacher|\/parent)/.test(pathname);
   const displayName = user?.name.trim() || "User Name";
 

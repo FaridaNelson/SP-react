@@ -1,4 +1,4 @@
-export default function FeatureCard({ title, text, Icon }) {
+export default function FeatureCard({ title, text }) {
   return (
     <article className="card feature">
       <Icon className="feature__icon" />

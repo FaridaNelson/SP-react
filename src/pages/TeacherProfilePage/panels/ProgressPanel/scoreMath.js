@@ -1,0 +1,124 @@
+export function initPieces(PIECES) {
+  const out = {};
+  for (const p of PIECES) {
+    out[p.id] = { criteria: {} };
+    for (const c of p.criteria)
+      out[p.id].criteria[c.id] = { score: undefined, note: "" };
+  }
+  return out;
+}
+
+export function initScales(list) {
+  const out = {};
+  for (const s of list) out[s.id] = { ready: false, note: "" };
+  return out;
+}
+
+/**
+ * pieceValue: { criteria: { [criterionId]: {score, note} } }
+ * criteriaDef: [{id,label}...]
+ * returns 0..100
+ */
+export function computePiecePercent(pieceValue, criteriaDef) {
+  const crit = criteriaDef || [];
+  const scores = crit
+    .map((c) => pieceValue?.criteria?.[c.id]?.score)
+    .filter((n) => Number.isFinite(n));
+
+  if (scores.length === 0) return 0;
+  const sum = scores.reduce((a, b) => a + b, 0);
+  const max = 6 * scores.length;
+  return Math.round((sum / max) * 100);
+}
+
+export function computeScalesPercent(scalesMap) {
+  const entries = Object.values(scalesMap || {});
+  const answered = entries.filter((s) => s.ready === true || s.ready === false);
+  if (answered.length === 0) return 0;
+  const readyCount = answered.filter((s) => s.ready === true).length;
+  return Math.round((readyCount / answered.length) * 100);
+}
+
+/**
+ * Merge computed scores into existing progressItems array.
+ * Keeps your current weights untouched.
+ */
+export function mergeIntoProgressItems(items, scores) {
+  const next = Array.isArray(items) ? [...items] : [];
+  const byId = new Map(next.map((it) => [it.id, it]));
+
+  for (const [id, value] of Object.entries(scores)) {
+    if (value == null) continue;
+    const existing = byId.get(id);
+    if (existing) existing.score = value;
+    else next.push({ id, label: id, weight: 0, score: value });
+  }
+  return next;
+}
+
+export function buildLessonPayload({
+  lessonDate,
+  studentId,
+  pieces,
+  piecePercents,
+  scales,
+  scalesPercent,
+  sight,
+  aural,
+  teacherNarrative,
+  share,
+}) {
+  return {
+    lessonDate,
+    studentId,
+    share,
+    pieces: Object.entries(pieces || {}).map(([pieceId, pv]) => ({
+      pieceId,
+      percent: piecePercents?.[pieceId] ?? 0,
+      criteria: Object.entries(pv?.criteria || {})
+        .filter(
+          ([, cv]) =>
+            Number.isFinite(cv?.score) || (cv?.note && cv.note.trim()),
+        )
+        .map(([criterionId, cv]) => ({
+          criterionId,
+          score: Number.isFinite(cv?.score) ? cv.score : null,
+          note: cv?.note?.trim() || null,
+        })),
+    })),
+    scales: {
+      percent: scalesPercent ?? 0,
+      items: Object.entries(scales || {})
+        .filter(([, sv]) => sv?.ready === true || sv?.ready === false)
+        .map(([scaleId, sv]) => ({
+          scaleId,
+          ready: sv?.ready === true,
+          note: sv?.note?.trim() || null,
+        })),
+    },
+    sightReading: normalizeNoteBlock(sight),
+    auralTraining: normalizeNoteBlock(aural),
+    teacherNarrative: teacherNarrative?.trim() || null,
+  };
+}
+
+export function normalizeNoteBlock(obj) {
+  if (!obj) return null;
+  const out = {};
+  for (const [k, v] of Object.entries(obj)) {
+    if (k === "score") out.score = Number.isFinite(v) ? v : null;
+    else out[k] = typeof v === "string" && v.trim() ? v.trim() : null;
+  }
+  return out;
+}
+
+export function formatLocal(yyyyMmDd) {
+  const [y, m, d] = String(yyyyMmDd).split("-").map(Number);
+  if (!y || !m || !d) return String(yyyyMmDd);
+
+  return new Intl.DateTimeFormat("en-US", {
+    weekday: "long",
+    month: "long",
+    day: "numeric",
+  }).format(new Date(y, m - 1, d));
+}

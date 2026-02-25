@@ -1,31 +1,91 @@
+import { useEffect, useMemo, useState } from "react";
 import "./ProgressDonut.css";
 
 export default function ProgressDonut({
   value = 0,
-  size = 220,
-  stroke = 18,
-  label = "Readiness",
+  size = 100,
+  stroke = 9,
+  label = "READY",
+  passMark = 67,
+  showPassMark = true,
 }) {
   const radius = (size - stroke) / 2;
   const circumference = 2 * Math.PI * radius;
-  const clamped = Math.max(0, Math.min(100, value));
-  const dash = (clamped / 100) * circumference;
+
+  const clamped = Math.max(0, Math.min(100, Number(value) || 0));
+  const progressLen = (clamped / 100) * circumference;
+
+  // NEW: decide tone
+  const tone = clamped >= 80 ? "good" : clamped >= passMark ? "mid" : "bad";
+
+  const [dashOffset, setDashOffset] = useState(circumference);
+  useEffect(() => {
+    setDashOffset(circumference - progressLen);
+  }, [circumference, progressLen]);
 
   const cx = size / 2;
   const cy = size / 2;
 
+  // NEW: tone-specific gradient id
+  const gradId = useMemo(
+    () => `donutGrad-${Math.random().toString(16).slice(2)}`,
+    [],
+  );
+
+  // pass tick
+  const pm = Math.max(0, Math.min(100, Number(passMark) || 0));
+  const pmAngle = (pm / 100) * 2 * Math.PI;
+  const cos = Math.cos(pmAngle);
+  const sin = Math.sin(pmAngle);
+
+  const tickPad = 2;
+  const tickIn = radius - stroke / 2 - tickPad;
+  const tickOut = radius + stroke / 2 + tickPad;
+
+  const x1 = cx + tickIn * cos;
+  const y1 = cy + tickIn * sin;
+  const x2 = cx + tickOut * cos;
+  const y2 = cy + tickOut * sin;
+
+  const labelR = radius + stroke / 2 + 12;
+  const lx = cx + labelR * cos;
+  const ly = cy + labelR * sin;
+
   return (
     <div className="donut" style={{ width: size, height: size }}>
       <svg
+        className="donut__svg"
         width={size}
         height={size}
         viewBox={`0 0 ${size} ${size}`}
         role="img"
         aria-label={`${label}: ${clamped}%`}
       >
-        {/* Optional track (background ring) */}
+        <defs>
+          {/* Yellow (existing look) */}
+          <linearGradient id={`${gradId}-mid`} x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stopColor="var(--gold-light, #e8d49a)" />
+            <stop offset="55%" stopColor="var(--gold, #c9a84c)" />
+            <stop offset="100%" stopColor="var(--gold-light, #e8d49a)" />
+          </linearGradient>
+
+          {/* Green */}
+          <linearGradient id={`${gradId}-good`} x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stopColor="var(--green-light, #a7e0b7)" />
+            <stop offset="55%" stopColor="var(--green, #4eae6b)" />
+            <stop offset="100%" stopColor="var(--green-light, #a7e0b7)" />
+          </linearGradient>
+
+          {/* Red */}
+          <linearGradient id={`${gradId}-bad`} x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stopColor="var(--red-light, #efb0a2)" />
+            <stop offset="55%" stopColor="var(--red, #d07a66)" />
+            <stop offset="100%" stopColor="var(--red-light, #efb0a2)" />
+          </linearGradient>
+        </defs>
+
         <circle
-          className="donut__track"
+          className={`donut__track donut__track--${tone}`}
           cx={cx}
           cy={cy}
           r={radius}
@@ -33,7 +93,6 @@ export default function ProgressDonut({
           fill="none"
         />
 
-        {/* Foreground progress */}
         <circle
           className="donut__fg"
           cx={cx}
@@ -41,10 +100,26 @@ export default function ProgressDonut({
           r={radius}
           strokeWidth={stroke}
           fill="none"
-          strokeDasharray={`${dash} ${circumference - dash}`}
-          strokeDashoffset="0"
-          transform={`rotate(-90 ${cx} ${cy})`}
+          stroke={`url(#${gradId}-${tone})`}
+          strokeDasharray={circumference}
+          strokeDashoffset={dashOffset}
         />
+
+        {showPassMark && (
+          <>
+            <line className="donut__passTick" x1={x1} y1={y1} x2={x2} y2={y2} />
+            <text
+              className="donut__passText"
+              x={lx}
+              y={ly}
+              textAnchor="middle"
+              dominantBaseline="middle"
+              transform={`rotate(90 ${lx} ${ly})`}
+            >
+              {pm}%
+            </text>
+          </>
+        )}
       </svg>
 
       <div className="donut__center">
