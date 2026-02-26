@@ -2,28 +2,79 @@
   position: fixed;
   inset: 0;
   display: flex;
-  justify-content: center;
-  align-items: flex-start;
   overflow: auto;
-  padding: max(24px, env(safe-area-inset-top)) 24px 24px;
   z-index: 1000;
-  background: color-mix(in oklab, #000 60%, transparent);
+  background: rgba(0, 0, 0, 0.35);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
   overscroll-behavior: contain;
   touch-action: none;
 }
 
+/* Center modal (existing behavior) */
+.modal--center {
+  justify-content: center;
+  align-items: center;
+  padding: 24px;
+}
+
+/* Slide-right modal (ProgressPanel-like) */
+.modal--slideRight {
+  justify-content: flex-end;
+  align-items: stretch;
+  padding: 0;
+}
 .modal__panel {
-  width: min(960px, 100%);
-  max-height: min(92vh, 1000px);
   display: flex;
   flex-direction: column;
+
   background: var(--surface);
   color: var(--text);
   border: 1px solid var(--border);
   border-radius: 16px;
   box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4);
-  padding: 24px 28px;
   overflow: hidden;
+
+  /* animation support */
+  transition:
+    transform 220ms ease,
+    opacity 220ms ease;
+  will-change: transform, opacity;
+}
+
+/* Default animation states */
+.modal.is-closed .modal__panel {
+  opacity: 0;
+}
+
+/* Center animation */
+.modal--center.is-closed .modal__panel {
+  transform: translateY(10px) scale(0.98);
+}
+.modal--center.is-open .modal__panel {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+
+/* Slide-right animation */
+.modal--slideRight .modal__panel {
+  height: 100dvh;
+  max-height: 100dvh;
+
+  width: min(980px, 100dvw);
+  max-width: 100dvw;
+
+  border-radius: 0;
+  padding: 0;
+  margin: 0;
+}
+
+.modal--slideRight.is-closed .modal__panel {
+  transform: translateX(18px);
+}
+.modal--slideRight.is-open .modal__panel {
+  opacity: 1;
+  transform: translateX(0);
 }
 
 .modal__header {

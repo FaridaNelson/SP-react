@@ -10,9 +10,9 @@ export default defineConfig({
     open: true,
     proxy: {
       "/api": {
-        target: "http://localhost:4000",
+        target: "https://api.studiopulse.co",
         changeOrigin: true,
-        secure: false,
+        secure: true,
       },
     },
   },
