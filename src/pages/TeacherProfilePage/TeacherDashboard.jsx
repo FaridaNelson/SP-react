@@ -55,6 +55,22 @@ function formatPacificDate() {
   }).format(now);
 }
 
+function getPacificGreeting(now = new Date()) {
+  // Get the current hour in America/Los_Angeles as a number 0–23
+  const hourStr = new Intl.DateTimeFormat("en-US", {
+    timeZone: "America/Los_Angeles",
+    hour: "numeric",
+    hour12: false,
+  }).format(now);
+
+  const hour = Number(hourStr); // 0..23
+
+  if (hour >= 4 && hour <= 11) return "Good morning,";
+  if (hour >= 12 && hour <= 17) return "Good afternoon,";
+  if (hour >= 18 && hour <= 23) return "Good evening,";
+  return "Good night,"; // 0..3
+}
+
 function formatTeacherDisplayName(user) {
   if (!user) return "";
   const honorific =
@@ -151,6 +167,31 @@ export default function TeacherDashboard({
   const [roster, setRoster] = useState([]);
   useEffect(() => setRoster(students), [students]);
 
+  const [greeting, setGreeting] = useState(() => getPacificGreeting());
+  const [query, setQuery] = useState("");
+
+  const filteredRoster = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    if (!q) return roster;
+
+    return roster.filter((s) => {
+      const name = (s.name || "").trim().toLowerCase();
+      if (!name) return false;
+
+      // 1) Whole name starts with query (e.g. "ar" matches "Arisa ...")
+      if (name.startsWith(q)) return true;
+
+      // 2) Any word starts with query (e.g. "jo" matches "Emma Johnson")
+      const words = name.split(/\s+/);
+      return words.some((w) => w.startsWith(q));
+    });
+  }, [roster, query]);
+
+  useEffect(() => {
+    const id = setInterval(() => setGreeting(getPacificGreeting()), 60_000);
+    return () => clearInterval(id);
+  }, []);
+
   const [addOpen, setAddOpen] = useState(false);
 
   // TeacherDashboard controls panel open state
@@ -234,7 +275,7 @@ export default function TeacherDashboard({
           </div>
 
           <div className="td__greeting">
-            <div className="td__greetHi">Good morning,</div>
+            <div className="td__greetHi">{greeting}</div>{" "}
             <div className="td__greetName">
               {formatTeacherDisplayName(user)}
             </div>
@@ -244,7 +285,13 @@ export default function TeacherDashboard({
           </div>
 
           <div className="td__searchWrap">
-            <input className="td__search" placeholder="Search students…" />
+            <input
+              className="td__search"
+              type="text"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder="Search students…"
+            />
           </div>
 
           <div className="td__sectionHead">
@@ -254,42 +301,44 @@ export default function TeacherDashboard({
             </button>
           </div>
 
-          <ul className="td__studentList" role="list">
-            {roster.map((s) => {
-              const id = s._id || s.id;
-              const active = id === selectedStudentId;
+          <div className="td__studentListWrap">
+            <ul className="td__studentList" role="list">
+              {filteredRoster.map((s) => {
+                const id = s._id || s.id;
+                const active = id === selectedStudentId;
 
-              return (
-                <li key={id} className="td__studentRow">
-                  <button
-                    type="button"
-                    className={`td__studentBtn ${active ? "is-active" : ""}`}
-                    onClick={() => onSelectStudent?.(id)}
-                    aria-selected={active}
-                  >
-                    <div
-                      className="td__avatar"
-                      style={{ background: avatarGradient(s.name) }}
+                return (
+                  <li key={id} className="td__studentRow">
+                    <button
+                      type="button"
+                      className={`td__studentBtn ${active ? "is-active" : ""}`}
+                      onClick={() => onSelectStudent?.(id)}
+                      aria-selected={active}
                     >
-                      {initials(s.name)}
-                    </div>
-
-                    <div className="td__studentMain">
-                      <div className="td__studentName">{s.name}</div>
-                      <div className="td__studentMeta">
-                        {s.grade ? `Grade ${s.grade}` : "Grade —"} •{" "}
-                        {s.instrument || "Piano"}
+                      <div
+                        className="td__avatar"
+                        style={{ background: avatarGradient(s.name) }}
+                      >
+                        {initials(s.name)}
                       </div>
-                    </div>
 
-                    <div className="td__studentRight" aria-hidden="true">
-                      {active ? <span className="td__activeDot" /> : null}
-                    </div>
-                  </button>
-                </li>
-              );
-            })}
-          </ul>
+                      <div className="td__studentMain">
+                        <div className="td__studentName">{s.name}</div>
+                        <div className="td__studentMeta">
+                          {s.grade ? `Grade ${s.grade}` : "Grade —"} •{" "}
+                          {s.instrument || "Piano"}
+                        </div>
+                      </div>
+
+                      <div className="td__studentRight" aria-hidden="true">
+                        {active ? <span className="td__activeDot" /> : null}
+                      </div>
+                    </button>
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
 
           <div className="td__sidebarFade" />
         </aside>

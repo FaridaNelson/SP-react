@@ -132,17 +132,23 @@ export default function AddStudentModal({ open, onClose, onSubmit }) {
 
                   <label className="spModal__field">
                     <span className="spModal__label">GRADE</span>
-                    <input
+                    <select
                       className="spModal__input"
-                      type="number"
-                      min={1}
-                      max={8}
-                      placeholder="1–8"
                       value={form.grade}
                       onChange={(e) => set("grade", e.target.value)}
                       required
                       disabled={busy}
-                    />
+                    >
+                      <option value="">Select grade</option>
+                      <option value="1">Grade 1</option>
+                      <option value="2">Grade 2</option>
+                      <option value="3">Grade 3</option>
+                      <option value="4">Grade 4</option>
+                      <option value="5">Grade 5</option>
+                      <option value="6">Grade 6</option>
+                      <option value="7">Grade 7</option>
+                      <option value="8">Grade 8</option>
+                    </select>
                   </label>
                 </div>
               </div>
@@ -180,7 +186,7 @@ export default function AddStudentModal({ open, onClose, onSubmit }) {
 
                 <p className="spModal__hint">
                   If you add a parent email now, you can later email the parent
-                  automatically, just click “Save & Share” automatically.
+                  automatically, just click “Save & Share”.
                 </p>
               </div>
             </section>
