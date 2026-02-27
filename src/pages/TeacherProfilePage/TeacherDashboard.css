@@ -49,12 +49,27 @@
   background: linear-gradient(180deg, var(--td-rail), var(--td-rail-2));
   color: rgba(255, 255, 255, 0.92);
   border-right: 1px solid var(--td-rail-border);
-  padding: 16px 14px 18px;
+  padding: 6px 8px 18px;
   overflow: hidden;
+
+  display: flex;
+  flex-direction: column;
+  min-height: 0; /* for proper sidebar fade */
 }
 
 .teacher__brand {
-  padding: 14px 14px 10px;
+  padding: 14px 0px 10px;
+  margin: 0 30px;
+  text-decoration: none;
+}
+
+.brand-tag {
+  text-decoration: none;
+  color: inherit;
+}
+
+.brand-tag:hover {
+  text-decoration: none;
 }
 
 .td__brandRow {
@@ -98,8 +113,8 @@
 
 .td__searchWrap {
   position: relative;
-  margin: 10px 0 6px;
-  padding: 14px 0;
+  margin: 10px 5px 6px -10px;
+  padding: 14px 16px;
 }
 
 .td__searchWrap::before,
@@ -122,16 +137,31 @@
 
 .td__search {
   width: 90%;
-  padding: 10px 12px;
-  border-radius: 999px;
+  padding: 10px 0 10px 38px;
+  border-radius: 10px;
   border: 1px solid rgba(255, 255, 255, 0.1);
   background: rgba(255, 255, 255, 0.06);
   color: rgba(255, 255, 255, 0.9);
   outline: none;
+  transition:
+    background 0.2s,
+    border-color 0.2s;
+
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='rgba(255,255,255,0.3)' stroke-width='2'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cpath d='m21 21-4.35-4.35'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: 10px center;
 }
 
 .td__search::placeholder {
   color: rgba(255, 255, 255, 0.45);
+}
+
+.td__search:focus {
+  background: rgba(255, 255, 255, 0.11);
+  border-color: rgba(201, 168, 76, 0.4);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='rgba(255,255,255,0.3)' stroke-width='2'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cpath d='m21 21-4.35-4.35'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: 10px center;
 }
 
 .td__sectionHead {
@@ -148,14 +178,55 @@
 }
 
 .td__addStudent {
-  width: 100%;
-  text-align: left;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 8px 0 0;
   padding: 10px 12px;
-  border-radius: 12px;
-  border: 1px dashed rgba(198, 164, 74, 0.35);
-  background: rgba(198, 164, 74, 0.07);
-  color: rgba(255, 255, 255, 0.88);
+  border-radius: 10px;
+  border: 1px dashed rgba(201, 168, 76, 0.3);
+  background: rgba(201, 168, 76, 0.05);
+  color: #e8d49a;
+  font-size: 15px;
+  font-weight: 400;
+  letter-spacing: 0.1em;
   cursor: pointer;
+  transition: all 0.15s;
+}
+
+.td__addStudent:hover {
+  background: rgba(201, 168, 76, 0.12);
+  border-color: rgba(201, 168, 76, 0.5);
+}
+
+.td__studentListWrap {
+  flex: 1 1 auto;
+  min-height: 0px; /* for proper scrolling */
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 0 16px 8px;
+  scrollbar-gutter: stable;
+  scrollbar-width: thin; /* Firefox */
+  scrollbar-color: rgba(70, 58, 26, 0.6) rgba(0, 0, 0, 0.08); /* thumb track */
+}
+
+.td__studentListWrap::-webkit-scrollbar {
+  width: 4px;
+}
+
+.td__studentListWrap::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.06);
+  border-radius: 8px;
+}
+
+.td__studentListWrap::-webkit-scrollbar-thumb {
+  background: linear-gradient(135deg, #c9a84c, #a07820);
+  border-radius: 8px;
+  border: 2px solid rgba(0, 0, 0, 0.06); /* gives padding effect */
+}
+
+.studentsList::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(135deg, #e7bb56, #b88b2e);
 }
 
 .td__studentList {
@@ -178,7 +249,7 @@
   gap: 12px;
   padding: 12px 16px;
   border-radius: 0;
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border: none;
   background: rgba(255, 255, 255, 0.04);
   color: rgba(255, 255, 255, 0.92);
   cursor: pointer;
@@ -186,12 +257,11 @@
 }
 
 .td__studentBtn:hover {
-  background: rgba(255, 255, 255, 0.06);
+  background: rgba(255, 255, 255, 0.09);
 }
 
 .td__studentBtn.is-active {
-  border-color: rgba(198, 164, 74, 0.45);
-  background: rgba(198, 164, 74, 0.1);
+  background: rgba(201, 168, 76, 0.22);
 }
 /* thick left bar only for active row */
 .td__studentBtn.is-active::before {
@@ -202,8 +272,9 @@
   bottom: 0px;
   width: 6px;
   border-radius: 999px;
-  background: rgba(201, 168, 76, 0.95); /* your gold */
+  background: #c9a84c; /* your gold */
   box-shadow: 0 0 0 3px rgba(201, 168, 76, 0.12);
+  border-radius: 0 2px 2px 0;
 }
 
 .td__avatar {

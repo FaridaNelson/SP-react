@@ -1,20 +1,49 @@
 .brandTag {
-  display: inline-flex;
+  display: flex;
+  justify-content: center;
   align-items: center;
-  gap: 10px;
-  padding: 8px 14px;
+  box-sizing: border-box;
+  gap: 12px;
+  padding: 5px 14px;
   border-radius: 999px;
   border: 1px solid rgba(198, 164, 74, 0.35);
   background: rgba(198, 164, 74, 0.22);
   backdrop-filter: blur(10px);
   box-shadow: 0 10px 24px rgba(0, 0, 0, 0.25);
+  text-decoration: none;
+  color: inherit;
+  cursor: pointer;
+  transition:
+    transform 180ms ease,
+    box-shadow 180ms ease,
+    background 180ms ease;
+}
+
+.brandTag:hover {
+  transform: translateY(0px);
+  box-shadow: 0 14px 28px rgba(0, 0, 0, 0.35);
+  background: rgba(160, 126, 35, 0.55);
+}
+
+.brandTag:active {
+  transform: translateY(0);
+}
+
+.brandTag__pulse,
+.brandTag__text {
+  transition: transform 180ms ease;
+}
+
+.brandTag:hover .brandTag__pulse,
+.brandTag:hover .brandTag__text {
+  transform: scale(1.05);
 }
 
 .brandTag__text {
   font-family: var(--font-sans);
-  letter-spacing: 0.08em;
+  letter-spacing: 0.2em;
   text-transform: uppercase;
-  font-size: 12px;
+  font-size: 18px;
   color: #e8d49a;
 }
 
@@ -47,5 +76,7 @@
   gap: 8px;
 }
 .brandTag--compact .brandTag__text {
-  font-size: 11px;
+  font-size: 14px;
+  font-weight: 800;
+  text-decoration: none;
 }

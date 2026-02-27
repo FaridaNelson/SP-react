@@ -200,6 +200,7 @@ export default function TeacherStudentInfo({
           <AssignmentBreakdown
             items={items}
             subtitle="This component compiles progress entered in Today’s progress."
+            animateKey={sid}
           />
 
           {/* Teacher’s note - placeholder until latest lesson is wired */}

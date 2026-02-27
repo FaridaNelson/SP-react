@@ -1,3 +1,4 @@
+import { useEffect, useMemo, useState } from "react";
 import "./AssignmentBreakdown.css";
 
 const PASS_MARK = 67;
@@ -22,15 +23,41 @@ export default function AssignmentBreakdown({
   items = [],
   passMark = PASS_MARK,
   title = "Skill breakdown",
+  animateKey,
   subtitle, // optional little helper text
 }) {
-  const safe = items
-    .filter((it) => it && it.id)
-    .map((it) => ({
-      ...it,
-      score: clampPct(it.score),
-      weight: Number(it.weight) || 0,
-    }));
+  const safe = useMemo(
+    () =>
+      items
+        .filter((it) => it && it.id)
+        .map((it) => ({
+          ...it,
+          score: clampPct(it.score),
+          weight: Number(it.weight) || 0,
+        })),
+    [items],
+  );
+
+  // displayed percentages for animation: { [id]: number }
+  const [shown, setShown] = useState({});
+
+  // animate bars when student changes (or when list changes)
+  useEffect(() => {
+    // If no key provided, still animate once when safe changes.
+    // Reset to 0 first:
+    const zeros = Object.fromEntries(safe.map((it) => [it.id, 0]));
+    setShown(zeros);
+
+    // Next frame: set targets so CSS transition runs smoothly
+    const raf = requestAnimationFrame(() => {
+      const targets = Object.fromEntries(
+        safe.map((it) => [it.id, clampPct(it.score)]),
+      );
+      setShown(targets);
+    });
+
+    return () => cancelAnimationFrame(raf);
+  }, [animateKey, safe]);
 
   return (
     <section className="brk">
@@ -46,17 +73,13 @@ export default function AssignmentBreakdown({
         </div>
       </header>
 
-      {/* {highest?.id ? (
-        <p className="brk__hint">
-          Highest score: <strong>{highest.label}</strong> (
-          {Math.round(highest.score)}%)
-        </p>
-      ) : null} */}
-
       <div className="brk__list">
         {safe.map((it) => {
           const pct = clampPct(it.score);
-          const st = statusFor(pct);
+          const st = statusFor(pct, passMark);
+
+          // this is what actually animates
+          const w = shown[it.id] ?? 0;
 
           return (
             <div key={it.id} className="brk__item">
@@ -65,7 +88,7 @@ export default function AssignmentBreakdown({
 
                 <div className="brk__right">
                   <span className={`brk__chip brk__chip--${st}`}>
-                    {statusLabel(pct)}
+                    {statusLabel(pct, passMark)}
                   </span>
                   <span className={`brk__val brk__val--${st}`}>
                     {Math.round(pct)}%
@@ -76,7 +99,7 @@ export default function AssignmentBreakdown({
               <div className="brk__barwrap" aria-label={`${it.label} ${pct}%`}>
                 <div
                   className={`brk__bar brk__bar--${st}`}
-                  style={{ width: `${pct}%` }}
+                  style={{ width: `${w}%` }}
                 />
                 <div className="brk__mark" style={{ left: `${passMark}%` }} />
               </div>

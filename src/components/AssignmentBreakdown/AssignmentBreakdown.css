@@ -92,6 +92,7 @@
 }
 
 .brk__bar {
+  width: 0%;
   height: 100%;
   border-radius: inherit;
   background: linear-gradient(
@@ -99,7 +100,7 @@
     rgba(69, 145, 92, 0.85),
     rgba(69, 145, 92, 0.55)
   );
-  transition: width 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: width 1.2s cubic-bezier(0.2, 0.9, 0.2, 1);
 }
 
 /* PASS (green) */
