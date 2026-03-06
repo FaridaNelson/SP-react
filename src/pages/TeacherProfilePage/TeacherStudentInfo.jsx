@@ -145,7 +145,7 @@ export default function TeacherStudentInfo({
                           className={`tsi__pill ${pass ? "tsi__pill--pass" : "tsi__pill--fail"}`}
                           title={it ? `${pct}%` : "—"}
                         >
-                          {pass ? "✓ " : "✗ "}
+                          {pass ? "✓ " : "○ "}
                           {p.label}
                         </span>
                       );
