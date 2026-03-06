@@ -25,7 +25,10 @@ export default function PieceCard({
   lastWeekPercent, // last week's percent for this piece
   onSetScore,
   onSetNote,
+  onSavePiece,
   disabled,
+  missingCriteria = [],
+  onFocusCriterion,
 }) {
   const today = value || { criteria: {} };
   const prev = last || { criteria: {} };
@@ -53,6 +56,11 @@ export default function PieceCard({
         </div>
       </div>
 
+      {missingCriteria.length > 0 && (
+        <div className="pc__reminder">
+          Kind reminder: please score all criteria for this piece.
+        </div>
+      )}
       {/* rows */}
       <div className="pc__rows">
         {piece.criteria.map((c) => {
@@ -61,9 +69,13 @@ export default function PieceCard({
 
           const curScore = today.criteria?.[c.id]?.score;
           const curNote = today.criteria?.[c.id]?.note || "";
+          const isMissing = missingCriteria.includes(c.id);
 
           return (
-            <div key={c.id} className="pc__row2">
+            <div
+              key={c.id}
+              className={`pc__row2 ${isMissing ? "pc__row2--missing" : ""}`}
+            >
               <div className="pc__label">{c.label}</div>
 
               {/* LAST CLASS */}
@@ -95,7 +107,10 @@ export default function PieceCard({
                           ? `pc__pill--active pc__pill--${getColorClass(n)}`
                           : ""
                       }`}
-                      onClick={() => onSetScore?.(c.id, n)}
+                      onClick={() => {
+                        onFocusCriterion?.();
+                        onSetScore?.(c.id, n);
+                      }}
                       disabled={disabled}
                     >
                       {n}
@@ -109,6 +124,7 @@ export default function PieceCard({
                   className="pc__note"
                   placeholder="Note…"
                   value={curNote}
+                  onFocus={() => onFocusCriterion?.()}
                   onChange={(e) => onSetNote?.(c.id, e.target.value)}
                   disabled={disabled}
                 />
@@ -159,6 +175,17 @@ export default function PieceCard({
             {percent}%
           </span>{" "}
         </div>
+      </div>
+      <div className="pc__actions">
+        <button
+          type="button"
+          className="pc__saveOne"
+          onClick={() => onSavePiece?.(piece.id)}
+          disabled={disabled}
+          title="Save progress for this piece only"
+        >
+          Save this piece
+        </button>
       </div>
     </article>
   );

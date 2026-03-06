@@ -1,3 +1,4 @@
+import { useMemo } from "react";
 import "./ScalesCard.css";
 
 const PASS_THRESHOLD = 67; // same idea as PieceCard (adjust if you want)
@@ -15,6 +16,26 @@ export default function ScalesCard({
 }) {
   const afterIsPass = Number(percent) >= PASS_THRESHOLD;
   const lastIsPass = Number(lastWeekPercent) >= PASS_THRESHOLD;
+
+  // Group scales by category + detail
+  const sections = useMemo(() => {
+    const groupedScales = scalesDef.reduce((groups, scale) => {
+      const key = `${scale.category}__${scale.detail || ""}`;
+
+      if (!groups[key]) {
+        groups[key] = {
+          category: scale.category,
+          detail: scale.detail,
+          items: [],
+        };
+      }
+
+      groups[key].items.push(scale);
+      return groups;
+    }, {});
+
+    return Object.values(groupedScales);
+  }, [scalesDef]);
 
   return (
     <article className="sc__card">
@@ -43,78 +64,88 @@ export default function ScalesCard({
 
       {/* rows */}
       <div className="sc__rows">
-        {scalesDef.map((s) => {
-          const cur = value?.[s.id] || { ready: null, note: "" };
-          const prev = last?.[s.id] || { ready: null, note: "" };
-
-          const prevStatusClass =
-            prev.ready === true
-              ? "sc__status--ready"
-              : prev.ready === false
-                ? "sc__status--notready"
-                : "";
-
-          const prevStatusText =
-            prev.ready === true
-              ? "READY"
-              : prev.ready === false
-                ? "NOT READY"
-                : " ";
-
-          const prevIcon =
-            prev.ready === true ? "✓" : prev.ready === false ? "✕" : " ";
-
-          return (
-            <div key={s.id} className="sc__row">
-              {/* SCALE NAME */}
-              <div className="sc__scaleName">{s.label}</div>
-
-              {/* LAST CLASS */}
-              <div className="sc__last">
-                <div className="sc__lastNote">
-                  {prev.note || "Last class note..."}
-                </div>
-
-                <div className={`sc__status ${prevStatusClass}`}>
-                  <span className="sc__statusIcon">{prevIcon}</span>
-                  {prevStatusText}
-                </div>
-              </div>
-
-              {/* TODAY */}
-              <div className="sc__today">
-                <label
-                  className={`sc__check ${
-                    cur.ready ? "sc__check--ready" : "sc__check--notready"
-                  }`}
-                >
-                  <input
-                    id={`ready-${s.id}_scales`}
-                    name={`ready-${s.id}_scales`}
-                    type="checkbox"
-                    checked={cur.ready === true}
-                    onChange={(e) => onSetReady?.(s.id, e.target.checked)}
-                    disabled={disabled}
-                  />
-                  {cur.ready ? "Ready" : "Not Ready"}
-                </label>
-
-                <input
-                  id={`note-${s.id}_scales`}
-                  name={`note-${s.id}_scales`}
-                  className="sc__note"
-                  placeholder="Note…"
-                  value={cur.note || ""}
-                  onChange={(e) => onSetNote?.(s.id, e.target.value)}
-                  disabled={disabled}
-                />
-              </div>
+        {sections.map((section) => (
+          <div
+            key={`${section.category}-${section.detail || "no-detail"}`}
+            className="sc__section"
+          >
+            <div className="sc__sectionHeader">
+              <div className="sc__sectionCategory">{section.category}</div>
+              {section.detail ? (
+                <div className="sc__sectionDetail">{section.detail}</div>
+              ) : null}
             </div>
-          );
-        })}
+
+            {section.items.map((s) => {
+              const cur = value?.[s.id] || { ready: null, note: "" };
+              const prev = last?.[s.id] || { ready: null, note: "" };
+
+              const prevStatusClass =
+                prev.ready === true
+                  ? "sc__status--ready"
+                  : prev.ready === false
+                    ? "sc__status--notready"
+                    : "";
+
+              const prevStatusText =
+                prev.ready === true
+                  ? "READY"
+                  : prev.ready === false
+                    ? "NOT READY"
+                    : " ";
+
+              const prevIcon =
+                prev.ready === true ? "✓" : prev.ready === false ? "✕" : " ";
+
+              return (
+                <div key={s.id} className="sc__row">
+                  <div className="sc__scaleName">{s.label}</div>
+
+                  <div className="sc__last">
+                    <div className="sc__lastNote">
+                      {prev.note || "Last class note..."}
+                    </div>
+
+                    <div className={`sc__status ${prevStatusClass}`}>
+                      <span className="sc__statusIcon">{prevIcon}</span>
+                      {prevStatusText}
+                    </div>
+                  </div>
+
+                  <div className="sc__today">
+                    <label
+                      className={`sc__check ${
+                        cur.ready ? "sc__check--ready" : "sc__check--notready"
+                      }`}
+                    >
+                      <input
+                        id={`ready-${s.id}_scales`}
+                        name={`ready-${s.id}_scales`}
+                        type="checkbox"
+                        checked={cur.ready === true}
+                        onChange={(e) => onSetReady?.(s.id, e.target.checked)}
+                        disabled={disabled}
+                      />
+                      {cur.ready ? "Ready" : "Not Ready"}
+                    </label>
+
+                    <input
+                      id={`note-${s.id}_scales`}
+                      name={`note-${s.id}_scales`}
+                      className="sc__note"
+                      placeholder="Note…"
+                      value={cur.note || ""}
+                      onChange={(e) => onSetNote?.(s.id, e.target.value)}
+                      disabled={disabled}
+                    />
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        ))}
       </div>
 
-      {/* readiness section (bottom) */}
       <div className="sc__readiness">
         <div className="sc__readinessTitle">Scales readiness</div>
 
