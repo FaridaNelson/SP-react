@@ -1,6 +1,10 @@
 import { useEffect, useMemo, useState } from "react";
+import { PIECES } from "./TodayProgress/progressConfig";
+import { mergeOnePieceAndRecompute } from "./TodayProgress/lessonMerge";
 import "./ProgressPanel.css";
+import { getMissingPieceCriteria } from "./TodayProgress/scoreMath";
 import PieceCard from "./PieceCard";
+import { getScalesForGrade } from "./TodayProgress/scaleCurriculum";
 import {
   buildLessonPayload,
   computePiecePercent,
@@ -9,7 +13,7 @@ import {
   initPieces,
   initScales,
   mergeIntoProgressItems,
-} from "./scoreMath";
+} from "./TodayProgress/scoreMath";
 import ScalesCard from "./ScalesCard";
 import SightreadingCard from "./SightreadingCard";
 import AuralCard from "./AuralCard";
@@ -26,63 +30,20 @@ export default function ProgressPanel({
   const [lessonDate] = useState(() => new Date().toISOString().slice(0, 10));
   const studentId = student?._id || student?.id;
   const [latestLesson, setLatestLesson] = useState(null);
+  const [pieceErrors, setPieceErrors] = useState({});
+  // { [pieceId]: string[] missingCriterionIds } - used to show validation errors if user tries to save without filling all criteria scores
 
-  // --- config ---
-  // Each piece is graded by multiple criteria, each criterion score is 0..6
-  const BASE_CRITERIA = useMemo(
-    () => [
-      { id: "pitch", label: "Pitch" },
-      { id: "time", label: "Time" },
-      { id: "tone", label: "Tone" },
-      { id: "shape", label: "Shape" },
-      { id: "performance", label: "Performance" },
-    ],
-    [],
-  );
-  const PIECES = useMemo(
-    () => [
-      {
-        id: "pieceA",
-        title: "Piece A",
-        criteria: BASE_CRITERIA,
-      },
-      {
-        id: "pieceB",
-        title: "Piece B",
-        criteria: BASE_CRITERIA,
-      },
-      {
-        id: "pieceC",
-        title: "Piece C",
-        criteria: BASE_CRITERIA,
-      },
-    ],
-    [BASE_CRITERIA],
-  );
-
-  // Scales list (Phase 1: static example; later you’ll generate this from grade/instrument syllabus)
-  const DEFAULT_SCALES = useMemo(
-    () => [
-      { id: "c_major", label: "C Major" },
-      { id: "g_major", label: "G Major" },
-      { id: "d_major", label: "D Major" },
-      { id: "f_major", label: "F Major" },
-      { id: "a_minor_h", label: "A Minor Harmonic" },
-      { id: "d_minor_h", label: "D Minor Harmonic" },
-      { id: "c_major_contrary", label: "C Major Contrary" },
-      { id: "g_major_arpeggio", label: "G Major Arpeggio" },
-      { id: "a_minor_arpeggio", label: "A Minor Arpeggio" },
-    ],
-    [],
-  );
-
+  // Scales curriculum for this student (used to show scale names and which scales are relevant for this student's grade level)
+  const gradeScales = useMemo(() => {
+    return getScalesForGrade(student?.grade);
+  }, [student?.grade]);
   // -------- local state (draft preserved if user closes without saving) --------
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState("");
   // pieces state: { pieceId: { criteria: {criterionId: {score, note}}, overallNote } }
   const [pieces, setPieces] = useState(() => initPieces(PIECES));
   // scales state: { scaleId: { ready: true|false|null, note } }
-  const [scales, setScales] = useState(() => initScales(DEFAULT_SCALES));
+  const [scales, setScales] = useState(() => initScales(gradeScales));
   // sight/aural: keep what you already implemented in AddScoreModal (notes)
   const [sight, setSight] = useState(() => ({
     score: undefined,
@@ -101,7 +62,7 @@ export default function ProgressPanel({
 
   const resetForm = () => {
     setPieces(initPieces(PIECES));
-    setScales(initScales(DEFAULT_SCALES));
+    setScales(initScales(gradeScales));
     setSight({
       score: undefined,
       pitchAccuracy: "",
@@ -134,7 +95,7 @@ export default function ProgressPanel({
     // setSight({ score: undefined, pitchAccuracy: "", rhythmAccuracy: "", adequateTempo: "", confidentPresentation: "" });
     // setAural({ score: undefined, rhythmAccuracy: "", singingInPitch: "", musicalMemory: "", musicalPerceptiveness: "" });
     // setTeacherNarrative("");
-  }, [open, PIECES, DEFAULT_SCALES]);
+  }, [open]);
 
   useEffect(() => {
     if (!open) return;
@@ -170,6 +131,11 @@ export default function ProgressPanel({
     })();
   }, [open, studentId]);
 
+  useEffect(() => {
+    if (!open) return;
+    setScales(initScales(gradeScales));
+  }, [open, gradeScales]);
+
   // --- computed piece percent scores (0..100) based on criteria 0..6 ---
   const piecePercents = useMemo(() => {
     const out = {};
@@ -185,6 +151,88 @@ export default function ProgressPanel({
   // --- used to show student header ---
   const studentName = student?.name || "Student";
 
+  async function handleSavePiece(pieceId, { share = false } = {}) {
+    setErr("");
+
+    const todayStr = new Date().toISOString().slice(0, 10);
+    if (lessonDate > todayStr) {
+      setErr("Date cannot be in the future");
+      return;
+    }
+
+    const pieceDef = PIECES.find((p) => p.id === pieceId);
+    if (!pieceDef) {
+      setErr("Unknown piece");
+      return;
+    }
+
+    // Validate only this piece (must have all criteria scored)
+    const missing = getMissingPieceCriteria(
+      pieces?.[pieceId],
+      pieceDef.criteria,
+    );
+    if (missing.length) {
+      setPieceErrors((prev) => ({ ...prev, [pieceId]: missing }));
+      setErr("Kind reminder: please fill out all criteria for this piece.");
+      return;
+    }
+
+    try {
+      setBusy(true);
+
+      // ✅ merge latest lesson + this edited piece, recompute all percents
+      const {
+        mergedPieces,
+        mergedPiecePercents,
+        baselineScales,
+        baselineScalesPercent,
+        baselineSight,
+        baselineAural,
+      } = mergeOnePieceAndRecompute({
+        pieceId,
+        piecesDraft: pieces,
+        latestLesson,
+        piecesDef: PIECES,
+      });
+
+      // Update progress snapshot (Phase 1)
+      const nextItems = mergeIntoProgressItems(items, {
+        pieceA: mergedPiecePercents.pieceA,
+        pieceB: mergedPiecePercents.pieceB,
+        pieceC: mergedPiecePercents.pieceC,
+        scales: baselineScalesPercent,
+        sightReading: baselineSight?.score ?? null,
+        auralTraining: baselineAural?.score ?? null,
+      });
+
+      if (onSaveScores) await onSaveScores(nextItems);
+
+      // Save a FULL lesson snapshot (Phase 2) so backend upsert doesn't wipe other fields
+      const lessonPayload = buildLessonPayload({
+        lessonDate,
+        studentId,
+        pieces: mergedPieces,
+        piecePercents: mergedPiecePercents,
+        scales: baselineScales,
+        scalesPercent: baselineScalesPercent,
+        sight: baselineSight,
+        aural: baselineAural,
+        teacherNarrative, // keep current text
+        share,
+      });
+
+      const savedLesson = await upsertLesson(lessonPayload);
+
+      setLatestLesson(savedLesson);
+      onLessonSaved?.(savedLesson);
+      setPieceErrors((prev) => ({ ...prev, [pieceId]: [] }));
+      setErr("");
+    } catch (e) {
+      setErr(e?.message || "Failed to save this piece");
+    } finally {
+      setBusy(false);
+    }
+  }
   async function handleSave({ share = false } = {}) {
     setErr("");
     // Phase 1: just update the existing progress snapshot with new scores (no lesson creation yet)
@@ -193,6 +241,23 @@ export default function ProgressPanel({
     if (lessonDate > todayStr) {
       setErr("Date cannot be in the future");
       return;
+    }
+
+    // REQUIRED: all criteria for each piece must be filled
+    const nextErrors = {};
+    for (const p of PIECES) {
+      const missing = getMissingPieceCriteria(pieces?.[p.id], p.criteria);
+      if (missing.length) nextErrors[p.id] = missing;
+    }
+
+    if (Object.keys(nextErrors).length) {
+      setPieceErrors(nextErrors);
+      setErr(
+        "Kind reminder: please fill out all piece criteria before saving.",
+      );
+      return;
+    } else {
+      setPieceErrors({});
     }
 
     try {
@@ -325,6 +390,11 @@ export default function ProgressPanel({
                 value={pieces[p.id]}
                 last={lastPiecesMap[p.id] || { criteria: {} }}
                 percent={piecePercents[p.id]}
+                missingCriteria={pieceErrors[p.id] || []}
+                onFocusCriterion={() =>
+                  setPieceErrors((prev) => ({ ...prev, [p.id]: [] }))
+                } // clear errors for this piece when user focuses any criterion
+                onSavePiece={() => handleSavePiece(p.id, { share: true })}
                 lastWeekPercent={piecePercentFromLesson(latestLesson, p.id)}
                 disabled={busy}
                 onSetScore={(criterionId, score) =>
@@ -367,7 +437,7 @@ export default function ProgressPanel({
 
             <ScalesCard
               title="Scales"
-              scalesDef={DEFAULT_SCALES}
+              scalesDef={gradeScales}
               value={scales}
               last={lastScalesMap}
               percent={scalesPercent}
