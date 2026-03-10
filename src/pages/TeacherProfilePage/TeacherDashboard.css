@@ -225,19 +225,18 @@
   border: 2px solid rgba(0, 0, 0, 0.06); /* gives padding effect */
 }
 
-.studentsList::-webkit-scrollbar-thumb:hover {
+.td__studentsListWrap::-webkit-scrollbar-thumb:hover {
   background: linear-gradient(135deg, #e7bb56, #b88b2e);
 }
 
 .td__studentList {
   list-style: none;
-  padding: 0;
+  padding: 0 0 80px; /* for extra scroll space at bottom */
   margin: 0 -16px;
   display: grid;
   gap: 0px;
-  overflow: auto;
-  max-height: calc(100vh - 270px);
-  padding-bottom: 80px;
+  overflow: visible;
+  max-height: none;
 }
 
 .td__studentBtn {

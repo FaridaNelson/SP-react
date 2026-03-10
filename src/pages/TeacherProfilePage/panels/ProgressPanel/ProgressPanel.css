@@ -46,15 +46,14 @@
   color: #f5f1e8;
   font-family: var(--font-serif);
   font-size: 24px;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.8);
 }
 
 .pp__kicker {
   font-size: 22px;
   display: flex;
   flex-direction: row;
-  opacity: 0.9;
-  color: rgba(245, 241, 232, 0.75);
+  color: white;
 }
 
 .pp__title {
@@ -70,6 +69,77 @@
   opacity: 0.9;
   margin-top: 2px;
   color: rgba(245, 241, 232, 0.75);
+}
+
+.pp__dateWrap {
+  margin-top: 6px;
+  display: flex;
+  justify-content: space-around;
+}
+
+.pp__dateLabel {
+  display: block;
+  margin: 7px 4px 0;
+  font-size: 12px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(245, 241, 232, 0.72);
+}
+
+.pp__dateRow {
+  display: flex;
+  flex-direction: row-reverse;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.pp__dateInput {
+  position: relative;
+  width: 28px;
+  height: 28px;
+  border-radius: 10px;
+  border: 1px solid rgba(245, 241, 232, 0.18);
+  background: rgba(255, 255, 255, 0.68);
+  color: transparent;
+  cursor: pointer;
+  overflow: hidden;
+  font: 500 19px/1.2 var(--td-sans);
+  padding: 0 5px 0 0;
+}
+
+.pp__dateInput:hover {
+  cursor: pointer;
+  border-color: rgba(201, 168, 76, 0.9);
+  background: rgba(255, 255, 255, 0.88);
+}
+
+.pp__dateInput:focus {
+  outline: none;
+  border-color: rgba(201, 168, 76, 0.9);
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.pp__dateDisplay {
+  font-size: 17px;
+  /* font-family: var(--td-sans); */
+  color: rgba(245, 241, 232, 0.75);
+}
+
+/* hide the typed numbers */
+.pp__dateInput::-webkit-datetime-edit {
+  color: transparent;
+}
+
+/* keep the calendar icon visible */
+.pp__dateInput::-webkit-calendar-picker-indicator {
+  opacity: 1;
+  cursor: pointer;
+}
+
+/* Firefox fallback */
+.pp__dateInput::-moz-focus-inner {
+  border: 0;
 }
 
 .pp__close {
