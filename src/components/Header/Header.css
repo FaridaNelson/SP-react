@@ -1,123 +1,211 @@
 .header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.header--home {
+  padding: 20px 0;
+  background: rgba(253, 249, 244, 0.05);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border-soft);
+}
+
+.header--app {
+  padding: 16px 0;
   background: var(--bg);
+  border-bottom: 1px solid color-mix(in oklab, var(--text) 10%, transparent);
 }
 
 .header__row {
   display: flex;
   align-items: center;
-  padding-block: 20px;
+  justify-content: space-between;
+  gap: 24px;
 }
 
-.header__brand {
-  display: inline-flex;
-  align-items: center;
-  transform: translateY(10px);
-}
-
-.header__logo {
-  display: block;
-  background: none;
-  height: auto;
-  width: 155px;
-  cursor: pointer;
-}
-
-.header__navbtns {
+.header__brandWrap {
   display: flex;
   align-items: center;
-  gap: 20px;
+  flex-shrink: 0;
+  background: rgba(49, 41, 18, 0.78);
+  border-radius: 999px;
 }
 
-.header__user {
+.header__nav {
+  display: flex;
+  align-items: center;
+  gap: 32px;
   margin-left: auto;
+  margin-right: 12px;
+}
+
+.header__navLink {
+  text-decoration: none;
+  color: var(--gold-pale);
+  font-weight: 500;
+  transition: color 0.25s ease;
+}
+
+.header__navLink:hover {
+  color: var(--gold);
+}
+
+.header__actions {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 14px;
+  margin-left: auto;
 }
 
-.header__userbtn {
+.header__signIn {
+  background: transparent;
+  border: 0;
+  padding: 8px 16px;
+  font: inherit;
+  font-weight: 500;
+  color: var(--ink-soft);
+  cursor: pointer;
+  transition: color 0.25s ease;
+}
+
+.header__signIn:hover {
+  color: var(--gold);
+}
+
+.header__cta {
+  border: 0;
+  border-radius: 999px;
+  padding: 12px 24px;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+  color: white;
+  background: var(--gold);
+  box-shadow: 0 4px 20px rgba(201, 168, 76, 0.2);
+  transition:
+    transform 0.25s ease,
+    background 0.25s ease,
+    box-shadow 0.25s ease;
+}
+
+.header__cta:hover {
+  background: #b8965f;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 30px rgba(201, 168, 76, 0.3);
+}
+
+.header__userBtn {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  cursor: pointer;
-  background: transparent;
+  gap: 10px;
   border: 0;
-  padding: 0;
-  color: inherit;
-  font: inherit;
-}
-
-.header__userbtn:disabled {
-  cursor: default;
-  opacity: 0.6;
-}
-
-.header__username,
-.header__authbtn {
-  color: var(--text-muted);
-  opacity: 0.9;
-  font-size: 28px;
-  line-height: 1.15;
-  transition: color 0.2s ease;
-}
-
-.header__userbtn:hover .header__username,
-.header__usersection:hover .header__username {
-  color: var(--text);
-}
-
-.header__authbtn {
   background: transparent;
-  border: 0;
   padding: 0;
   margin: 0;
-  font-family: inherit;
-  font-weight: 600;
-  line-height: 1.15;
-  font-size: 28px;
+  font: inherit;
   cursor: pointer;
-  color: var(-text);
+  color: var(--gold-pale);
 }
 
-.header__authbtn:hover,
-.header__userbtn:hover {
-  color: var(--text);
+/* Home page logged-in state */
+.header--home .header__userText {
+  color: var(--gold-pale);
+  font-weight: 600;
+  transition: color 0.25s ease;
 }
 
-.header__authbtn:focus-visible {
-  outline: 2px solid var(--text-muted);
-  outline-offset: 2px;
-  border-radius: 4px;
+.header--home .header__userBtn:hover .header__userText {
+  color: var(--gold);
 }
 
-header .header__navbtns > .header__authbtn {
-  font-size: 28px;
-}
-
-.header__avatar {
-  width: 36px;
-  height: 36px;
+.header--home .header__avatar {
+  width: 38px;
+  height: 38px;
   border-radius: 999px;
-  background: var(--accent);
-  color: #111;
-  font:
-    700 14px/36px ui-sans-serif,
-    system-ui;
-  text-align: center;
+  display: grid;
+  place-items: center;
+  background: linear-gradient(135deg, var(--gold), var(--rose));
+  color: white;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
 }
 
-@media (min-width: 1440px) {
-  .header__logo {
-    width: 155px;
-  }
-}
-@media (max-width: 640px) {
-  .header__logo {
-    width: 110px;
-  }
+/* App/dashboard state */
+.header--app .header__userText {
+  color: var(--text-muted);
+  font-weight: 600;
+  transition: color 0.25s ease;
 }
 
-.header__userbtn:hover,
-.header__usersection:hover {
+.header--app .header__userBtn:hover .header__userText {
   color: var(--text);
+}
+
+.header--app .header__signIn {
+  color: var(--text-muted);
+}
+
+.header--app .header__signIn:hover {
+  color: var(--text);
+}
+
+.header--app .header__cta {
+  background: var(--surface-cta);
+  box-shadow: none;
+}
+
+.header--app .header__cta:hover {
+  background: #e86200;
+}
+
+.header__signIn:focus-visible,
+.header__cta:focus-visible,
+.header__userBtn:focus-visible,
+.header__navLink:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 3px;
+  border-radius: 10px;
+}
+
+@media (max-width: 900px) {
+  .header__nav {
+    display: none;
+  }
+
+  .header__row {
+    gap: 16px;
+  }
+}
+
+@media (max-width: 640px) {
+  .header--home,
+  .header--app {
+    padding: 14px 0;
+  }
+
+  .header__actions {
+    gap: 10px;
+  }
+
+  .header__signIn {
+    padding: 6px 10px;
+    font-size: 14px;
+  }
+
+  .header__cta {
+    padding: 10px 16px;
+    font-size: 14px;
+  }
+
+  .header--home .header__avatar {
+    width: 34px;
+    height: 34px;
+    font-size: 12px;
+  }
+
+  .header__userText {
+    font-size: 14px;
+  }
 }

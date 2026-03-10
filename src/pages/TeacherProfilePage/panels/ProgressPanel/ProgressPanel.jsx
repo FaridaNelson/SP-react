@@ -27,7 +27,9 @@ export default function ProgressPanel({
   onSaveScores,
   onLessonSaved,
 }) {
-  const [lessonDate] = useState(() => new Date().toISOString().slice(0, 10));
+  const [lessonDate, setLessonDate] = useState(() =>
+    new Date().toISOString().slice(0, 10),
+  );
   const studentId = student?._id || student?.id;
   const [latestLesson, setLatestLesson] = useState(null);
   const [pieceErrors, setPieceErrors] = useState({});
@@ -135,6 +137,21 @@ export default function ProgressPanel({
     if (!open) return;
     setScales(initScales(gradeScales));
   }, [open, gradeScales]);
+
+  useEffect(() => {
+    if (!open) return;
+
+    const draft = {
+      lessonDate,
+      pieces,
+      scales,
+      sight,
+      aural,
+      teacherNarrative,
+    };
+
+    localStorage.setItem(draftKey, JSON.stringify(draft));
+  }, [pieces, scales, sight, aural, teacherNarrative, lessonDate, open]);
 
   // --- computed piece percent scores (0..100) based on criteria 0..6 ---
   const piecePercents = useMemo(() => {
@@ -364,7 +381,24 @@ export default function ProgressPanel({
               Today’s Progress — <h2 className="pp__title">{studentName}</h2>
             </div>
 
-            <div className="pp__date">{formatLocal(lessonDate)}</div>
+            <div className="pp__dateWrap">
+              <label htmlFor="lesson-date" className="pp__dateLabel">
+                Lesson date:
+              </label>
+              <div className="pp__dateRow">
+                <input
+                  id="lesson-date"
+                  name="lessonDate"
+                  type="date"
+                  className="pp__dateInput"
+                  value={lessonDate}
+                  max={new Date().toISOString().slice(0, 10)}
+                  onChange={(e) => setLessonDate(e.target.value)}
+                  disabled={busy}
+                />
+                <div className="pp__dateDisplay">{formatLocal(lessonDate)}</div>
+              </div>
+            </div>
           </div>
 
           <button
