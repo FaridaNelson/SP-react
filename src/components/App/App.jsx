@@ -59,7 +59,6 @@ export default function App() {
   const isTeacherView = pathname.startsWith("/teacher");
   const isParentView = pathname.startsWith("/parent");
 
-  const hideHeader = isTeacherView || isParentView;
   const hideFooter = isTeacherView || isParentView;
 
   // CTA helpers
@@ -164,14 +163,12 @@ export default function App() {
 
   return (
     <>
-      {!hideHeader && (
-        <Header
-          user={user}
-          onSignIn={openSignIn}
-          onSignUp={openRolePicker}
-          onSignOutRequest={() => setConfirmSignOutOpen(true)}
-        />
-      )}
+      <Header
+        user={user}
+        onSignIn={openSignIn}
+        onSignUp={openRolePicker}
+        onSignOutRequest={() => setConfirmSignOutOpen(true)}
+      />
 
       <Routes>
         <Route element={<DefaultLayout onSignUp={openRolePicker} />}>

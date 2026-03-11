@@ -1,0 +1,31 @@
+.td__studentDropdown {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 6px 8px 8px 56px;
+  background: rgba(0, 0, 0, 0.15);
+}
+
+.td__studentDropdownItem {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  font: 500 13px/1.2 var(--td-sans);
+  color: rgba(255, 255, 255, 0.9);
+
+  padding: 8px 10px;
+  border-radius: 6px;
+
+  background: transparent;
+  border: none;
+  cursor: pointer;
+
+  text-align: left;
+
+  transition: background 0.15s ease;
+}
+
+.td__studentDropdownItem:hover {
+  background: rgba(255, 255, 255, 0.08);
+}

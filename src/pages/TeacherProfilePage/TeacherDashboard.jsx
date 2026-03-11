@@ -4,11 +4,13 @@ import { useProgress } from "../../hooks/useProgress";
 import { computeReadiness } from "../../lib/progress";
 import { api } from "../../lib/api";
 import { useLatestLesson } from "./hooks/useLatestLesson";
-import TeacherStudentInfo from "./TeacherStudentInfo";
+import TeacherStudentInfo from "./views/TeacherStudentInfo";
 import ProgressPanel from "./panels/ProgressPanel/ProgressPanel";
 import AddStudentModal from "./modals/AddStudentModal";
 import "./TeacherDashboard.css";
 import BrandTag from "../../components/BrandTag/BrandTag";
+import StudentInformationView from "./views/StudentInformationView";
+import StudentDropdownMenu from "./components/StudentDropdownMenu";
 
 const AVATAR_GRADIENTS = [
   "linear-gradient(135deg,#C9A84C,#D4806A)",
@@ -165,10 +167,17 @@ export default function TeacherDashboard({
   const { students, isLoading, error } = useTeacherStudents();
 
   const [roster, setRoster] = useState([]);
-  useEffect(() => setRoster(students), [students]);
-
   const [greeting, setGreeting] = useState(() => getPacificGreeting());
   const [query, setQuery] = useState("");
+  const [addOpen, setAddOpen] = useState(false);
+
+  // TeacherDashboard controls panel open state
+  const [progressOpen, setProgressOpen] = useState(false);
+
+  // snapshot | history | information
+  const [view, setView] = useState("snapshot");
+
+  useEffect(() => setRoster(students), [students]);
 
   const filteredRoster = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -191,11 +200,6 @@ export default function TeacherDashboard({
     const id = setInterval(() => setGreeting(getPacificGreeting()), 60_000);
     return () => clearInterval(id);
   }, []);
-
-  const [addOpen, setAddOpen] = useState(false);
-
-  // TeacherDashboard controls panel open state
-  const [progressOpen, setProgressOpen] = useState(false);
 
   const selectedStudent = useMemo(
     () => roster.find((s) => (s._id || s.id) === selectedStudentId) || null,
@@ -270,10 +274,6 @@ export default function TeacherDashboard({
       <div className="td__grid">
         {/* LEFT SIDEBAR */}
         <aside className="td__sidebar">
-          <div className="teacher__brand">
-            <BrandTag compact />
-          </div>
-
           <div className="td__greeting">
             <div className="td__greetHi">{greeting}</div>{" "}
             <div className="td__greetName">
@@ -309,31 +309,41 @@ export default function TeacherDashboard({
 
                 return (
                   <li key={id} className="td__studentRow">
-                    <button
-                      type="button"
-                      className={`td__studentBtn ${active ? "is-active" : ""}`}
-                      onClick={() => onSelectStudent?.(id)}
-                      aria-selected={active}
+                    <div
+                      className={`td__studentItem ${active ? "is-active" : ""}`}
                     >
-                      <div
-                        className="td__avatar"
-                        style={{ background: avatarGradient(s.name) }}
+                      <button
+                        type="button"
+                        className="td__studentBtn"
+                        onClick={() => {
+                          onSelectStudent?.(id);
+                          setView("snapshot");
+                        }}
                       >
-                        {initials(s.name)}
-                      </div>
-
-                      <div className="td__studentMain">
-                        <div className="td__studentName">{s.name}</div>
-                        <div className="td__studentMeta">
-                          {s.grade ? `Grade ${s.grade}` : "Grade —"} •{" "}
-                          {s.instrument || "Piano"}
+                        <div
+                          className="td__avatar"
+                          style={{ background: avatarGradient(s.name) }}
+                        >
+                          {initials(s.name)}
                         </div>
-                      </div>
 
-                      <div className="td__studentRight" aria-hidden="true">
-                        {active ? <span className="td__activeDot" /> : null}
-                      </div>
-                    </button>
+                        <div className="td__studentMain">
+                          <div className="td__studentName">{s.name}</div>
+                          <div className="td__studentMeta">
+                            {s.grade ? `Grade ${s.grade}` : "Grade —"} •{" "}
+                            {s.instrument || "Piano"}
+                          </div>
+                        </div>
+                      </button>
+
+                      {active && (
+                        <StudentDropdownMenu
+                          studentId={id}
+                          onSelectStudent={onSelectStudent}
+                          setView={setView}
+                        />
+                      )}
+                    </div>
                   </li>
                 );
               })}
@@ -345,31 +355,6 @@ export default function TeacherDashboard({
 
         {/* MAIN CANVAS */}
         <section className="td__main">
-          <header className="td__topbar">
-            <div className="td__topbarSpacer" />
-
-            <div className="td__topActions">
-              <button className="td__pillBtn" disabled={!selectedStudent}>
-                <span className="td__pillIcon">📅</span> Schedule a lesson
-              </button>
-
-              <button
-                className="td__pillBtn td__pillBtn--dark"
-                disabled={!selectedStudent}
-              >
-                ✉️ Message parent
-              </button>
-
-              <button
-                className="td__pillBtn td__pillBtn--gold"
-                disabled={!selectedStudent}
-                onClick={() => setProgressOpen(true)}
-              >
-                ✏️ Today’s progress
-              </button>
-            </div>
-          </header>
-
           {!selectedStudent ? (
             <div className="td__canvasEmpty">
               <div className="td__emptyIcon">▥</div>
@@ -378,13 +363,20 @@ export default function TeacherDashboard({
                 Their full progress will appear here
               </p>
             </div>
-          ) : (
+          ) : view === "snapshot" ? (
             <SelectedStudentPane
               student={selectedStudent}
               progressOpen={progressOpen}
               onOpenProgress={() => setProgressOpen(true)}
               onCloseProgress={() => setProgressOpen(false)}
             />
+          ) : view === "history" ? (
+            <div style={{ padding: 30 }}>
+              <h2>Progress history</h2>
+              <p>Coming soon.</p>
+            </div>
+          ) : (
+            <StudentInformationView student={selectedStudent} />
           )}
         </section>
       </div>

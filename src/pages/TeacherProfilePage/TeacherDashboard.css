@@ -26,13 +26,13 @@
 }
 
 .td__shell {
-  min-height: 100vh;
-  background: #0b0b0b; /* behind the app */
+  min-height: calc(100vh - 84px);
+  background: #0b0b0b;
   display: grid;
 }
 
 .td__grid {
-  height: 100vh;
+  min-height: calc(100vh - 84px);
   display: grid;
   grid-template-columns: 320px 1fr;
 }
@@ -253,6 +253,31 @@
   color: rgba(255, 255, 255, 0.92);
   cursor: pointer;
   text-align: left;
+}
+
+.td__studentItem {
+  display: flex;
+  flex-direction: column;
+}
+
+.td__studentDropdown {
+  padding-left: 66px;
+  display: flex;
+  flex-direction: column;
+}
+
+.td__studentDropdown button {
+  background: transparent;
+  border: none;
+  color: rgba(255, 255, 255, 0.7);
+  padding: 6px 0;
+  font-size: 12px;
+  text-align: left;
+  cursor: pointer;
+}
+
+.td__studentDropdown button:hover {
+  color: #e8d49a;
 }
 
 .td__studentBtn:hover {

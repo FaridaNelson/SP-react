@@ -73,6 +73,27 @@
   color: var(--gold);
 }
 
+.header__signOutBtn {
+  background: transparent;
+  border: 0;
+  padding: 8px 16px;
+  font: inherit;
+  font-weight: 600;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: color 0.25s ease;
+}
+
+.header__signOutBtn:hover {
+  color: var(--text);
+}
+
+.header__signOutBtn:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 3px;
+  border-radius: 10px;
+}
+
 .header__cta {
   border: 0;
   border-radius: 999px;
@@ -130,6 +151,26 @@
   font-size: 13px;
   font-weight: 700;
   letter-spacing: 0.04em;
+}
+
+/* App/dashboard avatar */
+.header--app .header__avatar {
+  width: 38px;
+  height: 38px;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  background: linear-gradient(135deg, var(--gold), var(--rose));
+  color: white;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+
+.header__inner {
+  margin: 0 10px;
+  width: 96%;
+  padding: 0 28px;
 }
 
 /* App/dashboard state */
