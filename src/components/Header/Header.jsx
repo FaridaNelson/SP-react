@@ -18,7 +18,6 @@ export default function Header({ user, onSignIn, onSignUp, onSignOutRequest }) {
   const navigate = useNavigate();
 
   const isHome = pathname === "/";
-  const isDashboardRoute = /^(\/profile|\/teacher|\/parent)/.test(pathname);
 
   const displayName = user?.name?.trim() || "User";
 
@@ -29,20 +28,9 @@ export default function Header({ user, onSignIn, onSignUp, onSignOutRequest }) {
       .map((part) => part[0]?.toUpperCase())
       .join("") || "UN";
 
-  const handleUserAction = () => {
-    if (!user) return;
-
-    if (isDashboardRoute) {
-      onSignOutRequest?.();
-      return;
-    }
-
-    navigate(firstDashboardPath(user));
-  };
-
   return (
     <header className={`header ${isHome ? "header--home" : "header--app"}`}>
-      <div className="container header__row">
+      <div className="header__inner header__row">
         <div className="header__brandWrap">
           <BrandTag compact={!isHome} />
         </div>
@@ -63,21 +51,26 @@ export default function Header({ user, onSignIn, onSignUp, onSignOutRequest }) {
 
         <div className="header__actions">
           {user ? (
-            <button
-              type="button"
-              className="header__userBtn"
-              onClick={handleUserAction}
-            >
-              <span className="header__userText">
-                {isDashboardRoute ? "Sign Out" : displayName}
-              </span>
+            <>
+              <button
+                type="button"
+                className="header__signOutBtn"
+                onClick={onSignOutRequest}
+              >
+                Sign Out
+              </button>
 
-              {!isDashboardRoute && (
+              <button
+                type="button"
+                className="header__userBtn"
+                onClick={() => navigate(firstDashboardPath(user))}
+              >
+                <span className="header__userText">{displayName}</span>
                 <span className="header__avatar" aria-hidden="true">
                   {initials}
                 </span>
-              )}
-            </button>
+              </button>
+            </>
           ) : (
             <>
               <button

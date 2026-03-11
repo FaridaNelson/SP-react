@@ -1,8 +1,8 @@
 import { useMemo, useState } from "react";
-import ProgressDonut from "../../components/ProgressDonut/ProgressDonut";
-import AssignmentBreakdown from "../../components/AssignmentBreakdown/AssignmentBreakdown";
-import AttendanceCalendar from "./attendance/AttendanceCalendar";
-import { api } from "../../lib/api";
+import ProgressDonut from "../../../components/ProgressDonut/ProgressDonut";
+import AssignmentBreakdown from "../../../components/AssignmentBreakdown/AssignmentBreakdown";
+import AttendanceCalendar from "../attendance/AttendanceCalendar";
+import { api } from "../../../lib/api";
 import "./TeacherStudentInfo.css";
 
 export default function TeacherStudentInfo({
@@ -11,6 +11,7 @@ export default function TeacherStudentInfo({
   readiness = 0,
   latestLesson,
   latestLessonLoading,
+  onOpenProgress,
 }) {
   const { id: studentId, _id, name } = student || {};
   const sid = _id || studentId || "";
@@ -74,15 +75,31 @@ export default function TeacherStudentInfo({
 
   return (
     <section className="teacherStudentInfo">
-      {/* Page header row (matches screenshot) */}
       <header className="tsi__pageHead">
         <div className="tsi__pageTitleWrap">
           <h1 className="tsi__pageTitle">{name}</h1>
           <div className="tsi__pageMeta">
             {student.grade ? `Grade ${student.grade}` : "Grade —"} •{" "}
             {student.instrument || "Piano"}
-            {/* you can append next lesson text later */}
           </div>
+        </div>
+
+        <div className="tsi__pageActions">
+          <button type="button" className="td__pillBtn">
+            <span className="td__pillIcon">📅</span> Schedule a lesson
+          </button>
+
+          <button type="button" className="td__pillBtn td__pillBtn--dark">
+            ✉️ Message parent
+          </button>
+
+          <button
+            type="button"
+            className="td__pillBtn td__pillBtn--gold"
+            onClick={onOpenProgress}
+          >
+            ✏️ Today’s progress
+          </button>
         </div>
       </header>
 
