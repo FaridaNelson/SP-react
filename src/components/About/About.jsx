@@ -26,10 +26,10 @@ export default function About({ onOpenSignUp }) {
               student knows exactly what to do next, every teacher can assign
               and assess in minutes, and every parent gets a clear, timely
               picture of progress. By uniting structured homework with
-              interactive sight-reading (via Soundslice) and lightweight
-              assessment, we boost exam readiness and long-term musicianship.
-              The core philosophy of StudioPulse revolves around what we call
-              “The Triangle of Success.”
+              interactive sight-reading and lightweight assessment, we boost
+              exam readiness and long-term musicianship. The core philosophy of
+              StudioPulse revolves around what we call “The Triangle of
+              Success.”
             </p>
           </article>
         </div>

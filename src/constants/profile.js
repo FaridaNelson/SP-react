@@ -6,7 +6,6 @@ export const CURRENT_ASSIGNMENT = [
   {
     key: "sight-reading",
     title: "Daily Sight-Reading",
-    type: "soundslice",
     sliceId: "r7RTc", // your live slice
     useApi: false, // use direct embed (you can flip to true later)
     meta: {
