@@ -1,13 +1,13 @@
 import "./PieceCard.css";
 
-const SCORE_LABEL = (n) => {
-  if (!Number.isFinite(n)) return "";
-  if (n <= 1) return "Needs work";
-  if (n <= 3) return "Getting there";
-  if (n <= 4) return "Good";
-  if (n <= 5) return "Very good";
-  return "Excellent";
-};
+// const SCORE_LABEL = (n) => {
+//   if (!Number.isFinite(n)) return "";
+//   if (n <= 1) return "Needs work";
+//   if (n <= 3) return "Getting there";
+//   if (n <= 4) return "Good";
+//   if (n <= 5) return "Very good";
+//   return "Excellent";
+// };
 
 const PASS_THRESHOLD = 67;
 
@@ -180,7 +180,7 @@ export default function PieceCard({
         <button
           type="button"
           className="pc__saveOne"
-          onClick={() => onSavePiece?.(piece.id)}
+          onClick={() => onSavePiece?.()}
           disabled={disabled}
           title="Save progress for this piece only"
         >
