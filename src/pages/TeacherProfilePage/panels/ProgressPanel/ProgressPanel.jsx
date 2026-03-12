@@ -188,11 +188,16 @@ export default function ProgressPanel({
       pieces?.[pieceId],
       pieceDef.criteria,
     );
+
+    // Only this piece should show validation errors, not the whole form
     if (missing.length) {
-      setPieceErrors((prev) => ({ ...prev, [pieceId]: missing }));
-      setErr("Kind reminder: please fill out all criteria for this piece.");
+      setPieceErrors({ [pieceId]: missing });
+      setErr("");
       return;
     }
+
+    // Clear errors for this piece if validation passed
+    setPieceErrors({});
 
     try {
       setBusy(true);
@@ -242,7 +247,6 @@ export default function ProgressPanel({
 
       setLatestLesson(savedLesson);
       onLessonSaved?.(savedLesson);
-      setPieceErrors((prev) => ({ ...prev, [pieceId]: [] }));
       setErr("");
     } catch (e) {
       setErr(e?.message || "Failed to save this piece");

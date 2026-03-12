@@ -85,7 +85,7 @@
 }
 
 .header__signOutBtn:hover {
-  color: var(--text);
+  color: var(--gold);
 }
 
 .header__signOutBtn:focus-visible {
@@ -180,7 +180,11 @@
   transition: color 0.25s ease;
 }
 
-.header--app .header__userBtn:hover .header__userText {
+.header--app .header__userText .header__userBtn:hover {
+  color: var(--gold);
+}
+
+.header--app {
   color: var(--text);
 }
 
