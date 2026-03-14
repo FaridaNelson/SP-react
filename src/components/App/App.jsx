@@ -14,13 +14,14 @@ import AboutPage from "../../pages/AboutPage";
 import ProfilePage from "../../pages/ProfilePage/ProfilePage";
 import ParentProfilePage from "../../pages/ParentProfilePage/ParentProfilePage.jsx";
 import TeacherDashboard from "../../pages/TeacherProfilePage/TeacherDashboard.jsx";
+import PrivacyPolicyPage from "../../pages/PrivacyPolicyPage.jsx";
+import TermsOfServicePage from "../../pages/TermsOfServicePage.jsx";
 import DefaultLayout from "../../layouts/DefaultLayout";
 import ProfileLayout from "../../layouts/ProfileLayout";
 import LoginModal from "../LoginModal/LoginModal";
 import RegisterModal from "../RegisterModal/RegisterModal";
 import ConfirmationModal from "../ConfirmationModal/ConfirmationModal";
 import ProtectedRoute from "../ProtectedRoute";
-import RoleSelectModal from "../../components/RoleSelectModal/RoleSelectModal.jsx";
 import { api } from "../../lib/api.js";
 import NotFound from "../../pages/NotFound.jsx";
 
@@ -43,33 +44,25 @@ export function RoleRoute({ user, allowedRoles, element }) {
 
 export default function App() {
   const [booted, setBooted] = useState(false);
-  // selected student for teacher view
   const [selectedStudentId, setSelectedStudentId] = useState(null);
 
-  // auth mode: null | "signin" | "signup" | "role"
+  // auth mode: null | "signin" | "signup"
   const [authMode, setAuthMode] = useState(null);
-  const [pendingRole, setPendingRole] = useState(null);
 
-  // user/session
   const [user, setUser] = useState(null);
   const [confirmSignOutOpen, setConfirmSignOutOpen] = useState(false);
 
   const navigate = useNavigate();
   const { pathname } = useLocation();
+
   const isTeacherView = pathname.startsWith("/teacher");
   const isParentView = pathname.startsWith("/parent");
-
   const hideFooter = isTeacherView || isParentView;
 
-  // CTA helpers
-  const openRolePicker = () => setAuthMode("role");
   const openSignIn = () => setAuthMode("signin");
-  const closeAuth = () => {
-    setAuthMode(null);
-    setPendingRole(null);
-  };
+  const openSignUp = () => setAuthMode("signup");
+  const closeAuth = () => setAuthMode(null);
 
-  // test effect
   useEffect(() => {
     (async () => {
       try {
@@ -80,14 +73,9 @@ export default function App() {
       }
 
       try {
-        // IMPORTANT: let api() include cookies / auth
-        const me = await api("/api/auth/me", { expectUnauthorized: true }); // remove auth:false
-
-        // only log if actually authed - avoid 401 noise on every page load when not authed
+        const me = await api("/api/auth/me", { expectUnauthorized: true });
         if (me?.user) {
           console.log("ME OK:", me);
-        } else {
-          // logged out: do nothing
         }
       } catch (e) {
         console.warn("ME unexpected error:", e?.status, e?.message);
@@ -97,6 +85,7 @@ export default function App() {
 
   useEffect(() => {
     if (!booted || !user) return;
+
     const target = firstDashboardPath(user);
     if (
       ["/teacher", "/parent", "/profile"].includes(pathname) &&
@@ -123,11 +112,12 @@ export default function App() {
 
   if (!booted) return null;
 
-  async function handleRegister({ name, email, password, role, studentId }) {
+  async function handleRegister(payload) {
     const data = await api("/api/auth/signup", {
       method: "POST",
-      body: { name, email, password, role, studentId },
+      body: payload,
     });
+
     if (data.token) localStorage.setItem("token", data.token);
     setUser(data.user);
     closeAuth();
@@ -139,6 +129,7 @@ export default function App() {
       method: "POST",
       body: { email, password },
     });
+
     if (data.token) localStorage.setItem("token", data.token);
     setUser(data.user);
     closeAuth();
@@ -153,11 +144,11 @@ export default function App() {
     } catch {
       // ignore network errors on logout
     }
-    localStorage.removeItem("token"); // remove header token
+
+    localStorage.removeItem("token");
     setUser(null);
     setSelectedStudentId(null);
     setAuthMode(null);
-    setPendingRole(null);
     navigate("/", { replace: true });
   }
 
@@ -166,17 +157,16 @@ export default function App() {
       <Header
         user={user}
         onSignIn={openSignIn}
-        onSignUp={openRolePicker}
+        onSignUp={openSignUp}
         onSignOutRequest={() => setConfirmSignOutOpen(true)}
       />
 
       <Routes>
-        <Route element={<DefaultLayout onSignUp={openRolePicker} />}>
-          <Route path="/" element={<HomePage onSignUp={openRolePicker} />} />
-          <Route
-            path="/about"
-            element={<AboutPage onSignUp={openRolePicker} />}
-          />
+        <Route element={<DefaultLayout onSignUp={openSignUp} />}>
+          <Route path="/" element={<HomePage onSignUp={openSignUp} />} />
+          <Route path="/about" element={<AboutPage onSignUp={openSignUp} />} />
+          <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
+          <Route path="/terms-of-service" element={<TermsOfServicePage />} />
           <Route path="*" element={<NotFound />} />
         </Route>
 
@@ -217,7 +207,7 @@ export default function App() {
         </Route>
       </Routes>
 
-      {!hideFooter && <Footer onSignUp={openRolePicker} />}
+      {!hideFooter && <Footer onSignUp={openSignUp} />}
 
       <ConfirmationModal
         isOpen={confirmSignOutOpen}
@@ -233,21 +223,10 @@ export default function App() {
         autoFocus="confirm"
       />
 
-      {/* Step 1: Role selection */}
-      <RoleSelectModal
-        open={authMode === "role"}
-        onClose={closeAuth}
-        onPick={(role) => {
-          setPendingRole(role);
-          setAuthMode("signup"); // move to signup with chosen role
-        }}
-      />
-
-      {/* Step 2: Sign in / Sign up */}
       <LoginModal
         open={authMode === "signin"}
         onClose={closeAuth}
-        onSwitch={openRolePicker}
+        onSwitch={openSignUp}
         onSubmit={handleLogin}
       />
 
@@ -256,7 +235,6 @@ export default function App() {
         onClose={closeAuth}
         onSwitch={openSignIn}
         onSubmit={handleRegister}
-        initialRole={pendingRole}
       />
     </>
   );

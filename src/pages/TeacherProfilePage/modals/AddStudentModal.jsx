@@ -4,55 +4,84 @@ import "./AddStudentModal.css";
 
 export default function AddStudentModal({ open, onClose, onSubmit }) {
   const [form, setForm] = useState({
-    studentName: "",
+    studentFirstName: "",
+    studentLastName: "",
     studentEmail: "",
     instrument: "",
     grade: "",
-    parentName: "",
+    parentFirstName: "",
+    parentLastName: "",
     parentEmail: "",
   });
+
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState("");
 
-  function set(k, v) {
-    setForm((f) => ({ ...f, [k]: v }));
+  function setField(key, value) {
+    setForm((prev) => ({ ...prev, [key]: value }));
   }
 
-  const handleAddStudent = async (e) => {
+  async function handleAddStudent(e) {
     e.preventDefault();
     setErr("");
+
+    if (!form.studentFirstName || !form.studentLastName) {
+      setErr("Student first and last name are required.");
+      return;
+    }
+
+    if (!form.studentEmail.trim()) {
+      setErr("Student email is required.");
+      return;
+    }
+
+    if (!form.instrument) {
+      setErr("Instrument is required.");
+      return;
+    }
+
+    if (!form.grade) {
+      setErr("Grade is required.");
+      return;
+    }
+
     setBusy(true);
 
     const payload = {
-      name: form.studentName.trim(),
+      firstName: form.studentFirstName.trim(),
+      lastName: form.studentLastName.trim(),
       email: form.studentEmail.trim(),
-      instrument: form.instrument.trim(),
+      instrument: form.instrument,
       grade: Number(form.grade),
       parent: {
-        name: form.parentName.trim(),
+        firstName: form.parentFirstName.trim(),
+        lastName: form.parentLastName.trim(),
         email: form.parentEmail.trim(),
       },
     };
 
     try {
-      const created = await onSubmit?.(payload); // <-- parent will do the API call
-      // optional: reset form so next add starts clean
+      const created = await onSubmit?.(payload);
+
       setForm({
-        studentName: "",
+        studentFirstName: "",
+        studentLastName: "",
         studentEmail: "",
         instrument: "",
         grade: "",
-        parentName: "",
+        parentFirstName: "",
+        parentLastName: "",
         parentEmail: "",
       });
-      onClose?.(); // parent also closes; safe to keep
+
+      onClose?.();
       return created;
     } catch (e) {
       setErr(e?.message || "Failed to add student");
     } finally {
       setBusy(false);
     }
-  };
+  }
 
   return (
     <Modal
@@ -62,11 +91,9 @@ export default function AddStudentModal({ open, onClose, onSubmit }) {
       title={null}
       variant="slideRight"
     >
-      {/* “Panel-style” header */}
       <div className="spModal__content">
         <header className="spModal__head">
           <div>
-            <div className="spModal__kicker"></div>
             <h2 className="spModal__title">Add a new student</h2>
           </div>
 
@@ -87,15 +114,32 @@ export default function AddStudentModal({ open, onClose, onSubmit }) {
               <div className="spModal__sectionHead">
                 <h3 className="spModal__sectionTitle">Student Information</h3>
               </div>
+
               <div className="spModal__sectionBody">
                 <div className="spModal__grid">
                   <label className="spModal__field">
-                    <span className="spModal__label">STUDENT NAME</span>
+                    <span className="spModal__label">FIRST NAME</span>
                     <input
                       className="spModal__input"
-                      placeholder="e.g., Emma Johnson"
-                      value={form.studentName}
-                      onChange={(e) => set("studentName", e.target.value)}
+                      placeholder="e.g., Emma"
+                      value={form.studentFirstName}
+                      onChange={(e) =>
+                        setField("studentFirstName", e.target.value)
+                      }
+                      required
+                      disabled={busy}
+                    />
+                  </label>
+
+                  <label className="spModal__field">
+                    <span className="spModal__label">LAST NAME</span>
+                    <input
+                      className="spModal__input"
+                      placeholder="e.g., Johnson"
+                      value={form.studentLastName}
+                      onChange={(e) =>
+                        setField("studentLastName", e.target.value)
+                      }
                       required
                       disabled={busy}
                     />
@@ -108,7 +152,7 @@ export default function AddStudentModal({ open, onClose, onSubmit }) {
                       type="email"
                       placeholder="emma@email.com"
                       value={form.studentEmail}
-                      onChange={(e) => set("studentEmail", e.target.value)}
+                      onChange={(e) => setField("studentEmail", e.target.value)}
                       required
                       disabled={busy}
                     />
@@ -119,7 +163,7 @@ export default function AddStudentModal({ open, onClose, onSubmit }) {
                     <select
                       className="spModal__input"
                       value={form.instrument}
-                      onChange={(e) => set("instrument", e.target.value)}
+                      onChange={(e) => setField("instrument", e.target.value)}
                       required
                       disabled={busy}
                     >
@@ -135,7 +179,7 @@ export default function AddStudentModal({ open, onClose, onSubmit }) {
                     <select
                       className="spModal__input"
                       value={form.grade}
-                      onChange={(e) => set("grade", e.target.value)}
+                      onChange={(e) => setField("grade", e.target.value)}
                       required
                       disabled={busy}
                     >
@@ -158,15 +202,31 @@ export default function AddStudentModal({ open, onClose, onSubmit }) {
               <div className="spModal__sectionHead">
                 <h3 className="spModal__sectionTitle">Parent Information</h3>
               </div>
+
               <div className="spModal__sectionBody">
                 <div className="spModal__grid">
                   <label className="spModal__field">
-                    <span className="spModal__label">PARENT NAME</span>
+                    <span className="spModal__label">PARENT FIRST NAME</span>
                     <input
                       className="spModal__input"
                       placeholder="(optional)"
-                      value={form.parentName}
-                      onChange={(e) => set("parentName", e.target.value)}
+                      value={form.parentFirstName}
+                      onChange={(e) =>
+                        setField("parentFirstName", e.target.value)
+                      }
+                      disabled={busy}
+                    />
+                  </label>
+
+                  <label className="spModal__field">
+                    <span className="spModal__label">PARENT LAST NAME</span>
+                    <input
+                      className="spModal__input"
+                      placeholder="(optional)"
+                      value={form.parentLastName}
+                      onChange={(e) =>
+                        setField("parentLastName", e.target.value)
+                      }
                       disabled={busy}
                     />
                   </label>
@@ -178,7 +238,7 @@ export default function AddStudentModal({ open, onClose, onSubmit }) {
                       type="email"
                       placeholder="(optional)"
                       value={form.parentEmail}
-                      onChange={(e) => set("parentEmail", e.target.value)}
+                      onChange={(e) => setField("parentEmail", e.target.value)}
                       disabled={busy}
                     />
                   </label>
@@ -186,7 +246,7 @@ export default function AddStudentModal({ open, onClose, onSubmit }) {
 
                 <p className="spModal__hint">
                   If you add a parent email now, you can later email the parent
-                  automatically, just click “Save & Share”.
+                  automatically using “Save &amp; Share”.
                 </p>
               </div>
             </section>
