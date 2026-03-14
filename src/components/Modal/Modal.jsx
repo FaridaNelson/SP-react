@@ -11,7 +11,7 @@ export default function Modal({
   children,
   panelClassName = "",
   overlayClassName = "",
-  variant = "center", // "center" | "slideRight"
+  variant = "center", // "center" | "slideRight" | "auth",
 }) {
   const panelRef = useRef(null);
   const [mounted, setMounted] = useState(open);
@@ -40,15 +40,16 @@ export default function Modal({
     return () => window.removeEventListener("keydown", onKey);
   }, [mounted, onClose]);
 
-  // optional: lock body scroll when modal is mounted
   useEffect(() => {
     if (!mounted) return;
+    if (variant === "auth") return;
+
     const prev = document.body.style.overflow;
     document.body.style.overflow = "hidden";
     return () => {
       document.body.style.overflow = prev;
     };
-  }, [mounted]);
+  }, [mounted, variant]);
 
   if (!mounted) return null;
 
@@ -58,7 +59,11 @@ export default function Modal({
 
   const overlayCls = [
     "modal",
-    variant === "slideRight" ? "modal--slideRight" : "modal--center",
+    variant === "slideRight"
+      ? "modal--slideRight"
+      : variant === "auth"
+        ? "modal--auth"
+        : "modal--center",
     visible ? "is-open" : "is-closed",
     overlayClassName,
   ]

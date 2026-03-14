@@ -26,30 +26,44 @@ function displayGrade(student) {
   return `${gradeText} ${instrument}`;
 }
 
-export default function StudentInformationView({ student }) {
+export default function StudentInformationView({ student, user }) {
   if (!student) return null;
 
-  const { firstName, lastName } = splitName(student.name);
+  const firstName = student.firstName || splitName(student.name).firstName;
+  const lastName = student.lastName || splitName(student.name).lastName;
+
+  const linkedParent =
+    Array.isArray(student.parentIds) && student.parentIds.length > 0
+      ? student.parentIds[0]
+      : null;
 
   const parentFirstName =
-    student.parentFirstName ||
-    splitName(student.parentName || "").firstName ||
+    student.parent?.firstName ||
+    linkedParent?.firstName ||
+    splitName(student.parent?.name || linkedParent?.name || "").firstName ||
     "—";
 
   const parentLastName =
-    student.parentLastName ||
-    splitName(student.parentName || "").lastName ||
+    student.parent?.lastName ||
+    linkedParent?.lastName ||
+    splitName(student.parent?.name || linkedParent?.name || "").lastName ||
     "—";
 
   const studentEmail = student.studentEmail || student.email || "—";
-  const parentEmail = student.parentEmail || "—";
-  const parentPhone = student.parentPhone || "—";
-  const examType = student.examType || "ABRSM - Practical";
-  const classFrequency = student.classFrequency || "1x per week";
-  const classLength = student.classLength || "45 minutes";
+
+  const parentEmail = student.parent?.email || linkedParent?.email || "—";
+
+  const parentPhone = student.parent?.phone || linkedParent?.phone || "—";
+
+  const examType = student.examType || "Practical";
+  const classFrequency = student.classFrequency || "—";
+  const classLength = student.classLength || "—";
   const nextLesson = student.nextLessonFull || student.nextLesson || "—";
-  const room = student.lessonRoom || "Studio B";
-  const teacherName = student.teacherName || "Ms. Okafor";
+  const room = student.lessonRoom || "—";
+  const teacherName =
+    user?.name ||
+    `${user?.firstName || ""} ${user?.lastName || ""}`.trim() ||
+    "—";
   const studentNotes = student.studentNotes || "No student notes added yet.";
 
   return (
@@ -96,7 +110,9 @@ export default function StudentInformationView({ student }) {
 
               <div className="siv__field">
                 <div className="siv__label">Exam Type</div>
-                <div className="siv__value">{examType}</div>
+                <div className="siv__value">
+                  {student.examType || "ABRSM - Practical"}
+                </div>
               </div>
 
               <div className="siv__field">

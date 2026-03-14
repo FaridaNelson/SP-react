@@ -248,7 +248,7 @@ export default function TeacherDashboard({
       <main className="td__shell">
         <div className="td__emptyCard">
           <h2>To get started</h2>
-          <p>
+          <p className="td__emptySub">
             Add your first student to begin tracking progress and attendance.
           </p>
           <button
@@ -376,7 +376,7 @@ export default function TeacherDashboard({
               <p>Coming soon.</p>
             </div>
           ) : (
-            <StudentInformationView student={selectedStudent} />
+            <StudentInformationView student={selectedStudent} user={user} />
           )}
         </section>
       </div>

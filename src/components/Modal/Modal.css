@@ -91,6 +91,37 @@
   font-weight: 700;
 }
 
+.modal--auth {
+  position: fixed;
+  left: 0;
+  right: 0;
+  top: 88px; /* adjust to the real header height */
+  bottom: 0;
+  display: block;
+  overflow-y: auto;
+  padding: 32px 20px 48px;
+  background: #faf7f2;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
+.modal--auth .modal__panel {
+  width: 100%;
+  max-width: 560px;
+  margin: 0 auto;
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+  overflow: visible;
+  display: block;
+}
+
+.modal--auth .modal__body {
+  padding: 0;
+  overflow: visible;
+}
+
 .modal__close {
   background: none;
   border: 0;

@@ -455,7 +455,7 @@
 
 .td__emptySub {
   margin: 10px 0 0;
-  color: var(--td-muted);
+  color: black;
   font: 500 13px/1.5 var(--td-sans);
 }
 

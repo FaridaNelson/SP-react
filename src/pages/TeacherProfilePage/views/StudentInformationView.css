@@ -21,10 +21,11 @@
   margin: 0;
   font: 500 22px/1 var(--font-serif);
   color: var(--td-ink);
+  font-size: 36px;
 }
 
 .siv__sub {
-  margin: 6px 0 0;
+  margin: 16px 0 0;
   font: 500 12px/1.2 var(--td-sans);
   color: var(--td-muted);
 }

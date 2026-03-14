@@ -1,9 +1,9 @@
-.loginModal {
-  width: min(100%, 440px);
+.registerModal {
+  width: min(100%, 520px);
   margin: 0 auto;
 }
 
-.loginModal__card {
+.registerModal__card {
   background: #ffffff;
   border: 1px solid rgba(28, 26, 23, 0.1);
   border-radius: 20px;
@@ -11,26 +11,26 @@
   box-shadow: 0 8px 32px rgba(28, 26, 23, 0.08);
 }
 
-.loginModal__header {
+.registerModal__header {
   text-align: center;
   margin-bottom: 28px;
 }
 
-.loginModal__title {
+.registerModal__title {
   margin: 0 0 8px;
   font-family: "Cormorant Garamond", serif;
   font-size: 32px;
-  font-weight: 600;
+  font-weight: 700;
   color: #1c1a17;
 }
 
-.loginModal__subtitle {
+.registerModal__subtitle {
   margin: 0;
   font-size: 15px;
   color: #7a766d;
 }
 
-.loginModal__tabs {
+.registerModal__tabs {
   display: flex;
   gap: 8px;
   margin-bottom: 28px;
@@ -39,7 +39,7 @@
   border-radius: 12px;
 }
 
-.loginModal__tab {
+.registerModal__tab {
   flex: 1;
   padding: 10px 16px;
   border: none;
@@ -54,29 +54,40 @@
     box-shadow 0.2s ease;
 }
 
-.loginModal__tab--active {
+.registerModal__tab--active {
   background: #ffffff;
   color: #1c1a17;
   box-shadow: 0 2px 8px rgba(28, 26, 23, 0.08);
 }
 
-.loginModal__form {
+.registerModal__form {
   display: grid;
   gap: 18px;
+  overflow-y: auto;
+  min-height: 0;
+  padding-right: 6px;
 }
 
-.loginModal__group {
+.registerModal__row {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.registerModal__group {
   display: grid;
   gap: 8px;
 }
 
-.loginModal__label {
+.registerModal__label {
   font-size: 13px;
   font-weight: 600;
   color: #3d3a34;
 }
 
-.loginModal__input {
+.registerModal__input,
+.registerModal__select,
+.registerModal__placeholderBox {
   padding: 12px 16px;
   border: 1px solid rgba(28, 26, 23, 0.1);
   border-radius: 10px;
@@ -84,62 +95,110 @@
   color: #1c1a17;
   font: 400 15px/1.3 var(--td-sans, "DM Sans", sans-serif);
   outline: none;
-  transition:
-    border-color 0.2s ease,
-    background-color 0.2s ease,
-    box-shadow 0.2s ease;
 }
 
-.loginModal__input:focus {
+.registerModal__input:focus,
+.registerModal__select:focus {
   border-color: #c9a84c;
   background: #ffffff;
   box-shadow: 0 0 0 3px rgba(201, 168, 76, 0.1);
 }
 
-.loginModal__input::placeholder {
+.registerModal__input::placeholder {
   color: #7a766d;
   opacity: 0.5;
 }
 
-.loginModal__helperRow {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-}
-
-.loginModal__checkboxLabel {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 13px;
-  color: #3d3a34;
+.registerModal__select {
   cursor: pointer;
 }
 
-.loginModal__checkboxLabel input[type="checkbox"] {
-  width: 16px;
-  height: 16px;
-  accent-color: #c9a84c;
+.registerModal__placeholderBox {
+  color: #7a766d;
+  display: flex;
+  align-items: center;
 }
 
-.loginModal__linkButton {
+.registerModal__helper {
+  font-size: 12px;
+  color: #7a766d;
+  line-height: 1.5;
+}
+
+.registerModal__checkboxGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 12px 16px;
+  background: #fdf9f4;
+  border: 1px solid rgba(28, 26, 23, 0.1);
+  border-radius: 10px;
+}
+
+.registerModal__checkboxLabel {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  font-size: 13px;
+  color: #3d3a34;
+  line-height: 1.5;
+  cursor: pointer;
+}
+
+.registerModal__checkboxLabel--compact {
+  margin: 0;
+}
+
+.registerModal__checkboxLabel input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  margin-top: 2px;
+  accent-color: #c9a84c;
+  flex-shrink: 0;
+}
+
+.registerModal__inlineLink {
   padding: 0;
   border: none;
   background: transparent;
-  font: 500 13px/1.2 var(--td-sans, "DM Sans", sans-serif);
   color: #c9a84c;
-  cursor: not-allowed;
-  opacity: 0.6;
+  font: 500 13px/1.2 var(--td-sans, "DM Sans", sans-serif);
+  cursor: pointer;
 }
 
-.loginModal__error {
+.registerModal__inlineLink:hover {
+  color: #b8932a;
+  text-decoration: underline;
+}
+
+.registerModal__infoBox {
+  background: #f5edd0;
+  border: 1px solid rgba(201, 168, 76, 0.3);
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 6px;
+}
+
+.registerModal__infoTitle {
+  font-size: 13px;
+  font-weight: 600;
+  color: #c9a84c;
+  margin-bottom: 6px;
+}
+
+.registerModal__infoText {
+  font-size: 13px;
+  color: #3d3a34;
+  line-height: 1.6;
+}
+
+.registerModal__error {
   margin: 0;
   font-size: 13px;
   color: #b05040;
 }
 
-.loginModal__submit {
+.registerModal__submit {
   width: 100%;
   margin-top: 4px;
   padding: 14px;
@@ -155,25 +214,25 @@
     background-color 0.2s ease;
 }
 
-.loginModal__submit:hover:not(:disabled) {
+.registerModal__submit:hover:not(:disabled) {
   background: #b8932a;
   transform: translateY(-1px);
   box-shadow: 0 4px 16px rgba(201, 168, 76, 0.3);
 }
 
-.loginModal__submit:disabled {
+.registerModal__submit:disabled {
   cursor: default;
   opacity: 0.7;
 }
 
-.loginModal__footer {
+.registerModal__footer {
   margin-top: 24px;
   text-align: center;
   font-size: 14px;
   color: #7a766d;
 }
 
-.loginModal__footerLink {
+.registerModal__footerLink {
   margin-left: 6px;
   padding: 0;
   border: none;
@@ -183,22 +242,27 @@
   cursor: pointer;
 }
 
-.loginModal__footerLink:hover:not(:disabled) {
+.registerModal__footerLink:hover:not(:disabled) {
   color: #b8932a;
 }
 
-@media (max-width: 540px) {
-  .loginModal__card {
+.registerModal__header,
+.registerModal__tabs,
+.registerModal__footer {
+  flex-shrink: 0;
+}
+
+@media (max-width: 640px) {
+  .registerModal__card {
     padding: 24px;
     border-radius: 18px;
   }
 
-  .loginModal__title {
+  .registerModal__title {
     font-size: 28px;
   }
 
-  .loginModal__helperRow {
+  .registerModal__row {
     flex-direction: column;
-    align-items: flex-start;
   }
 }
