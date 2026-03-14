@@ -1,87 +1,194 @@
-🟦 StudioPulse
-🎵 Modern Practice & Assignment Web App for Private Music Studios
+# StudioPulse Frontend (SP-react)
 
-Live Demo: https://studiopulse.co
+StudioPulse is a modern web platform designed to help private music teachers manage students, track lesson progress, and organize exam preparation.
 
-StudioPulse streamlines communication between teachers, students, and parents — structuring the learning process, reducing administrative overhead, and making musical progress crystal-clear.
+This repository contains the **React frontend application**.
 
-This repository contains the frontend (React) portion of the app.
-The companion backend (Express/MongoDB) repo handles authentication, data storage, and secure API proxying.
+🔗 Live Application  
+https://studiopulse.co
 
-🎯 Project Goals
+🔗 Backend API  
+https://api.studiopulse.co
 
-1. Structure and simplify the music learning process
-2. Minimize teacher time spent assigning and checking homework
-3. Facilitate evaluation and progress tracking
-4. Provide clear, real-time progress reports to parents
-5. Improve exam and recital readiness
-6. Increase student motivation and practice effectiveness
+---
 
-💻 Key Features
+# Overview
 
-- **Secure Authentication:** Sign up and sign in for students and parents
-- **Profile Page:** Displays personalized reminders and progress updates
-- **Sidebar Navigation:**
-  - Current Homework (Scales, Pieces A–C, Sight Reading, Aural Training)
-  - Practice Tools (Calendar, Metronome, Timer)
-  - History (Practice Log, Repertoire, Performance History)
-- **Dynamic Assignments:** Interactive task lists, detailed practice notes, and tempo tracking
-- **Media Uploads:** Students can submit photos or short videos of homework
-- **Chat & Feedback:** Built-in space for teacher comments and student questions
-- **Responsive UI:** Designed for desktop and mobile use
+StudioPulse improves communication and organization between **teachers, students, and parents** by structuring lesson preparation and progress tracking.
 
-🧩 Tech Stack
+The platform helps teachers:
 
-Frontend:
+- track student progress
+- manage lesson materials
+- prepare students for music exams
+- keep parents informed about progress
 
-- React + Vite
+---
 
+# Core Features
+
+### Authentication
+
+Secure signup and login using **JWT authentication via HTTP-only cookies**.
+
+Supported roles:
+
+- Teacher
+- Parent
+- Student
+- Admin
+
+---
+
+### Teacher Dashboard
+
+Teachers can:
+
+- view their students
+- create new students
+- access detailed student profiles
+- track lesson progress
+
+---
+
+### Student Information View
+
+Displays:
+
+- student information
+- parent contact information
+- teacher assignment
+- exam preparation details
+
+---
+
+### Lesson Progress Tracking
+
+Teachers can record progress for:
+
+- Pieces (A–C)
+- Scales
+- Sight Reading
+- Aural Training
+
+Each lesson stores detailed performance metrics and notes.
+
+---
+
+### Score History
+
+Progress history is stored and displayed for:
+
+- exam preparation tracking
+- long-term student development
+- parent visibility
+
+---
+
+# Technology Stack
+
+Frontend
+
+- React
+- Vite
 - React Router
+- CSS Modules
+- Framer Motion
 
-- CSS Modules (BEM structure)
+Backend (separate repository)
 
-- Framer Motion animations
+- Node.js
+- Express
+- MongoDB
+- Mongoose
+- JWT Authentication
 
-- Deployed on Ubuntu server with Nginx
+Backend Repository
 
-Backend:
+https://github.com/FaridaNelson/SP-express
 
-- Node.js / Express
+---
 
-- MongoDB with Mongoose
+# Project Structure
 
-- JWT authentication via secure cookies
+src
+├ components
+├ pages
+├ contexts
+├ services
+├ utils
+└ assets
 
-- Hosted at: https://api.studiopulse.co
+The frontend communicates with the backend through REST APIs exposed by **SP-express**.
 
-🚀 Deployment
+---
 
-Frontend: Served via Nginx on https://studiopulse.co
+# Local Development
 
-Backend: Reverse-proxied via Nginx on https://api.studiopulse.co
+Install dependencies:
 
-SSL: Let’s Encrypt managed certificates
+npm install
 
-Process Management: PM2
+Run development server:
 
-🧠 Concept
+npm run dev
 
-At the heart of StudioPulse lies the “Triangle of Success” —
-a pedagogical framework uniting teacher, student, and parent collaboration for measurable growth and motivation.
+Default development URL:
 
-🎓 About the Project
+http://localhost:5173
 
-StudioPulse is the Final Capstone Project for the
-TripleTen Software Engineering Bootcamp.
+The frontend expects the backend API running locally or at:
 
-Frontend Repository: github.com/FaridaNelson/SP-react
+https://api.studiopulse.co
 
-Backend Repository: github.com/FaridaNelson/SP-express
+---
 
-👩‍💻 Author
+# Production Deployment
 
-Farida Nelson
-Founder of Farida Nelson Music LLC and Farida Nelson Digital Solutions LLC
+Frontend is served through **Nginx** on an Ubuntu VM.
+
+Build application:
+
+npm run build
+
+Deploy build:
+
+sudo rm -rf /var/www/studiopulse.co/_
+sudo cp -r dist/_ /var/www/studiopulse.co/
+sudo systemctl reload nginx
+
+---
+
+# Project Origin
+
+StudioPulse was created to solve real workflow challenges in private music studios.
+
+The platform is designed to reduce administrative overhead while giving teachers, students, and parents a clear view of musical progress.
+
+---
+
+# Contributors
+
+**Farida Nelson**  
+Full-Stack Development, Backend Architecture, API Design, System Integration, Product Logic
+
+**Dilara Swain**  
+UX/UI Design, User Experience Strategy, and User Workflow Design
+
+StudioPulse combines software engineering and user-centered design to build a practical platform for music education.
+
+---
+
+# Author
+
+Farida Nelson  
 Software Engineer | Music Educator | Performer
-🔗 LinkedIn
-| 🌐 studiopulse.co
+
+Founder – Farida Nelson Music LLC  
+Founder – Farida Nelson Digital Solutions LLC
+
+LinkedIn  
+https://linkedin.com/in/farida-nelson
+
+Website  
+https://studiopulse.co
