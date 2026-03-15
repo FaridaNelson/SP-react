@@ -25,6 +25,14 @@ The platform helps teachers:
 
 ---
 
+## Screenshots
+
+![Teacher Dashboard](screenshots/teacherDashboard-examCycle.png)
+
+![Sign Up Form with Terms of Service and Privacy Policy](screenshots/registrationModal.png)
+
+![Home Page](screenshots/homePage.png)
+
 # Core Features
 
 ### Authentication
