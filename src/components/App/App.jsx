@@ -212,7 +212,9 @@ export default function App() {
       <ConfirmationModal
         isOpen={confirmSignOutOpen}
         title="Sign Out"
-        message="Are you sure you want to sign out?"
+        message={
+          "Are you sure you want to sign out?\nYour progress is saved automatically."
+        }
         confirmText="Sign out"
         cancelText="Stay signed in"
         onConfirm={async () => {

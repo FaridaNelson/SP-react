@@ -113,7 +113,7 @@ export default function Home({ onSignUp }) {
                       <div className="sp-donut-center">
                         <div className="sp-donut-center__pct">74</div>
                         <div className="sp-donut-center__sub">overall</div>
-                        <div className="sp-donut-center__pass">pass: 67%</div>
+                        <div className="sp-donut-center__pass">ready: 67%</div>
                       </div>
                     </div>
 
@@ -222,7 +222,7 @@ export default function Home({ onSignUp }) {
             ))}
 
             <div className="sp-skill-footer">
-              <div className="sp-skill-marker-label">PASS</div>
+              <div className="sp-skill-marker-label">READY</div>
             </div>
           </div>
         </div>
