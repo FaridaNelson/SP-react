@@ -489,3 +489,21 @@
   background: linear-gradient(180deg, var(--td-gold), var(--td-gold-2));
   border-color: rgba(0, 0, 0, 0.18);
 }
+
+/* ── Progress history view ── */
+
+.td__historyView {
+  padding: 18px;
+}
+
+.td__historyHead {
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--td-line);
+}
+
+.td__historyTitle {
+  margin: 0;
+  font: 500 22px/1 var(--td-serif);
+  color: var(--td-ink);
+}

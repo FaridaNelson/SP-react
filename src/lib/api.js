@@ -5,7 +5,6 @@ export async function api(path, options = {}) {
     method = "GET",
     body,
     headers: optHeaders = {},
-    auth = true,
     expectUnauthorized = false,
     ...rest
   } = options;
@@ -23,11 +22,6 @@ export async function api(path, options = {}) {
     body != null && !isFormData && !isBlob && typeof body !== "string";
   if (shouldJson && !headers["Content-Type"]) {
     headers["Content-Type"] = "application/json";
-  }
-
-  if (auth && !headers.Authorization) {
-    const token = localStorage.getItem("token");
-    if (token) headers.Authorization = `Bearer ${token}`;
   }
 
   const opts = {

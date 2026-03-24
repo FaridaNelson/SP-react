@@ -1,0 +1,206 @@
+/* ── Overlay (matches ConfirmationModal pattern) ── */
+
+.eca__overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1400;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: rgba(28, 26, 23, 0.55);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease;
+}
+
+.eca__overlay.open {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* ── Panel ── */
+
+.eca__panel {
+  width: min(480px, 92vw);
+  background: var(--warm-white, #fdf9f4);
+  border-radius: 16px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  transform: scale(0.96);
+  opacity: 0;
+  animation: ecaIn 0.25s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+@keyframes ecaIn {
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* ── Body ── */
+
+.eca__body {
+  padding: 32px 28px 24px;
+}
+
+.eca__title {
+  margin: 0 0 8px;
+  font-family: var(--font-serif, "Cormorant Garamond", serif);
+  font-size: 26px;
+  font-weight: 600;
+  color: var(--ink, #1c1a17);
+  line-height: 1.1;
+}
+
+.eca__subtitle {
+  margin: 0 0 24px;
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--ink-muted, #7a766d);
+}
+
+/* ── Fields ── */
+
+.eca__field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 18px;
+}
+
+.eca__label {
+  font: 600 12px/1.2 var(--font-sans, "DM Sans", sans-serif);
+  color: rgba(31, 28, 24, 0.7);
+}
+
+.eca__input {
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: 1px solid rgba(31, 28, 24, 0.14);
+  background: rgba(255, 255, 255, 0.85);
+  color: rgba(31, 28, 24, 0.92);
+  font: inherit;
+  font-size: 14px;
+  outline: none;
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+.eca__input:focus {
+  border-color: rgba(201, 168, 76, 0.55);
+  box-shadow: 0 0 0 3px rgba(201, 168, 76, 0.16);
+}
+
+.eca__textarea {
+  resize: vertical;
+  min-height: 60px;
+}
+
+/* ── Yes/No toggle ── */
+
+.eca__toggleRow {
+  display: flex;
+  gap: 8px;
+}
+
+.eca__toggle {
+  padding: 8px 20px;
+  border-radius: 10px;
+  border: 1px solid var(--border-soft, rgba(28, 26, 23, 0.1));
+  background: rgba(255, 255, 255, 0.6);
+  cursor: pointer;
+  font: 500 13px/1 var(--font-sans, "DM Sans", sans-serif);
+  color: var(--ink-soft, #3d3a34);
+  transition:
+    background 0.15s ease,
+    border-color 0.15s ease;
+}
+
+.eca__toggle:hover {
+  background: rgba(255, 255, 255, 0.85);
+}
+
+.eca__toggle--active {
+  background: var(--gold-pale, #f5edd0);
+  border-color: var(--gold, #c9a84c);
+  color: var(--ink, #1c1a17);
+}
+
+/* ── Error ── */
+
+.eca__error {
+  margin: 0 0 14px;
+  color: #b00020;
+  font: 600 13px/1.3 var(--font-sans, "DM Sans", sans-serif);
+}
+
+/* ── Actions ── */
+
+.eca__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  padding-top: 8px;
+}
+
+.eca__btn {
+  padding: 10px 20px;
+  border-radius: 10px;
+  border: 1px solid rgba(31, 28, 24, 0.16);
+  background: rgba(255, 255, 255, 0.85);
+  cursor: pointer;
+  font: 600 14px/1 var(--font-sans, "DM Sans", sans-serif);
+  transition:
+    background 0.15s ease,
+    color 0.15s ease;
+}
+
+.eca__btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.eca__btn--sage {
+  background: var(--sage, #7a9e87);
+  color: white;
+  border: none;
+}
+
+.eca__btn--sage:hover:not(:disabled) {
+  background: #6b8e78;
+}
+
+.eca__btn--rose {
+  background: var(--rose, #d4806a);
+  color: white;
+  border: none;
+}
+
+.eca__btn--rose:hover:not(:disabled) {
+  background: #c56f5a;
+}
+
+/* ── Responsive ── */
+
+@media (max-width: 560px) {
+  .eca__body {
+    padding: 24px 20px 20px;
+  }
+
+  .eca__title {
+    font-size: 22px;
+  }
+
+  .eca__actions {
+    flex-direction: column;
+  }
+
+  .eca__btn {
+    width: 100%;
+  }
+}

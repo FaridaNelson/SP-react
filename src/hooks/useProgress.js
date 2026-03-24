@@ -14,14 +14,11 @@ export function useProgress(studentId, { scope = "teacher" } = {}) {
   const [items, setItems] = useState(DEFAULT_ITEMS);
   const [isLoading, setIsLoading] = useState(true);
 
-  // NEW: history state
   const [history, setHistory] = useState([]);
   const [historyLoading, setHistoryLoading] = useState(false);
 
-  const base =
-    scope === "parent" ? "/api/parent/students" : "/api/teacher/students";
-
-  // Load snapshot progress
+  // Progress snapshot — GET /api/students/:studentId (teacher)
+  // or GET /api/parent/students/:id/progress (parent)
   useEffect(() => {
     let alive = true;
 
@@ -36,9 +33,20 @@ export function useProgress(studentId, { scope = "teacher" } = {}) {
     (async () => {
       try {
         setIsLoading(true);
-        const data = await api(`${base}/${studentId}/progress`);
+
+        let data;
+        if (scope === "parent") {
+          data = await api(`/api/parent/students/${studentId}/progress`);
+        } else {
+          data = await api(`/api/students/${studentId}`);
+        }
+
         if (!alive) return;
-        setItems(data?.items?.length ? data.items : DEFAULT_ITEMS);
+
+        // The student record may carry progressSummary or items
+        const progressItems =
+          data?.progressSummary?.items || data?.items || null;
+        setItems(progressItems?.length ? progressItems : DEFAULT_ITEMS);
       } catch {
         if (alive) setItems(DEFAULT_ITEMS);
       } finally {
@@ -49,40 +57,51 @@ export function useProgress(studentId, { scope = "teacher" } = {}) {
     return () => {
       alive = false;
     };
-  }, [studentId, base]);
+  }, [studentId, scope]);
 
+  // Save scores — POST /api/score-entries/
   const saveScores = useCallback(
     async (nextItems) => {
       setItems(nextItems); // optimistic
       try {
         if (!studentId) return;
-        await api(`${base}/${studentId}/progress`, {
-          method: "POST",
-          body: { items: nextItems },
-        });
+
+        // Send each item as an individual score entry
+        const promises = nextItems
+          .filter((it) => it.score != null && it.score > 0)
+          .map((it) =>
+            api("/api/score-entries/", {
+              method: "POST",
+              body: {
+                studentId,
+                elementId: it.id,
+                score: it.score,
+              },
+            }),
+          );
+        await Promise.all(promises);
       } catch {
         // TODO: toast/rollback
       }
     },
-    [studentId, base],
+    [studentId],
   );
 
-  // NEW: fetch history on demand (button click)
+  // Fetch score history — GET /api/score-entries/student/:studentId
   const fetchHistory = useCallback(async () => {
     if (!studentId) return;
     setHistoryLoading(true);
     try {
-      const data = await api(`${base}/${studentId}/scores`);
-      // accept either { items: [...] } or [...]
+      const data = await api(`/api/score-entries/student/${studentId}`);
       setHistory(Array.isArray(data) ? data : (data?.items ?? []));
     } catch {
       setHistory([]);
     } finally {
       setHistoryLoading(false);
     }
-  }, [studentId, base]);
+  }, [studentId]);
 
-  // NEW: add entries from AddScoreModal (bulk)
+  // Add score entries (bulk) — POST /api/score-entries/
   const addScoreEntries = useCallback(
     async (entries) => {
       if (!studentId) return;
@@ -90,15 +109,21 @@ export function useProgress(studentId, { scope = "teacher" } = {}) {
       // optimistic prepend for immediate UI
       setHistory((prev) => [...entries, ...prev]);
 
-      await api(`${base}/${studentId}/scores`, {
-        method: "POST",
-        body: { entries },
-      });
+      const promises = entries.map((entry) =>
+        api("/api/score-entries/", {
+          method: "POST",
+          body: {
+            studentId,
+            ...entry,
+          },
+        }),
+      );
+      await Promise.all(promises);
 
       // refresh history after save (keeps server timestamps as truth)
       await fetchHistory();
     },
-    [studentId, base, fetchHistory],
+    [studentId, fetchHistory],
   );
 
   return {
@@ -107,7 +132,6 @@ export function useProgress(studentId, { scope = "teacher" } = {}) {
     saveScores,
     isLoading,
 
-    // NEW exports
     history,
     historyLoading,
     fetchHistory,

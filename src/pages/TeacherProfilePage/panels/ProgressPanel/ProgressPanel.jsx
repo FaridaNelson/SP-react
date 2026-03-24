@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { PIECES } from "./TodayProgress/progressConfig";
+import { ALL_PIECES, PIECES } from "./TodayProgress/progressConfig";
 import { mergeOnePieceAndRecompute } from "./TodayProgress/lessonMerge";
 import "./ProgressPanel.css";
 import { getMissingPieceCriteria } from "./TodayProgress/scoreMath";
@@ -26,6 +26,7 @@ export default function ProgressPanel({
   items = [],
   onSaveScores,
   onLessonSaved,
+  activeCycle,
 }) {
   const [lessonDate, setLessonDate] = useState(() =>
     new Date().toISOString().slice(0, 10),
@@ -34,6 +35,33 @@ export default function ProgressPanel({
   const [latestLesson, setLatestLesson] = useState(null);
   const [pieceErrors, setPieceErrors] = useState({});
   // { [pieceId]: string[] missingCriterionIds } - used to show validation errors if user tries to save without filling all criteria scores
+
+  // Determine which elements to show based on active cycle's examType
+  const isPerformance = activeCycle?.examType === "Performance";
+  const requiredElements = activeCycle?.progressSummary?.requiredElements || [];
+
+  // Build piece list: 4 pieces for Performance, 3 for Practical
+  // Overlay piece names from the cycle if available
+  const cyclePieces = activeCycle?.pieces || [];
+  const activePieces = useMemo(() => {
+    const base = isPerformance ? ALL_PIECES : PIECES;
+    // Only show pieces that are in requiredElements (if available)
+    const filtered = requiredElements.length > 0
+      ? base.filter((p) => requiredElements.includes(p.id))
+      : base;
+    return filtered.map((p) => {
+      const match = cyclePieces.find((cp) => cp.key === p.id || cp.label === p.title);
+      const pieceName = match?.title || "";
+      return {
+        ...p,
+        title: pieceName ? `${p.title}: ${pieceName}` : p.title,
+      };
+    });
+  }, [isPerformance, requiredElements, cyclePieces]);
+
+  const showScales = !isPerformance && (requiredElements.length === 0 || requiredElements.includes("scales"));
+  const showSightReading = !isPerformance && (requiredElements.length === 0 || requiredElements.includes("sightReading"));
+  const showAural = !isPerformance && (requiredElements.length === 0 || requiredElements.includes("auralTraining"));
 
   // Scales curriculum for this student (used to show scale names and which scales are relevant for this student's grade level)
   const gradeScales = useMemo(() => {
@@ -156,11 +184,11 @@ export default function ProgressPanel({
   // --- computed piece percent scores (0..100) based on criteria 0..6 ---
   const piecePercents = useMemo(() => {
     const out = {};
-    for (const p of PIECES) {
+    for (const p of activePieces) {
       out[p.id] = computePiecePercent(pieces?.[p.id], p.criteria);
     }
     return out;
-  }, [pieces, PIECES]);
+  }, [pieces, activePieces]);
 
   // --- computed overall “scales percent” (0..100) ---
   const scalesPercent = useMemo(() => computeScalesPercent(scales), [scales]);
@@ -177,7 +205,7 @@ export default function ProgressPanel({
       return;
     }
 
-    const pieceDef = PIECES.find((p) => p.id === pieceId);
+    const pieceDef = activePieces.find((p) => p.id === pieceId);
     if (!pieceDef) {
       setErr("Unknown piece");
       return;
@@ -214,7 +242,7 @@ export default function ProgressPanel({
         pieceId,
         piecesDraft: pieces,
         latestLesson,
-        piecesDef: PIECES,
+        piecesDef: activePieces,
       });
 
       // Update progress snapshot (Phase 1)
@@ -266,7 +294,7 @@ export default function ProgressPanel({
 
     // REQUIRED: all criteria for each piece must be filled
     const nextErrors = {};
-    for (const p of PIECES) {
+    for (const p of activePieces) {
       const missing = getMissingPieceCriteria(pieces?.[p.id], p.criteria);
       if (missing.length) nextErrors[p.id] = missing;
     }
@@ -285,14 +313,18 @@ export default function ProgressPanel({
       setBusy(true);
 
       // 1) Update your EXISTING progress snapshot items (Phase 1)
-      const nextItems = mergeIntoProgressItems(items, {
-        scales: scalesPercent,
+      const scoreMap = {
         pieceA: piecePercents.pieceA,
         pieceB: piecePercents.pieceB,
         pieceC: piecePercents.pieceC,
-        sightReading: sight.score ?? null,
-        auralTraining: aural.score ?? null,
-      });
+      };
+      if (isPerformance) {
+        scoreMap.pieceD = piecePercents.pieceD;
+      }
+      if (showScales) scoreMap.scales = scalesPercent;
+      if (showSightReading) scoreMap.sightReading = sight.score ?? null;
+      if (showAural) scoreMap.auralTraining = aural.score ?? null;
+      const nextItems = mergeIntoProgressItems(items, scoreMap);
 
       if (onSaveScores) {
         await onSaveScores(nextItems);
@@ -420,7 +452,7 @@ export default function ProgressPanel({
           <section className="pp__section">
             <h3 className="pp__h3">Pieces</h3>
 
-            {PIECES.map((p) => (
+            {activePieces.map((p) => (
               <PieceCard
                 idPrefix={`piece-${p.id}`} // for accessibility; optional but better
                 key={p.id}
@@ -469,48 +501,54 @@ export default function ProgressPanel({
             ))}
           </section>
 
-          {/* Scales */}
-          <section className="pp__section">
-            <h3 className="pp__h3">Scales</h3>
+          {/* Scales — Practical only */}
+          {showScales && (
+            <section className="pp__section">
+              <h3 className="pp__h3">Scales</h3>
 
-            <ScalesCard
-              title="Scales"
-              scalesDef={gradeScales}
-              value={scales}
-              last={lastScalesMap}
-              percent={scalesPercent}
-              lastWeekPercent={lastScalesPercent}
+              <ScalesCard
+                title="Scales"
+                scalesDef={gradeScales}
+                value={scales}
+                last={lastScalesMap}
+                percent={scalesPercent}
+                lastWeekPercent={lastScalesPercent}
+                disabled={busy}
+                onSetReady={(scaleId, isReady) =>
+                  setScales((prev) => ({
+                    ...prev,
+                    [scaleId]: { ...(prev[scaleId] || {}), ready: isReady },
+                  }))
+                }
+                onSetNote={(scaleId, note) =>
+                  setScales((prev) => ({
+                    ...prev,
+                    [scaleId]: { ...(prev[scaleId] || {}), note },
+                  }))
+                }
+              />
+            </section>
+          )}
+
+          {showSightReading && (
+            <SightreadingCard
+              idPrefix={`sight-${studentId}-${lessonDate}`}
+              value={sight}
+              last={lastSight}
               disabled={busy}
-              onSetReady={(scaleId, isReady) =>
-                setScales((prev) => ({
-                  ...prev,
-                  [scaleId]: { ...(prev[scaleId] || {}), ready: isReady },
-                }))
-              }
-              onSetNote={(scaleId, note) =>
-                setScales((prev) => ({
-                  ...prev,
-                  [scaleId]: { ...(prev[scaleId] || {}), note },
-                }))
-              }
+              onChange={(k, v) => setSight((prev) => ({ ...prev, [k]: v }))}
             />
-          </section>
+          )}
 
-          <SightreadingCard
-            idPrefix={`sight-${studentId}-${lessonDate}`} // for accessibility; optional but better
-            value={sight}
-            last={lastSight}
-            disabled={busy}
-            onChange={(k, v) => setSight((prev) => ({ ...prev, [k]: v }))}
-          />
-
-          <AuralCard
-            idPrefix={`aural-${studentId}-${lessonDate}`} // for accessibility; optional but better
-            value={aural}
-            last={lastAural}
-            disabled={busy}
-            onChange={(k, v) => setAural((prev) => ({ ...prev, [k]: v }))}
-          />
+          {showAural && (
+            <AuralCard
+              idPrefix={`aural-${studentId}-${lessonDate}`}
+              value={aural}
+              last={lastAural}
+              disabled={busy}
+              onChange={(k, v) => setAural((prev) => ({ ...prev, [k]: v }))}
+            />
+          )}
 
           {/* Teacher narrative */}
           <section className="pp__section">

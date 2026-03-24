@@ -1,0 +1,186 @@
+.ecl {
+  width: 100%;
+}
+
+.ecl__loading,
+.ecl__error,
+.ecl__empty {
+  padding: 16px 0;
+  font: 500 13px/1.4 var(--font-sans, "DM Sans", sans-serif);
+  color: var(--ink-muted, #7a766d);
+}
+
+.ecl__error {
+  color: var(--rose, #d4806a);
+}
+
+/* ── List ── */
+
+.ecl__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* ── Card ── */
+
+.ecl__card {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+  padding: 14px 16px;
+  border-radius: 14px;
+  border: 1px solid var(--border-soft, rgba(28, 26, 23, 0.1));
+  background: rgba(255, 255, 255, 0.55);
+  cursor: pointer;
+  text-align: left;
+  transition:
+    background 0.15s ease,
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+.ecl__card:hover {
+  background: rgba(255, 255, 255, 0.85);
+  border-color: var(--gold-light, #e8d49a);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+}
+
+/* ── Card top row ── */
+
+.ecl__cardTop {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.ecl__info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.ecl__instrument {
+  font: 600 13px/1 var(--font-sans, "DM Sans", sans-serif);
+  color: var(--ink, #1c1a17);
+}
+
+.ecl__type {
+  font: 400 12px/1 var(--font-sans, "DM Sans", sans-serif);
+  color: var(--ink-muted, #7a766d);
+}
+
+/* ── Status badges ── */
+
+.ecl__badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font: 600 11px/1 var(--font-sans, "DM Sans", sans-serif);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.ecl__badge--current {
+  background: var(--gold-pale, #f5edd0);
+  color: var(--gold, #c9a84c);
+}
+
+.ecl__badge--completed {
+  background: var(--sage-pale, #ebf3ee);
+  color: var(--sage, #7a9e87);
+}
+
+.ecl__badge--withdrawn {
+  background: rgba(212, 128, 106, 0.12);
+  color: var(--rose, #d4806a);
+}
+
+.ecl__badge--registered {
+  background: rgba(28, 26, 23, 0.06);
+  color: var(--ink-muted, #7a766d);
+}
+
+/* ── Card body ── */
+
+.ecl__cardBody {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.ecl__grade {
+  font-family: var(--font-serif, "Cormorant Garamond", serif);
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--ink, #1c1a17);
+}
+
+.ecl__gradeNum {
+  color: var(--gold, #c9a84c);
+}
+
+.ecl__date {
+  font: 400 12px/1 var(--font-sans, "DM Sans", sans-serif);
+  color: var(--ink-muted, #7a766d);
+}
+
+/* ── Readiness bar ── */
+
+.ecl__readiness {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+  min-width: 100px;
+}
+
+.ecl__readinessBar {
+  flex: 1;
+  height: 6px;
+  border-radius: 3px;
+  background: var(--border-soft, rgba(28, 26, 23, 0.1));
+  overflow: hidden;
+}
+
+.ecl__readinessFill {
+  height: 100%;
+  border-radius: 3px;
+  background: var(--gold, #c9a84c);
+  transition: width 0.3s ease;
+}
+
+.ecl__readinessPct {
+  font: 600 12px/1 var(--font-sans, "DM Sans", sans-serif);
+  color: var(--ink-soft, #3d3a34);
+  min-width: 32px;
+  text-align: right;
+}
+
+/* ── Card footer ── */
+
+.ecl__cardFooter {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding-top: 8px;
+  border-top: 1px solid var(--border-soft, rgba(28, 26, 23, 0.08));
+}
+
+.ecl__result {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.ecl__resultItem {
+  font: 500 12px/1 var(--font-sans, "DM Sans", sans-serif);
+  color: var(--sage, #7a9e87);
+}

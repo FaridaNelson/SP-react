@@ -131,6 +131,13 @@
   word-break: break-word;
 }
 
+.siv__helper {
+  margin-top: 4px;
+  font: 400 11px/1.3 var(--td-sans);
+  color: rgba(31, 28, 24, 0.4);
+  font-style: italic;
+}
+
 .siv__value--serif {
   font: 500 28px/1.05 var(--font-serif);
   color: rgba(31, 28, 24, 0.92);
@@ -159,6 +166,119 @@
   .siv__grid--2 {
     grid-template-columns: 1fr;
   }
+}
+
+/* ── Inline editing ── */
+
+.siv__valueWrap {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  position: relative;
+}
+
+.siv__pencilBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2px;
+  border: none;
+  background: none;
+  cursor: pointer;
+  color: rgba(31, 28, 24, 0.35);
+  opacity: 0;
+  transition: opacity 0.15s ease;
+}
+
+.siv__field:hover .siv__pencilBtn {
+  opacity: 1;
+}
+
+.siv__pencilBtn:hover {
+  color: rgba(31, 28, 24, 0.7);
+}
+
+.siv__pencilSvg {
+  display: block;
+}
+
+.siv__editRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.siv__editInput {
+  font: 500 16px/1.45 var(--td-sans);
+  color: var(--td-ink);
+  padding: 4px 8px;
+  border: 1px solid rgba(31, 28, 24, 0.2);
+  border-radius: 8px;
+  background: #fff;
+  outline: none;
+  min-width: 80px;
+  max-width: 220px;
+}
+
+.siv__editInput--serif {
+  font: 500 22px/1.1 var(--font-serif);
+  color: rgba(31, 28, 24, 0.92);
+}
+
+.siv__editInput:focus {
+  border-color: var(--gold, #C9A84C);
+  box-shadow: 0 0 0 2px rgba(201, 168, 76, 0.18);
+}
+
+.siv__saveBtn {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 12px;
+  border: none;
+  border-radius: 6px;
+  background: var(--gold, #C9A84C);
+  color: #1a1406;
+  font: 600 12px/1 var(--td-sans);
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.siv__saveBtn:hover {
+  filter: brightness(1.05);
+}
+
+.siv__cancelBtn {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 8px;
+  border: none;
+  background: none;
+  color: rgba(31, 28, 24, 0.5);
+  font: 500 12px/1 var(--td-sans);
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.siv__cancelBtn:hover {
+  color: rgba(31, 28, 24, 0.8);
+}
+
+.siv__statusOk {
+  font: 600 11px/1 var(--td-sans);
+  color: var(--sage, #7A9E87);
+  animation: siv-fade 1.5s ease forwards;
+}
+
+.siv__statusErr {
+  font: 600 11px/1 var(--td-sans);
+  color: var(--rose, #D4806A);
+  animation: siv-fade 2.5s ease forwards;
+}
+
+@keyframes siv-fade {
+  0%, 60% { opacity: 1; }
+  100% { opacity: 0; }
 }
 
 @media (max-width: 720px) {

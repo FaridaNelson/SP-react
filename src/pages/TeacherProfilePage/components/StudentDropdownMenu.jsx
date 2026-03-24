@@ -4,12 +4,14 @@ export default function StudentDropdownMenu({
   studentId,
   onSelectStudent,
   setView,
+  onClearCycle,
 }) {
   return (
     <div className="td__studentDropdown">
       <button
         className="td__studentDropdownItem"
         onClick={() => {
+          onClearCycle?.();
           onSelectStudent?.(studentId);
           setView("snapshot");
         }}
