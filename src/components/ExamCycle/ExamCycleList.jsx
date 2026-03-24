@@ -1,5 +1,9 @@
 import { useEffect, useState } from "react";
 import { listExamCycles } from "../../lib/examCycleApi";
+import {
+  CompleteCycleModal,
+  WithdrawCycleModal,
+} from "./ExamCycleActions";
 import "./ExamCycleList.css";
 
 const STATUS_META = {
@@ -9,10 +13,18 @@ const STATUS_META = {
   withdrawn: { label: "Withdrawn", className: "ecl__badge--withdrawn" },
 };
 
-export default function ExamCycleList({ studentId, onSelect, refreshKey, onCyclesLoaded }) {
+export default function ExamCycleList({
+  studentId,
+  onSelect,
+  refreshKey,
+  onCyclesLoaded,
+  onCycleAction,
+}) {
   const [cycles, setCycles] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [completeTarget, setCompleteTarget] = useState(null);
+  const [withdrawTarget, setWithdrawTarget] = useState(null);
 
   useEffect(() => {
     if (!studentId) {
@@ -72,7 +84,9 @@ export default function ExamCycleList({ studentId, onSelect, refreshKey, onCycle
   if (cycles.length === 0) {
     return (
       <div className="ecl">
-        <div className="ecl__empty">No exam cycles yet.</div>
+        <div className="ecl__empty">
+          No exam cycles yet. Create one to start tracking progress.
+        </div>
       </div>
     );
   }
@@ -89,6 +103,7 @@ export default function ExamCycleList({ studentId, onSelect, refreshKey, onCycle
             progress?.overallReadiness != null
               ? Math.round(progress.overallReadiness)
               : null;
+          const isActive = st === "current" || st === "registered";
 
           return (
             <li key={id} className="ecl__item">
@@ -165,10 +180,57 @@ export default function ExamCycleList({ studentId, onSelect, refreshKey, onCycle
                   )}
                 </div>
               </button>
+
+              {isActive && (
+                <div className="ecl__actions">
+                  <button
+                    type="button"
+                    className="ecl__actionBtn ecl__actionBtn--sage"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setCompleteTarget(c);
+                    }}
+                  >
+                    ✓ Complete Cycle
+                  </button>
+                  <button
+                    type="button"
+                    className="ecl__actionBtn ecl__actionBtn--rose"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setWithdrawTarget(c);
+                    }}
+                  >
+                    ✗ Withdraw
+                  </button>
+                </div>
+              )}
             </li>
           );
         })}
       </ul>
+
+      {completeTarget && (
+        <CompleteCycleModal
+          cycle={completeTarget}
+          onClose={() => setCompleteTarget(null)}
+          onSuccess={() => {
+            setCompleteTarget(null);
+            onCycleAction?.("Exam cycle completed", "success");
+          }}
+        />
+      )}
+
+      {withdrawTarget && (
+        <WithdrawCycleModal
+          cycle={withdrawTarget}
+          onClose={() => setWithdrawTarget(null)}
+          onSuccess={() => {
+            setWithdrawTarget(null);
+            onCycleAction?.("Exam cycle withdrawn", "warning");
+          }}
+        />
+      )}
     </div>
   );
 }

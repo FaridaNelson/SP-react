@@ -555,6 +555,12 @@ export default function TeacherDashboard({
                   setView("snapshot");
                 }}
                 onCyclesLoaded={() => {}}
+                onCycleAction={(message, variant) => {
+                  setHistoryRefreshKey((k) => k + 1);
+                  // Clear selected cycle so snapshot re-fetches active
+                  setSelectedCycle(null);
+                  showToast(message, variant);
+                }}
               />
 
               {historyWizardOpen && (
