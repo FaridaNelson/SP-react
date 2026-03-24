@@ -1,16 +1,33 @@
 import { useMemo, useState } from "react";
 import ProgressDonut from "../../../components/ProgressDonut/ProgressDonut";
 import AssignmentBreakdown from "../../../components/AssignmentBreakdown/AssignmentBreakdown";
-import {
-  CompleteCycleModal,
-  WithdrawCycleModal,
-} from "../../../components/ExamCycle/ExamCycleActions";
+import CycleCompleteWizard from "../../../components/ExamCycle/CycleCompleteWizard";
 import AttendanceCalendar from "../attendance/AttendanceCalendar";
 import { api } from "../../../lib/api";
 import "./TeacherStudentInfo.css";
 
 function cycleStatus(c) {
   return c?.cycleStatus || c?.status || "";
+}
+
+function getExamLabel(cycle) {
+  if (!cycle) return null;
+  const type = cycle.examType;
+  if (type === "Performance") return "Performance Exam";
+  if (cycle.examDate) {
+    const month = new Date(cycle.examDate).getMonth() + 1;
+    return month <= 6 ? "Spring Exam" : "Fall Exam";
+  }
+  return null;
+}
+
+function daysToGo(examDate) {
+  if (!examDate) return null;
+  const now = new Date();
+  now.setHours(0, 0, 0, 0);
+  const target = new Date(examDate);
+  target.setHours(0, 0, 0, 0);
+  return Math.ceil((target - now) / (1000 * 60 * 60 * 24));
 }
 
 export default function TeacherStudentInfo({
@@ -40,8 +57,6 @@ export default function TeacherStudentInfo({
   const [historyLoading, setHistoryLoading] = useState(false);
   const [history, setHistory] = useState([]);
 
-  // initialCycle is resolved by the parent (SelectedStudentPane):
-  // either from the history view click or auto-fetched active cycle
   const activeCycle = initialCycle || null;
   const hasActiveCycle = !!activeCycle;
   const activeCycleId = activeCycle?._id || activeCycle?.id || "";
@@ -53,7 +68,6 @@ export default function TeacherStudentInfo({
 
   const grouped = useMemo(() => {
     const groups = new Map();
-
     for (const h of history) {
       const d = h.lessonDate || h.createdAt;
       const dt = d ? new Date(d) : null;
@@ -63,7 +77,6 @@ export default function TeacherStudentInfo({
       if (!groups.has(key)) groups.set(key, []);
       groups.get(key).push(h);
     }
-
     return Array.from(groups.entries())
       .sort((a, b) => (a[0] < b[0] ? 1 : -1))
       .map(([date, entries]) => ({
@@ -99,7 +112,7 @@ export default function TeacherStudentInfo({
     );
   }
 
-  // Element label mapping for requiredElements-driven display
+  // Element label mapping
   const ELEMENT_LABELS = {
     pieceA: "Piece A",
     pieceB: "Piece B",
@@ -115,26 +128,22 @@ export default function TeacherStudentInfo({
     "scales", "sightReading", "auralTraining",
   ];
 
-  const requiredElements =
-    activeCycle?.progressSummary?.requiredElements;
+  const requiredElements = activeCycle?.progressSummary?.requiredElements;
   const elementIds =
     Array.isArray(requiredElements) && requiredElements.length > 0
       ? requiredElements
-      : ALL_ELEMENT_IDS.filter((id) => id !== "pieceD"); // safe default: 3 pieces + 3 components
+      : ALL_ELEMENT_IDS.filter((id) => id !== "pieceD");
 
-  // Build the pill list for the donut card from the same source of truth
   const pillElements = elementIds.map((id) => ({
     id,
     label: ELEMENT_LABELS[id] || id,
   }));
 
-  // Filter items for AssignmentBreakdown to only show relevant elements
   const filteredItems = useMemo(() => {
     const latestScores = activeCycle?.progressSummary?.latestScores || {};
     return elementIds.map((id) => {
       const existing = items.find((it) => it.id === id);
       if (existing) return existing;
-      // Fallback: build from latestScores on the cycle
       return {
         id,
         label: ELEMENT_LABELS[id] || id,
@@ -144,11 +153,9 @@ export default function TeacherStudentInfo({
     });
   }, [items, elementIds, activeCycle]);
 
-  const inviteCode = (student.inviteCode || "").toString().toUpperCase();
-  const email = student.email || "";
-  const pcs = student.parentContactSnapshot || {};
-  const parentName = [pcs.firstName, pcs.lastName].filter(Boolean).join(" ") || "";
-  const parentEmail = pcs.email || "";
+  // Exam card derived data
+  const examLabel = getExamLabel(activeCycle);
+  const days = daysToGo(activeCycle?.examDate);
 
   return (
     <section className="teacherStudentInfo">
@@ -167,7 +174,7 @@ export default function TeacherStudentInfo({
         </div>
 
         <div className="tsi__pageActions">
-          {!isActiveCycleReadOnly && (
+          {!isActiveCycleReadOnly && hasActiveCycle && (
             <>
               <button type="button" className="td__pillBtn">
                 <span className="td__pillIcon">📅</span> Schedule a lesson
@@ -182,7 +189,7 @@ export default function TeacherStudentInfo({
                 className="td__pillBtn td__pillBtn--gold"
                 onClick={onOpenProgress}
               >
-                ✏️ Today’s progress
+                ✏️ Today's progress
               </button>
             </>
           )}
@@ -218,16 +225,35 @@ export default function TeacherStudentInfo({
 
           {hasActiveCycle && (
             <>
-              {/* Exam progress donut */}
+              {/* Exam progress donut — enriched */}
               <section className="tsi__cardPaper tsi__examCard tsi__examCard--dark">
-                <div className="tsi__kicker">
-                  Exam progress
-                  {isActiveCycleReadOnly && (
-                    <span className="tsi__readOnlyBadge">
-                      {activeCycleStatus}
-                    </span>
-                  )}
+                {/* Grade + instrument label */}
+                <div className="tsi__examGradeLabel">
+                  GRADE {activeCycle?.examGrade ?? "—"}{" "}
+                  {(activeCycle?.instrument || "Piano").toUpperCase()}
                 </div>
+
+                {/* Exam name */}
+                {examLabel && (
+                  <div className="tsi__examName">{examLabel}</div>
+                )}
+
+                {/* Exam date */}
+                {activeCycle?.examDate && (
+                  <div className="tsi__examDate">
+                    {new Date(activeCycle.examDate).toLocaleDateString("en-GB", {
+                      day: "numeric",
+                      month: "long",
+                      year: "numeric",
+                    })}
+                  </div>
+                )}
+
+                {isActiveCycleReadOnly && (
+                  <span className="tsi__readOnlyBadge">
+                    {activeCycleStatus}
+                  </span>
+                )}
 
                 <div className="tsi__examBody">
                   <div className="tsi__donutWrap">
@@ -271,56 +297,65 @@ export default function TeacherStudentInfo({
                         })}
                       </div>
                     </div>
+
+                    {/* Days to go */}
+                    {days != null && (
+                      <div className="tsi__daysToGo">
+                        {days > 0
+                          ? `${days} DAYS TO GO`
+                          : days === 0
+                            ? "EXAM TODAY"
+                            : "EXAM DATE PASSED"}
+                      </div>
+                    )}
                   </div>
                 </div>
               </section>
 
+              {/* Action buttons — below the exam card */}
+              {!isActiveCycleReadOnly && (
+                <div className="tsi__cycleActions">
+                  <button
+                    type="button"
+                    className="tsi__cycleBtn tsi__cycleBtn--complete"
+                    onClick={() => setCompleteOpen(true)}
+                  >
+                    ✓ Complete this cycle
+                  </button>
+                  <button
+                    type="button"
+                    className="tsi__cycleBtn tsi__cycleBtn--withdraw"
+                    onClick={() => setWithdrawOpen(true)}
+                  >
+                    ✕ Withdraw from this cycle
+                  </button>
+                </div>
+              )}
+
               {/* Homework section - only for active cycles */}
               {!isActiveCycleReadOnly && (
                 <section className="tsi__cardPaper">
-                  <div className="tsi__kicker">This week’s homework</div>
+                  <div className="tsi__kicker">This week's homework</div>
                   <div className="tsi__homeworkEmpty">
                     Homework will show here (coming next).
                   </div>
                 </section>
               )}
-
-              {/* Student info card */}
-              <section className="tsi__cardPaper">
-                <div className="tsi__kicker">Student info</div>
-                <div className="tsi__infocardPaper">
-                  <div className="tsi__infoLine">
-                    <strong>Email:</strong> {email || "—"}
-                  </div>
-                  <div className="tsi__infoLine">
-                    <strong>Invite code:</strong> {inviteCode || "—"}
-                  </div>
-                  <div className="tsi__infoLine">
-                    <strong>Parent:</strong> {parentName || "—"}
-                  </div>
-                  <div className="tsi__infoLine">
-                    <strong>Parent email:</strong> {parentEmail || "—"}
-                  </div>
-                </div>
-              </section>
             </>
           )}
         </div>
 
-        {/* RIGHT COLUMN — when any cycle is active */}
+        {/* RIGHT COLUMN */}
         {hasActiveCycle && (
           <div className="tsi__col">
-            {/* Skill breakdown (your upgraded AssignmentBreakdown) */}
             <AssignmentBreakdown
               items={filteredItems}
-              subtitle="This component compiles progress entered in Today’s progress."
+              subtitle="This component compiles progress entered in Today's progress."
               animateKey={sid}
             />
 
-            {/* Teacher’s note - placeholder until latest lesson is wired */}
             <section className="tsi__cardPaper tsi__noteCard">
-              <div className="tsi__kicker">Teacher’s note</div>
-
+              <div className="tsi__kicker">Teacher's note</div>
               {latestLessonLoading ? (
                 <div className="tsi__noteBody">Loading latest note…</div>
               ) : latestLesson?.teacherNarrative ? (
@@ -329,12 +364,11 @@ export default function TeacherStudentInfo({
                 </div>
               ) : (
                 <div className="tsi__noteBody tsi__muted">
-                  No teacher note yet. Add one in Today’s progress.
+                  No teacher note yet. Add one in Today's progress.
                 </div>
               )}
             </section>
 
-            {/* Next lesson - placeholder */}
             <section className="tsi__cardPaper tsi__nextLesson">
               <div className="tsi__kicker">Next lesson</div>
               <div className="tsi__nextLessonBody">
@@ -342,7 +376,6 @@ export default function TeacherStudentInfo({
               </div>
             </section>
 
-            {/* History toggle can live here */}
             <div className="tsi__historyBar">
               <button
                 className="td__pillBtn"
@@ -389,19 +422,16 @@ export default function TeacherStudentInfo({
                                   ? ` • Tempo: ${h.tempoCurrent}${h.tempoGoal != null ? `/${h.tempoGoal}` : ""}`
                                   : ""}
                               </div>
-
                               {h.dynamics ? (
                                 <div className="tsi__historyNote">
                                   <strong>Dynamics:</strong> {h.dynamics}
                                 </div>
                               ) : null}
-
                               {h.articulation ? (
                                 <div className="tsi__historyNote">
                                   <strong>Articulation:</strong> {h.articulation}
                                 </div>
                               ) : null}
-
                               <div className="tsi__entryTime">
                                 {new Date(
                                   h.createdAt || h.lessonDate,
@@ -430,63 +460,37 @@ export default function TeacherStudentInfo({
       />
 
       {completeOpen && activeCycle && (
-        <CompleteCycleModal
+        <CycleCompleteWizard
           cycle={activeCycle}
+          studentName={displayName}
           onClose={() => setCompleteOpen(false)}
           onSuccess={() => {
             setCompleteOpen(false);
-            onToast?.("Exam cycle completed", "success");
+            onToast?.("Cycle completed", "success");
+          }}
+          onWithdrawSuccess={() => {
+            setCompleteOpen(false);
+            onToast?.("Cycle withdrawn", "warning");
           }}
         />
       )}
 
       {withdrawOpen && activeCycle && (
-        <WithdrawCycleModal
+        <CycleCompleteWizard
           cycle={activeCycle}
+          studentName={displayName}
+          startOnWithdraw
           onClose={() => setWithdrawOpen(false)}
           onSuccess={() => {
             setWithdrawOpen(false);
-            onToast?.("Exam cycle withdrawn", "warning");
+            onToast?.("Cycle completed", "success");
+          }}
+          onWithdrawSuccess={() => {
+            setWithdrawOpen(false);
+            onToast?.("Cycle withdrawn", "warning");
           }}
         />
       )}
     </section>
-  );
-}
-
-function InfoRow({ label, value, copyValue }) {
-  const [copied, setCopied] = useState(false);
-
-  async function copy() {
-    if (!copyValue) return;
-    try {
-      await navigator.clipboard.writeText(copyValue);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 1200);
-    } catch (e) {
-      console.error(e);
-    }
-  }
-
-  return (
-    <div className="tsi__inforow">
-      <div className="tsi__label">{label}</div>
-      <div className="tsi__value">
-        <span className="tsi__text" title={String(value)}>
-          {String(value)}
-        </span>
-        {copyValue && (
-          <button
-            type="button"
-            className="tsi__copybtn"
-            onClick={copy}
-            aria-label={`Copy ${label}`}
-            data-copied={copied || undefined}
-          >
-            {copied ? "Copied" : "Copy"}
-          </button>
-        )}
-      </div>
-    </div>
   );
 }
