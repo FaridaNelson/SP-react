@@ -57,7 +57,7 @@
   justify-content: space-between;
   gap: 8px;
   padding: 10px 16px;
-  background: var(--gold-pale, #F5EDD0);
+  background: var(--gold-pale, #f5edd0);
   border-bottom: 0.5px solid var(--border, rgba(28, 26, 23, 0.1));
 }
 
@@ -144,11 +144,13 @@
   border-radius: 20px;
   font: 500 12px/1 var(--font-sans, "DM Sans", sans-serif);
   cursor: pointer;
-  transition: filter 0.12s ease, background 0.12s ease;
+  transition:
+    filter 0.12s ease,
+    background 0.12s ease;
 }
 
 .ecl__actionBtn--complete {
-  background: #7A9E87;
+  background: #7a9e87;
   color: #ffffff;
   border: none;
 }
@@ -159,7 +161,7 @@
 
 .ecl__actionBtn--withdraw {
   background: transparent;
-  border: 1.5px solid #D4806A;
+  border: 1.5px solid #d4806a;
   color: #8b3a22;
 }
 

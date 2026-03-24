@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Modal from "../Modal/Modal";
+import PasswordInput from "../PasswordInput/PasswordInput";
 import "./RegisterModal.css";
 
 const STUDENT_INSTRUMENTS = ["Piano", "Voice", "Guitar"];
@@ -29,6 +30,8 @@ export default function RegisterModal({
     yearsTeaching: "",
   });
 
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [confirmTouched, setConfirmTouched] = useState(false);
   const [studentId, setStudentId] = useState("");
   const [instrumentsTaught, setInstrumentsTaught] = useState([]);
   const [acceptedTerms, setAcceptedTerms] = useState(false);
@@ -63,6 +66,8 @@ export default function RegisterModal({
         studioName: "",
         yearsTeaching: "",
       });
+      setConfirmPassword("");
+      setConfirmTouched(false);
       setStudentId("");
       setInstrumentsTaught([]);
       setAcceptedTerms(false);
@@ -127,6 +132,12 @@ export default function RegisterModal({
 
     if (password.length < 8) {
       setErr("Password must be at least 8 characters.");
+      return;
+    }
+
+    if (confirmPassword !== password) {
+      setConfirmTouched(true);
+      setErr("Passwords do not match.");
       return;
     }
 
@@ -290,11 +301,10 @@ export default function RegisterModal({
                 />
               </label>
 
-              <label className="registerModal__group">
+              <div className="registerModal__group">
                 <span className="registerModal__label">Password</span>
-                <input
+                <PasswordInput
                   className="registerModal__input"
-                  type="password"
                   placeholder="Create a strong password"
                   autoComplete="new-password"
                   value={form.password}
@@ -305,7 +315,26 @@ export default function RegisterModal({
                 <span className="registerModal__helper">
                   At least 8 characters
                 </span>
-              </label>
+              </div>
+
+              <div className="registerModal__group">
+                <span className="registerModal__label">Confirm password</span>
+                <PasswordInput
+                  className="registerModal__input"
+                  placeholder="Re-enter your password"
+                  autoComplete="new-password"
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  onBlur={() => setConfirmTouched(true)}
+                  disabled={busy}
+                  required
+                />
+                {confirmTouched && confirmPassword && confirmPassword !== form.password && (
+                  <span className="registerModal__mismatch">
+                    Passwords do not match
+                  </span>
+                )}
+              </div>
 
               <label className="registerModal__group">
                 <span className="registerModal__label">
@@ -459,11 +488,10 @@ export default function RegisterModal({
                 />
               </label>
 
-              <label className="registerModal__group">
+              <div className="registerModal__group">
                 <span className="registerModal__label">Password</span>
-                <input
+                <PasswordInput
                   className="registerModal__input"
-                  type="password"
                   placeholder="Create a strong password"
                   autoComplete="new-password"
                   value={form.password}
@@ -474,7 +502,26 @@ export default function RegisterModal({
                 <span className="registerModal__helper">
                   At least 8 characters
                 </span>
-              </label>
+              </div>
+
+              <div className="registerModal__group">
+                <span className="registerModal__label">Confirm password</span>
+                <PasswordInput
+                  className="registerModal__input"
+                  placeholder="Re-enter your password"
+                  autoComplete="new-password"
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  onBlur={() => setConfirmTouched(true)}
+                  disabled={busy}
+                  required
+                />
+                {confirmTouched && confirmPassword && confirmPassword !== form.password && (
+                  <span className="registerModal__mismatch">
+                    Passwords do not match
+                  </span>
+                )}
+              </div>
 
               <div className="registerModal__row">
                 <div className="registerModal__group">

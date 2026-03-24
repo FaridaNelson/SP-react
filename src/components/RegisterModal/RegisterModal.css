@@ -192,6 +192,12 @@
   line-height: 1.6;
 }
 
+.registerModal__mismatch {
+  font-size: 12px;
+  color: #D4806A;
+  line-height: 1.4;
+}
+
 .registerModal__error {
   margin: 0;
   font-size: 13px;
