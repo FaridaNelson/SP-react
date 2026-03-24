@@ -376,15 +376,83 @@
 
 .tsi__cycleActions {
   display: flex;
-  gap: 8px;
+  align-items: center;
+  gap: 12px;
   margin-top: 12px;
-  padding-top: 12px;
-  border-top: 1px solid rgba(31, 28, 24, 0.08);
 }
 
-.tsi__withdrawBtn {
-  color: var(--rose, #d4806a);
-  border-color: var(--rose, #d4806a);
+.tsi__cycleBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 8px 20px;
+  border-radius: 20px;
+  font: 500 13px/1 var(--font-sans, "DM Sans", sans-serif);
+  cursor: pointer;
+  transition: filter 0.12s, background 0.12s;
+}
+
+.tsi__cycleBtn--complete {
+  background: #7A9E87;
+  color: #fff;
+  border: none;
+}
+
+.tsi__cycleBtn--complete:hover {
+  filter: brightness(0.92);
+}
+
+.tsi__cycleBtn--withdraw {
+  background: transparent;
+  border: 1.5px solid #D4806A;
+  color: #8b3a22;
+}
+
+.tsi__cycleBtn--withdraw:hover {
+  background: rgba(212, 128, 106, 0.08);
+}
+
+/* ── Enriched exam card labels ── */
+
+.tsi__examGradeLabel {
+  font: 600 11px/1 var(--font-sans, "DM Sans", sans-serif);
+  letter-spacing: 0.1em;
+  color: #C9A84C;
+  padding: 14px 14px 0;
+}
+
+.tsi__examName {
+  font: 600 22px/1.2 var(--font-serif, "Cormorant Garamond", serif);
+  font-style: italic;
+  color: #fff;
+  padding: 4px 14px 0;
+}
+
+.tsi__examCard--dark .tsi__examDate {
+  font: 400 12px/1 var(--font-sans, "DM Sans", sans-serif);
+  color: rgba(255, 255, 255, 0.5);
+  padding: 4px 14px 0;
+}
+
+.tsi__daysToGo {
+  font: 700 12px/1 var(--font-sans, "DM Sans", sans-serif);
+  letter-spacing: 0.08em;
+  color: #C9A84C;
+  text-align: right;
+  margin-top: auto;
+  padding-top: 8px;
+}
+
+.tsi__readOnlyBadge {
+  display: inline-block;
+  margin: 8px 0 0 14px;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font: 600 10px/1.2 var(--td-sans);
+  letter-spacing: 0.06em;
+  text-transform: capitalize;
+  background: rgba(255, 255, 255, 0.12);
+  color: rgba(255, 255, 255, 0.6);
 }
 
 /* Empty state when no active exam cycle */
@@ -411,16 +479,4 @@
   color: var(--td-gold-2, #b8953e);
 }
 
-/* Read-only badge on completed/withdrawn cycle views */
-.tsi__readOnlyBadge {
-  display: inline-block;
-  margin-left: 8px;
-  padding: 2px 8px;
-  border-radius: 999px;
-  font: 600 10px/1.2 var(--td-sans);
-  letter-spacing: 0.06em;
-  text-transform: capitalize;
-  background: rgba(255, 255, 255, 0.12);
-  color: rgba(255, 255, 255, 0.6);
-  vertical-align: middle;
-}
+/* (readOnlyBadge styles moved up to enriched exam card section) */
