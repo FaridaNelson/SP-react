@@ -13,6 +13,35 @@ const STATUS_META = {
   withdrawn: { label: "Withdrawn", className: "ecl__badge--withdrawn" },
 };
 
+function formatDate(d) {
+  return new Date(d).toLocaleDateString("en-GB", {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+  });
+}
+
+function MetaLine({ cycle, status, pct }) {
+  if (status === "completed") {
+    const parts = [];
+    if (cycle.examTaken) parts.push(`Taken ${formatDate(cycle.examTaken)}`);
+    if (pct != null) parts.push(`Final score ${pct}%`);
+    return <div className="ecl__meta">{parts.join(" · ") || "Completed"}</div>;
+  }
+  if (status === "withdrawn") {
+    return (
+      <div className="ecl__meta">
+        Withdrawn{cycle.updatedAt ? ` ${formatDate(cycle.updatedAt)}` : ""}
+      </div>
+    );
+  }
+  // current / registered
+  const parts = [];
+  if (cycle.createdAt) parts.push(`Started ${formatDate(cycle.createdAt)}`);
+  if (pct != null) parts.push(`${pct}% ready`);
+  return <div className="ecl__meta">{parts.join(" · ") || "In progress"}</div>;
+}
+
 export default function ExamCycleList({
   studentId,
   onSelect,
@@ -74,9 +103,7 @@ export default function ExamCycleList({
   if (error) {
     return (
       <div className="ecl">
-        <div className="ecl__error">
-          Failed to load exam cycles.
-        </div>
+        <div className="ecl__error">Failed to load exam cycles.</div>
       </div>
     );
   }
@@ -93,7 +120,7 @@ export default function ExamCycleList({
 
   return (
     <div className="ecl">
-      <ul className="ecl__list" role="list">
+      <div className="ecl__grid" role="list">
         {cycles.map((c) => {
           const id = c._id || c.id;
           const st = c.cycleStatus || c.status;
@@ -106,109 +133,59 @@ export default function ExamCycleList({
           const isActive = st === "current" || st === "registered";
 
           return (
-            <li key={id} className="ecl__item">
+            <div key={id} className="ecl__item" role="listitem">
               <button
                 type="button"
                 className="ecl__card"
                 onClick={() => onSelect?.(c)}
               >
-                <div className="ecl__cardTop">
-                  <div className="ecl__info">
-                    <span className="ecl__instrument">
-                      {c.instrument || "Piano"}
-                    </span>
-                    <span className="ecl__type">
-                      {c.examType || "Practical"}
-                    </span>
-                  </div>
+                {/* Card header — tinted */}
+                <div className="ecl__header">
+                  <span className="ecl__headerLabel">
+                    {c.instrument || "Piano"} · ABRSM
+                  </span>
                   <span className={`ecl__badge ${meta.className}`}>
                     {meta.label}
                   </span>
                 </div>
 
-                <div className="ecl__cardBody">
-                  <div className="ecl__grade">
-                    Grade{" "}
-                    <span className="ecl__gradeNum">
-                      {c.examGrade ?? "—"}
-                    </span>
+                {/* Card body */}
+                <div className="ecl__body">
+                  <div className="ecl__gradeType">
+                    Grade {c.examGrade ?? "—"} {c.examType || "Practical"}
                   </div>
+                  <MetaLine cycle={c} status={st} pct={pct} />
 
-                  {pct != null && (
-                    <div className="ecl__readiness">
-                      <div className="ecl__readinessBar">
-                        <div
-                          className="ecl__readinessFill"
-                          style={{ width: `${pct}%` }}
-                        />
-                      </div>
-                      <span className="ecl__readinessPct">{pct}%</span>
-                    </div>
-                  )}
-                </div>
-
-                <div className="ecl__cardFooter">
-                  {c.examDate && (
-                    <div className="ecl__date">
-                      Exam date:{" "}
-                      {new Date(c.examDate).toLocaleDateString("en-GB", {
-                        day: "numeric",
-                        month: "short",
-                        year: "numeric",
-                      })}
-                    </div>
-                  )}
-
-                  {st === "completed" && (
-                    <div className="ecl__result">
-                      {c.examTaken != null && (
-                        <span className="ecl__resultItem">
-                          Taken:{" "}
-                          {new Date(c.examTaken).toLocaleDateString("en-GB", {
-                            day: "numeric",
-                            month: "short",
-                            year: "numeric",
-                          })}
-                        </span>
-                      )}
-                      {pct != null && (
-                        <span className="ecl__resultItem">
-                          Final: {pct}%
-                        </span>
-                      )}
+                  {isActive && (
+                    <div className="ecl__actions">
+                      <button
+                        type="button"
+                        className="ecl__actionBtn ecl__actionBtn--complete"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setCompleteTarget(c);
+                        }}
+                      >
+                        ✓ Complete
+                      </button>
+                      <button
+                        type="button"
+                        className="ecl__actionBtn ecl__actionBtn--withdraw"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setWithdrawTarget(c);
+                        }}
+                      >
+                        ✕ Withdraw
+                      </button>
                     </div>
                   )}
                 </div>
               </button>
-
-              {isActive && (
-                <div className="ecl__actions">
-                  <button
-                    type="button"
-                    className="ecl__actionBtn ecl__actionBtn--sage"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setCompleteTarget(c);
-                    }}
-                  >
-                    ✓ Complete Cycle
-                  </button>
-                  <button
-                    type="button"
-                    className="ecl__actionBtn ecl__actionBtn--rose"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setWithdrawTarget(c);
-                    }}
-                  >
-                    ✗ Withdraw
-                  </button>
-                </div>
-              )}
-            </li>
+            </div>
           );
         })}
-      </ul>
+      </div>
 
       {completeTarget && (
         <CompleteCycleModal
