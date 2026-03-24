@@ -358,3 +358,53 @@
     justify-content: flex-start;
   }
 }
+
+/* ── Exam cycle section ── */
+
+.tsi__kickerRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.tsi__newCycleBtn {
+  font-size: 12px;
+  padding: 6px 14px;
+}
+
+.tsi__cycleActions {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid rgba(31, 28, 24, 0.08);
+}
+
+.tsi__withdrawBtn {
+  color: var(--rose, #d4806a);
+  border-color: var(--rose, #d4806a);
+}
+
+/* Empty state when no active exam cycle */
+.tsi__emptyState {
+  margin: 8px 0 0;
+  font: 500 14px/1.5 "DM Sans", var(--td-sans), sans-serif;
+  color: rgba(31, 28, 24, 0.55);
+  text-align: center;
+}
+
+/* Read-only badge on completed/withdrawn cycle views */
+.tsi__readOnlyBadge {
+  display: inline-block;
+  margin-left: 8px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font: 600 10px/1.2 var(--td-sans);
+  letter-spacing: 0.06em;
+  text-transform: capitalize;
+  background: rgba(255, 255, 255, 0.12);
+  color: rgba(255, 255, 255, 0.6);
+  vertical-align: middle;
+}

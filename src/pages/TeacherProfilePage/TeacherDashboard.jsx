@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useTeacherStudents } from "../../hooks/useTeacherStudents";
 import { useProgress } from "../../hooks/useProgress";
 import { computeReadiness } from "../../lib/progress";
@@ -7,10 +7,21 @@ import { useLatestLesson } from "./hooks/useLatestLesson";
 import TeacherStudentInfo from "./views/TeacherStudentInfo";
 import ProgressPanel from "./panels/ProgressPanel/ProgressPanel";
 import AddStudentModal from "./modals/AddStudentModal";
+import ExamCycleWizard from "../../components/ExamCycle/ExamCycleWizard";
+import ExamCycleList from "../../components/ExamCycle/ExamCycleList";
+import { listExamCycles } from "../../lib/examCycleApi";
+import Toast from "../../components/ui/Toast";
 import "./TeacherDashboard.css";
 import BrandTag from "../../components/BrandTag/BrandTag";
 import StudentInformationView from "./views/StudentInformationView";
 import StudentDropdownMenu from "./components/StudentDropdownMenu";
+
+/** Compose a display name from whichever fields are available. */
+function studentDisplayName(s) {
+  return (
+    s.name || `${s.firstName || ""} ${s.lastName || ""}`.trim() || "Unnamed"
+  );
+}
 
 const AVATAR_GRADIENTS = [
   "linear-gradient(135deg,#C9A84C,#D4806A)",
@@ -92,11 +103,18 @@ function formatTeacherDisplayName(user) {
   return `${base}.`;
 }
 
+function cycleIsActive(c) {
+  const s = c.cycleStatus || c.status;
+  return s === "current" || s === "registered";
+}
+
 function SelectedStudentPane({
   student,
   progressOpen,
   onOpenProgress,
   onCloseProgress,
+  onToast,
+  initialCycle,
 }) {
   const studentId = student?._id || student?.id;
 
@@ -110,11 +128,99 @@ function SelectedStudentPane({
     isLoading: latestLoading,
   } = useLatestLesson(studentId, { enabled: !!studentId });
 
-  // You can render a nicer skeleton later; for now keep it explicit.
-  if (isLoading) {
+  const [wizardOpen, setWizardOpen] = useState(false);
+  const [examCycleRefreshKey, setExamCycleRefreshKey] = useState(0);
+
+  // Fetch cycles once at student level, find active one
+  const [fetchedCycle, setFetchedCycle] = useState(null);
+  const [cyclesFetched, setCyclesFetched] = useState(false);
+
+  useEffect(() => {
+    if (!studentId) return;
+    // Don't fetch if parent already provided a cycle from history view
+    if (initialCycle) {
+      setFetchedCycle(null);
+      setCyclesFetched(true);
+      return;
+    }
+    let cancelled = false;
+    setCyclesFetched(false);
+    listExamCycles(studentId)
+      .then((data) => {
+        if (cancelled) return;
+        const cycles = Array.isArray(data) ? data : data?.cycles ?? [];
+        const active = cycles.find(cycleIsActive);
+        setFetchedCycle(active || null);
+        setCyclesFetched(true);
+      })
+      .catch(() => {
+        if (!cancelled) setCyclesFetched(true);
+      });
+    return () => { cancelled = true; };
+  }, [studentId, initialCycle]);
+
+  // The cycle to pass down: prefer initialCycle (from history), else auto-fetched
+  const resolvedCycle = initialCycle || fetchedCycle;
+
+  const handleExamCycleCreated = useCallback(() => {
+    setWizardOpen(false);
+    setExamCycleRefreshKey((k) => k + 1);
+    // Re-fetch cycles so snapshot picks up the new one
+    if (studentId) {
+      listExamCycles(studentId)
+        .then((data) => {
+          const cycles = Array.isArray(data) ? data : data?.cycles ?? [];
+          const active = cycles.find(cycleIsActive);
+          setFetchedCycle(active || null);
+        })
+        .catch(() => {});
+    }
+    onToast?.("Exam cycle created", "success");
+  }, [onToast, studentId]);
+
+  const handleExamCycleAction = useCallback(
+    (message, variant) => {
+      setExamCycleRefreshKey((k) => k + 1);
+      // Re-fetch cycles after complete/withdraw
+      if (studentId) {
+        listExamCycles(studentId)
+          .then((data) => {
+            const cycles = Array.isArray(data) ? data : data?.cycles ?? [];
+            const active = cycles.find(cycleIsActive);
+            setFetchedCycle(active || null);
+          })
+          .catch(() => {});
+      }
+      onToast?.(message, variant);
+    },
+    [onToast, studentId],
+  );
+
+  const handleNewExamCycle = useCallback(async () => {
+    try {
+      const data = await listExamCycles(studentId);
+      const cycles = Array.isArray(data) ? data : data?.cycles ?? [];
+      const instrument = student?.instrument || "Piano";
+      const active = cycles.find(
+        (c) => cycleIsActive(c) && c.instrument === instrument,
+      );
+      if (active) {
+        onToast?.(
+          `${studentDisplayName(student)} already has an active Grade ${active.examGrade} ${active.instrument || instrument} cycle. Complete or withdraw it before starting a new one.`,
+          "warning",
+        );
+        return;
+      }
+    } catch {
+      // If the check fails, allow opening the wizard
+    }
+    setWizardOpen(true);
+  }, [studentId, student, onToast]);
+
+  if (isLoading || !cyclesFetched) {
     return (
       <div style={{ padding: 22 }}>
-        <p>Loading {student?.name}…</p>
+        <p>Loading {studentDisplayName(student)}…</p>
       </div>
     );
   }
@@ -128,6 +234,10 @@ function SelectedStudentPane({
         onOpenProgress={onOpenProgress}
         latestLesson={latestLesson}
         latestLessonLoading={latestLoading}
+        onNewExamCycle={handleNewExamCycle}
+        examCycleRefreshKey={examCycleRefreshKey}
+        onToast={handleExamCycleAction}
+        initialCycle={resolvedCycle}
       />
 
       <ProgressPanel
@@ -137,7 +247,17 @@ function SelectedStudentPane({
         items={items}
         onSaveScores={saveScores}
         onLessonSaved={(saved) => setLatestLesson(saved)}
+        activeCycle={resolvedCycle}
       />
+
+      {wizardOpen && (
+        <ExamCycleWizard
+          studentId={studentId}
+          instrument={student?.instrument}
+          onSuccess={handleExamCycleCreated}
+          onClose={() => setWizardOpen(false)}
+        />
+      )}
     </>
   );
 }
@@ -164,18 +284,26 @@ export default function TeacherDashboard({
   onSelectStudent,
   user,
 }) {
-  const { students, isLoading, error } = useTeacherStudents();
+  const teacherId = user?._id || user?.id;
+  const { students, isLoading, error } = useTeacherStudents(teacherId);
 
   const [roster, setRoster] = useState([]);
   const [greeting, setGreeting] = useState(() => getPacificGreeting());
   const [query, setQuery] = useState("");
   const [addOpen, setAddOpen] = useState(false);
+  const [toast, setToast] = useState(null);
+
+  const showToast = useCallback((message, variant = "success") => {
+    setToast({ message, variant, key: Date.now() });
+  }, []);
 
   // TeacherDashboard controls panel open state
   const [progressOpen, setProgressOpen] = useState(false);
 
-  // snapshot | history | information
+  // snapshot | history | info
   const [view, setView] = useState("snapshot");
+  // Cycle selected from the history view to show in snapshot
+  const [selectedCycle, setSelectedCycle] = useState(null);
 
   useEffect(() => setRoster(students), [students]);
 
@@ -184,7 +312,7 @@ export default function TeacherDashboard({
     if (!q) return roster;
 
     return roster.filter((s) => {
-      const name = (s.name || "").trim().toLowerCase();
+      const name = studentDisplayName(s).toLowerCase();
       if (!name) return false;
 
       // 1) Whole name starts with query (e.g. "ar" matches "Arisa ...")
@@ -212,11 +340,15 @@ export default function TeacherDashboard({
     setRoster((r) => [...r, optimistic]);
 
     try {
-      const created = await api("/api/teacher/students", {
+      const created = await api("/api/students/", {
         method: "POST",
         body: payload,
       });
       const real = created?.student || created;
+      // Normalise name for sidebar display
+      if (!real.name && (real.firstName || real.lastName)) {
+        real.name = [real.firstName, real.lastName].filter(Boolean).join(" ");
+      }
       const realId = real?._id || real?.id;
 
       setRoster((r) => r.map((s) => (s.id === tempId ? { ...real } : s)));
@@ -317,18 +449,19 @@ export default function TeacherDashboard({
                         className="td__studentBtn"
                         onClick={() => {
                           onSelectStudent?.(id);
+                          setSelectedCycle(null);
                           setView("snapshot");
                         }}
                       >
                         <div
                           className="td__avatar"
-                          style={{ background: avatarGradient(s.name) }}
+                          style={{ background: avatarGradient(studentDisplayName(s)) }}
                         >
-                          {initials(s.name)}
+                          {initials(studentDisplayName(s))}
                         </div>
 
                         <div className="td__studentMain">
-                          <div className="td__studentName">{s.name}</div>
+                          <div className="td__studentName">{studentDisplayName(s)}</div>
                           <div className="td__studentMeta">
                             {s.grade ? `Grade ${s.grade}` : "Grade —"} •{" "}
                             {s.instrument || "Piano"}
@@ -341,6 +474,7 @@ export default function TeacherDashboard({
                           studentId={id}
                           onSelectStudent={onSelectStudent}
                           setView={setView}
+                          onClearCycle={() => setSelectedCycle(null)}
                         />
                       )}
                     </div>
@@ -369,11 +503,24 @@ export default function TeacherDashboard({
               progressOpen={progressOpen}
               onOpenProgress={() => setProgressOpen(true)}
               onCloseProgress={() => setProgressOpen(false)}
+              onToast={showToast}
+              initialCycle={selectedCycle}
             />
           ) : view === "history" ? (
-            <div style={{ padding: 30 }}>
-              <h2>Progress history</h2>
-              <p>Coming soon.</p>
+            <div className="td__historyView">
+              <header className="td__historyHead">
+                <h2 className="td__historyTitle">
+                  Exam Cycles — {studentDisplayName(selectedStudent)}
+                </h2>
+              </header>
+              <ExamCycleList
+                studentId={selectedStudent._id || selectedStudent.id}
+                onSelect={(cycle) => {
+                  setSelectedCycle(cycle);
+                  setView("snapshot");
+                }}
+                onCyclesLoaded={() => {}}
+              />
             </div>
           ) : (
             <StudentInformationView student={selectedStudent} user={user} />
@@ -386,6 +533,15 @@ export default function TeacherDashboard({
         onClose={() => setAddOpen(false)}
         onSubmit={handleAddStudent}
       />
+
+      {toast && (
+        <Toast
+          key={toast.key}
+          message={toast.message}
+          variant={toast.variant}
+          onDone={() => setToast(null)}
+        />
+      )}
     </main>
   );
 }

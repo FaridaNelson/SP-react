@@ -66,7 +66,7 @@ export default function App() {
   useEffect(() => {
     (async () => {
       try {
-        const health = await api("/api/health", { auth: false });
+        const health = await api("/api/health");
         console.log("Health OK:", health);
       } catch (e) {
         console.error("Health ERROR:", e?.message, e);
@@ -118,7 +118,6 @@ export default function App() {
       body: payload,
     });
 
-    if (data.token) localStorage.setItem("token", data.token);
     setUser(data.user);
     closeAuth();
     navigate(firstDashboardPath(data.user));
@@ -130,7 +129,6 @@ export default function App() {
       body: { email, password },
     });
 
-    if (data.token) localStorage.setItem("token", data.token);
     setUser(data.user);
     closeAuth();
     navigate(firstDashboardPath(data.user));
@@ -145,7 +143,6 @@ export default function App() {
       // ignore network errors on logout
     }
 
-    localStorage.removeItem("token");
     setUser(null);
     setSelectedStudentId(null);
     setAuthMode(null);

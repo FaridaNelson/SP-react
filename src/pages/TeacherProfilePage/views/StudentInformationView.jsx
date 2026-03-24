@@ -1,78 +1,232 @@
+import { useEffect, useState, useCallback } from "react";
+import { api } from "../../../lib/api";
 import "./StudentInformationView.css";
 
-function splitName(name = "") {
-  const parts = String(name).trim().split(/\s+/).filter(Boolean);
-  if (parts.length === 0) return { firstName: "—", lastName: "—" };
-  if (parts.length === 1) return { firstName: parts[0], lastName: "—" };
-
-  return {
-    firstName: parts[0],
-    lastName: parts.slice(1).join(" "),
-  };
+function displayGrade(derivedGrade, instrument) {
+  const inst = instrument || "Piano";
+  if (derivedGrade == null) return `Grade — ${inst}`;
+  return `Grade ${derivedGrade} ${inst}`;
 }
 
-function displayGrade(student) {
-  const grade = student?.grade;
-  const instrument = student?.instrument || "Piano";
+function PencilIcon() {
+  return (
+    <svg
+      className="siv__pencilSvg"
+      width="14"
+      height="14"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z" />
+      <path d="m15 5 4 4" />
+    </svg>
+  );
+}
 
-  if (grade === undefined || grade === null || grade === "") {
-    return `Grade — ${instrument}`;
+function EditableField({
+  label,
+  value,
+  fieldKey,
+  type = "text",
+  serif,
+  onSave,
+}) {
+  const [editing, setEditing] = useState(false);
+  const [draft, setDraft] = useState(value);
+  const [saving, setSaving] = useState(false);
+  const [status, setStatus] = useState(null);
+
+  function startEdit() {
+    setDraft(value);
+    setEditing(true);
+    setStatus(null);
   }
 
-  const gradeText = String(grade).toLowerCase().startsWith("grade")
-    ? String(grade)
-    : `Grade ${grade}`;
+  function cancel() {
+    setDraft(value);
+    setEditing(false);
+  }
 
-  return `${gradeText} ${instrument}`;
+  async function save() {
+    if (draft === value) {
+      setEditing(false);
+      return;
+    }
+    setSaving(true);
+    setStatus(null);
+    try {
+      await onSave(fieldKey, draft);
+      setEditing(false);
+      setStatus("success");
+      setTimeout(() => setStatus(null), 1500);
+    } catch {
+      setDraft(value);
+      setEditing(false);
+      setStatus("error");
+      setTimeout(() => setStatus(null), 2500);
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  function handleKeyDown(e) {
+    if (e.key === "Enter") save();
+    if (e.key === "Escape") cancel();
+  }
+
+  const displayValue = value || "—";
+
+  return (
+    <div className="siv__field">
+      <div className="siv__label">{label}</div>
+      {editing ? (
+        <div className="siv__editRow">
+          <input
+            className={`siv__editInput ${serif ? "siv__editInput--serif" : ""}`}
+            type={type}
+            value={draft}
+            onChange={(e) => setDraft(e.target.value)}
+            onKeyDown={handleKeyDown}
+            disabled={saving}
+            autoFocus
+          />
+          <button
+            className="siv__saveBtn"
+            onClick={save}
+            disabled={saving}
+            type="button"
+          >
+            {saving ? "…" : "Save"}
+          </button>
+          <button
+            className="siv__cancelBtn"
+            onClick={cancel}
+            disabled={saving}
+            type="button"
+          >
+            Cancel
+          </button>
+        </div>
+      ) : (
+        <div className={`siv__valueWrap ${serif ? "siv__value--serif" : "siv__value"}`}>
+          <span>{displayValue}</span>
+          <button
+            type="button"
+            className="siv__pencilBtn"
+            onClick={startEdit}
+            aria-label={`Edit ${label}`}
+          >
+            <PencilIcon />
+          </button>
+          {status === "success" && (
+            <span className="siv__statusOk">Saved</span>
+          )}
+          {status === "error" && (
+            <span className="siv__statusErr">Error</span>
+          )}
+        </div>
+      )}
+    </div>
+  );
 }
 
 export default function StudentInformationView({ student, user }) {
-  if (!student) return null;
+  const studentId = student?._id || student?.id;
+  const [full, setFull] = useState(null);
+  const [derivedGrade, setDerivedGrade] = useState(null);
 
-  const firstName = student.firstName || splitName(student.name).firstName;
-  const lastName = student.lastName || splitName(student.name).lastName;
+  useEffect(() => {
+    if (!studentId) return;
+    let cancelled = false;
+    api(`/api/students/${studentId}`)
+      .then((data) => {
+        if (!cancelled) setFull(data?.student || data);
+      })
+      .catch((err) => console.error("Failed to fetch full student", err));
+    return () => { cancelled = true; };
+  }, [studentId]);
 
-  const linkedParent =
-    Array.isArray(student.parentIds) && student.parentIds.length > 0
-      ? student.parentIds[0]
-      : null;
+  // Derive grade from completed exam cycles
+  useEffect(() => {
+    if (!studentId) return;
+    let cancelled = false;
+    api(`/api/exam-cycles/student/${studentId}`)
+      .then((data) => {
+        if (cancelled) return;
+        const cycles = Array.isArray(data) ? data : data?.examCycles || data?.cycles || [];
+        const completed = cycles.filter((c) => c.status === "completed");
+        if (completed.length > 0) {
+          const highest = Math.max(...completed.map((c) => Number(c.examGrade)));
+          setDerivedGrade(highest);
+        }
+      })
+      .catch((err) => console.error("Failed to fetch exam cycles", err));
+    return () => { cancelled = true; };
+  }, [studentId]);
 
-  const parentFirstName =
-    student.parent?.firstName ||
-    linkedParent?.firstName ||
-    splitName(student.parent?.name || linkedParent?.name || "").firstName ||
-    "—";
+  const s = full || student;
 
-  const parentLastName =
-    student.parent?.lastName ||
-    linkedParent?.lastName ||
-    splitName(student.parent?.name || linkedParent?.name || "").lastName ||
-    "—";
+  const handleSave = useCallback(
+    async (fieldKey, newValue) => {
+      const parentFields = ["parentFirstName", "parentLastName", "parentEmail", "parentPhone"];
+      let body;
 
-  const studentEmail = student.studentEmail || student.email || "—";
+      if (parentFields.includes(fieldKey)) {
+        const shortKey = fieldKey.replace("parent", "");
+        const snapshotKey = shortKey.charAt(0).toLowerCase() + shortKey.slice(1);
+        body = { parentContactSnapshot: { [snapshotKey]: newValue } };
+      } else {
+        body = { [fieldKey]: newValue };
+      }
 
-  const parentEmail = student.parent?.email || linkedParent?.email || "—";
+      const updated = await api(`/api/students/${studentId}`, {
+        method: "PATCH",
+        body,
+      });
 
-  const parentPhone = student.parent?.phone || linkedParent?.phone || "—";
+      setFull(updated?.student || updated);
+    },
+    [studentId],
+  );
 
-  const examType = student.examType || "Practical";
-  const classFrequency = student.classFrequency || "—";
-  const classLength = student.classLength || "—";
-  const nextLesson = student.nextLessonFull || student.nextLesson || "—";
-  const room = student.lessonRoom || "—";
+  if (!s) return null;
+
+  const firstName = s.firstName || s.name?.split(" ")[0] || "—";
+  const lastName =
+    s.lastName || s.name?.split(" ").slice(1).join(" ") || "—";
+
+  const pcs = s.parentContactSnapshot || {};
+
+  const parentFirstName = pcs.firstName || "—";
+  const parentLastName = pcs.lastName || "—";
+
+  const studentEmail = s.email || "—";
+
+  const parentEmail = pcs.email || "—";
+  const parentPhone = pcs.phone || "—";
+
   const teacherName =
     user?.name ||
     `${user?.firstName || ""} ${user?.lastName || ""}`.trim() ||
     "—";
-  const studentNotes = student.studentNotes || "No student notes added yet.";
+
+  const gradeDisplay = derivedGrade != null ? `Grade ${derivedGrade}` : "Grade —";
 
   return (
     <div className="siv">
       <header className="siv__topbar">
         <div>
-          <h1 className="siv__name">{student.name || "Student"}</h1>
+          <h1 className="siv__name">
+            {s.name ||
+              `${s.firstName || ""} ${s.lastName || ""}`.trim() ||
+              "Student"}
+          </h1>
           <p className="siv__sub">
-            {displayGrade(student)} · Student Information
+            {displayGrade(derivedGrade, s.instrument)} · Student Information
           </p>
         </div>
       </header>
@@ -83,36 +237,40 @@ export default function StudentInformationView({ student, user }) {
 
           <div className="siv__card siv__card--large">
             <div className="siv__grid siv__grid--2">
-              <div className="siv__field">
-                <div className="siv__label">First Name</div>
-                <div className="siv__value siv__value--serif">{firstName}</div>
-              </div>
+              <EditableField
+                label="First Name"
+                value={firstName !== "—" ? firstName : ""}
+                fieldKey="firstName"
+                serif
+                onSave={handleSave}
+              />
 
-              <div className="siv__field">
-                <div className="siv__label">Last Name</div>
-                <div className="siv__value siv__value--serif">{lastName}</div>
-              </div>
+              <EditableField
+                label="Last Name"
+                value={lastName !== "—" ? lastName : ""}
+                fieldKey="lastName"
+                serif
+                onSave={handleSave}
+              />
 
-              <div className="siv__field">
-                <div className="siv__label">Student Email</div>
-                <div className="siv__value">{studentEmail}</div>
-              </div>
-
-              <div className="siv__field">
-                <div className="siv__label">Birth Date</div>
-                <div className="siv__value">{student.birthDate || "—"}</div>
-              </div>
+              <EditableField
+                label="Student Email"
+                value={studentEmail !== "—" ? studentEmail : ""}
+                fieldKey="email"
+                type="email"
+                onSave={handleSave}
+              />
 
               <div className="siv__field">
                 <div className="siv__label">Grade</div>
-                <div className="siv__value">{displayGrade(student)}</div>
+                <div className="siv__value">{gradeDisplay}</div>
+                <div className="siv__helper">Updates automatically when an exam cycle is completed</div>
               </div>
 
               <div className="siv__field">
-                <div className="siv__label">Exam Type</div>
-                <div className="siv__value">
-                  {student.examType || "ABRSM - Practical"}
-                </div>
+                <div className="siv__label">Instrument</div>
+                <div className="siv__value">{s.instrument || "Piano"}</div>
+                <div className="siv__helper">Set at registration</div>
               </div>
 
               <div className="siv__field">
@@ -121,12 +279,6 @@ export default function StudentInformationView({ student, user }) {
               </div>
             </div>
 
-            <div className="siv__divider" />
-
-            <div className="siv__field">
-              <div className="siv__label">Notes About Student</div>
-              <div className="siv__notes">{studentNotes}</div>
-            </div>
           </div>
         </section>
 
@@ -136,57 +288,37 @@ export default function StudentInformationView({ student, user }) {
 
             <div className="siv__card">
               <div className="siv__grid siv__grid--2">
-                <div className="siv__field">
-                  <div className="siv__label">First Name</div>
-                  <div className="siv__value siv__value--serif">
-                    {parentFirstName}
-                  </div>
-                </div>
+                <EditableField
+                  label="First Name"
+                  value={parentFirstName !== "—" ? parentFirstName : ""}
+                  fieldKey="parentFirstName"
+                  serif
+                  onSave={handleSave}
+                />
 
-                <div className="siv__field">
-                  <div className="siv__label">Last Name</div>
-                  <div className="siv__value siv__value--serif">
-                    {parentLastName}
-                  </div>
-                </div>
+                <EditableField
+                  label="Last Name"
+                  value={parentLastName !== "—" ? parentLastName : ""}
+                  fieldKey="parentLastName"
+                  serif
+                  onSave={handleSave}
+                />
 
-                <div className="siv__field">
-                  <div className="siv__label">Parent Email</div>
-                  <div className="siv__value">{parentEmail}</div>
-                </div>
+                <EditableField
+                  label="Parent Email"
+                  value={parentEmail !== "—" ? parentEmail : ""}
+                  fieldKey="parentEmail"
+                  type="email"
+                  onSave={handleSave}
+                />
 
-                <div className="siv__field">
-                  <div className="siv__label">Contact Phone</div>
-                  <div className="siv__value">{parentPhone}</div>
-                </div>
-              </div>
-            </div>
-          </section>
-
-          <section className="siv__section">
-            <h2 className="siv__sectionTitle">Class Schedule</h2>
-
-            <div className="siv__card">
-              <div className="siv__grid siv__grid--2">
-                <div className="siv__field">
-                  <div className="siv__label">Frequency</div>
-                  <div className="siv__value">{classFrequency}</div>
-                </div>
-
-                <div className="siv__field">
-                  <div className="siv__label">Class Length</div>
-                  <div className="siv__value">{classLength}</div>
-                </div>
-
-                <div className="siv__field">
-                  <div className="siv__label">Next Lesson</div>
-                  <div className="siv__value">{nextLesson}</div>
-                </div>
-
-                <div className="siv__field">
-                  <div className="siv__label">Room</div>
-                  <div className="siv__value">{room}</div>
-                </div>
+                <EditableField
+                  label="Contact Phone"
+                  value={parentPhone !== "—" ? parentPhone : ""}
+                  fieldKey="parentPhone"
+                  type="tel"
+                  onSave={handleSave}
+                />
               </div>
             </div>
           </section>

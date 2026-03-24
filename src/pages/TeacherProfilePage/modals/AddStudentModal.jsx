@@ -12,6 +12,7 @@ export default function AddStudentModal({ open, onClose, onSubmit }) {
     parentFirstName: "",
     parentLastName: "",
     parentEmail: "",
+    parentPhone: "",
   });
 
   const [busy, setBusy] = useState(false);
@@ -53,10 +54,11 @@ export default function AddStudentModal({ open, onClose, onSubmit }) {
       email: form.studentEmail.trim(),
       instrument: form.instrument,
       grade: Number(form.grade),
-      parent: {
+      parentContactSnapshot: {
         firstName: form.parentFirstName.trim(),
         lastName: form.parentLastName.trim(),
         email: form.parentEmail.trim(),
+        phone: form.parentPhone.trim(),
       },
     };
 
@@ -72,6 +74,7 @@ export default function AddStudentModal({ open, onClose, onSubmit }) {
         parentFirstName: "",
         parentLastName: "",
         parentEmail: "",
+        parentPhone: "",
       });
 
       onClose?.();
@@ -239,6 +242,18 @@ export default function AddStudentModal({ open, onClose, onSubmit }) {
                       placeholder="(optional)"
                       value={form.parentEmail}
                       onChange={(e) => setField("parentEmail", e.target.value)}
+                      disabled={busy}
+                    />
+                  </label>
+
+                  <label className="spModal__field">
+                    <span className="spModal__label">PARENT PHONE</span>
+                    <input
+                      className="spModal__input"
+                      type="tel"
+                      placeholder="(optional)"
+                      value={form.parentPhone}
+                      onChange={(e) => setField("parentPhone", e.target.value)}
                       disabled={busy}
                     />
                   </label>
