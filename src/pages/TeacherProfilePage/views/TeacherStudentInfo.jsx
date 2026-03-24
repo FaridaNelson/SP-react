@@ -98,6 +98,51 @@ export default function TeacherStudentInfo({
     );
   }
 
+  // Element label mapping for requiredElements-driven display
+  const ELEMENT_LABELS = {
+    pieceA: "Piece A",
+    pieceB: "Piece B",
+    pieceC: "Piece C",
+    pieceD: "Piece D",
+    scales: "Scales",
+    sightReading: "Sight Reading",
+    auralTraining: "Aural Training",
+  };
+
+  const ALL_ELEMENT_IDS = [
+    "pieceA", "pieceB", "pieceC", "pieceD",
+    "scales", "sightReading", "auralTraining",
+  ];
+
+  const requiredElements =
+    activeCycle?.progressSummary?.requiredElements;
+  const elementIds =
+    Array.isArray(requiredElements) && requiredElements.length > 0
+      ? requiredElements
+      : ALL_ELEMENT_IDS.filter((id) => id !== "pieceD"); // safe default: 3 pieces + 3 components
+
+  // Build the pill list for the donut card from the same source of truth
+  const pillElements = elementIds.map((id) => ({
+    id,
+    label: ELEMENT_LABELS[id] || id,
+  }));
+
+  // Filter items for AssignmentBreakdown to only show relevant elements
+  const filteredItems = useMemo(() => {
+    const latestScores = activeCycle?.progressSummary?.latestScores || {};
+    return elementIds.map((id) => {
+      const existing = items.find((it) => it.id === id);
+      if (existing) return existing;
+      // Fallback: build from latestScores on the cycle
+      return {
+        id,
+        label: ELEMENT_LABELS[id] || id,
+        weight: 0,
+        score: latestScores[id] ?? 0,
+      };
+    });
+  }, [items, elementIds, activeCycle]);
+
   const inviteCode = (student.inviteCode || "").toString().toUpperCase();
   const email = student.email || "";
   const pcs = student.parentContactSnapshot || {};
@@ -191,43 +236,23 @@ export default function TeacherStudentInfo({
                   <div className="tsi__examInfo">
                     <div className="tsi__examMid">
                       <div className="tsi__pillGrid">
-                        {[
-                          { id: "pieceA", label: "Piece 1" },
-                          { id: "pieceB", label: "Piece 2" },
-                          { id: "pieceC", label: "Piece 3" },
-                          { id: "pieceD", label: "Piece 4" },
-                          { id: "scales", label: "Scales" },
-                          { id: "sightReading", label: "Sight-read" },
-                          { id: "auralTraining", label: "Aural" },
-                        ]
-                          .filter((p) => {
-                            if (p.id === "pieceD") {
-                              return activeCycle?.examType === "Performance";
-                            }
-                            if (
-                              ["scales", "sightReading", "auralTraining"].includes(p.id)
-                            ) {
-                              return activeCycle?.examType !== "Performance";
-                            }
-                            return true;
-                          })
-                          .map((p) => {
-                            const it = items.find((x) => x.id === p.id);
-                            const pct = it
-                              ? Math.round(Number(it.score) || 0)
-                              : 0;
-                            const pass = pct >= 67;
-                            return (
-                              <span
-                                key={p.id}
-                                className={`tsi__pill ${pass ? "tsi__pill--pass" : "tsi__pill--fail"}`}
-                                title={it ? `${pct}%` : "—"}
-                              >
-                                {pass ? "✓ " : "○ "}
-                                {p.label}
-                              </span>
-                            );
-                          })}
+                        {pillElements.map((p) => {
+                          const it = filteredItems.find((x) => x.id === p.id);
+                          const pct = it
+                            ? Math.round(Number(it.score) || 0)
+                            : 0;
+                          const pass = pct >= 67;
+                          return (
+                            <span
+                              key={p.id}
+                              className={`tsi__pill ${pass ? "tsi__pill--pass" : "tsi__pill--fail"}`}
+                              title={`${pct}%`}
+                            >
+                              {pass ? "✓ " : "○ "}
+                              {p.label}
+                            </span>
+                          );
+                        })}
                       </div>
                     </div>
                   </div>
@@ -271,7 +296,7 @@ export default function TeacherStudentInfo({
           <div className="tsi__col">
             {/* Skill breakdown (your upgraded AssignmentBreakdown) */}
             <AssignmentBreakdown
-              items={items}
+              items={filteredItems}
               subtitle="This component compiles progress entered in Today’s progress."
               animateKey={sid}
             />
