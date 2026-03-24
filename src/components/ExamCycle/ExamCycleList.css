@@ -184,3 +184,43 @@
   font: 500 12px/1 var(--font-sans, "DM Sans", sans-serif);
   color: var(--sage, #7a9e87);
 }
+
+/* ── Cycle action buttons ── */
+
+.ecl__actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 16px 10px;
+}
+
+.ecl__actionBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 5px 12px;
+  border-radius: 8px;
+  font: 600 11px/1 var(--font-sans, "DM Sans", sans-serif);
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  background: transparent;
+  transition: background 0.12s ease, border-color 0.12s ease;
+}
+
+.ecl__actionBtn--sage {
+  border: 1px solid var(--sage, #7a9e87);
+  color: var(--sage, #7a9e87);
+}
+
+.ecl__actionBtn--sage:hover {
+  background: var(--sage-pale, #ebf3ee);
+}
+
+.ecl__actionBtn--rose {
+  border: 1px solid var(--rose, #d4806a);
+  color: var(--rose, #d4806a);
+}
+
+.ecl__actionBtn--rose:hover {
+  background: rgba(212, 128, 106, 0.1);
+}
