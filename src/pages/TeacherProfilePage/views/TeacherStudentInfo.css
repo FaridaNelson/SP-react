@@ -395,6 +395,22 @@
   text-align: center;
 }
 
+/* Inline link button in empty state */
+.tsi__linkBtn {
+  display: inline;
+  padding: 0;
+  border: none;
+  background: none;
+  font: inherit;
+  color: var(--td-gold, #C9A84C);
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.tsi__linkBtn:hover {
+  color: var(--td-gold-2, #b8953e);
+}
+
 /* Read-only badge on completed/withdrawn cycle views */
 .tsi__readOnlyBadge {
   display: inline-block;

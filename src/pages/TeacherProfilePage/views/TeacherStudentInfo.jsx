@@ -24,6 +24,7 @@ export default function TeacherStudentInfo({
   examCycleRefreshKey,
   onToast,
   initialCycle,
+  onGoToHistory,
 }) {
   const { id: studentId, _id } = student || {};
   const sid = _id || studentId || "";
@@ -195,7 +196,22 @@ export default function TeacherStudentInfo({
           {!hasActiveCycle && (
             <section className="tsi__cardPaper">
               <p className="tsi__emptyState">
-                No active exam cycle. Create one from Progress History to start tracking.
+                No active exam cycle.{" "}
+                {onGoToHistory ? (
+                  <>
+                    Go to{" "}
+                    <button
+                      type="button"
+                      className="tsi__linkBtn"
+                      onClick={onGoToHistory}
+                    >
+                      Progress History
+                    </button>{" "}
+                    to create one.
+                  </>
+                ) : (
+                  "Go to Progress History to create one."
+                )}
               </p>
             </section>
           )}

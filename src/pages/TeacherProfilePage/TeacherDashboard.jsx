@@ -115,6 +115,7 @@ function SelectedStudentPane({
   onCloseProgress,
   onToast,
   initialCycle,
+  onGoToHistory,
 }) {
   const studentId = student?._id || student?.id;
 
@@ -238,6 +239,7 @@ function SelectedStudentPane({
         examCycleRefreshKey={examCycleRefreshKey}
         onToast={handleExamCycleAction}
         initialCycle={resolvedCycle}
+        onGoToHistory={onGoToHistory}
       />
 
       <ProgressPanel
@@ -304,6 +306,9 @@ export default function TeacherDashboard({
   const [view, setView] = useState("snapshot");
   // Cycle selected from the history view to show in snapshot
   const [selectedCycle, setSelectedCycle] = useState(null);
+  // Wizard opened from history view
+  const [historyWizardOpen, setHistoryWizardOpen] = useState(false);
+  const [historyRefreshKey, setHistoryRefreshKey] = useState(0);
 
   useEffect(() => setRoster(students), [students]);
 
@@ -505,6 +510,7 @@ export default function TeacherDashboard({
               onCloseProgress={() => setProgressOpen(false)}
               onToast={showToast}
               initialCycle={selectedCycle}
+              onGoToHistory={() => setView("history")}
             />
           ) : view === "history" ? (
             <div className="td__historyView">
@@ -512,15 +518,57 @@ export default function TeacherDashboard({
                 <h2 className="td__historyTitle">
                   Exam Cycles — {studentDisplayName(selectedStudent)}
                 </h2>
+                <button
+                  type="button"
+                  className="td__pillBtn td__pillBtn--gold"
+                  onClick={async () => {
+                    const sid = selectedStudent._id || selectedStudent.id;
+                    try {
+                      const data = await listExamCycles(sid);
+                      const cycles = Array.isArray(data) ? data : data?.cycles ?? [];
+                      const instrument = selectedStudent?.instrument || "Piano";
+                      const active = cycles.find(
+                        (c) => cycleIsActive(c) && c.instrument === instrument,
+                      );
+                      if (active) {
+                        showToast(
+                          `${studentDisplayName(selectedStudent)} already has an active Grade ${active.examGrade} ${active.instrument || instrument} cycle. Complete or withdraw it before starting a new one.`,
+                          "warning",
+                        );
+                        return;
+                      }
+                    } catch {
+                      // allow opening wizard on check failure
+                    }
+                    setHistoryWizardOpen(true);
+                  }}
+                >
+                  + New Exam Cycle
+                </button>
               </header>
               <ExamCycleList
+                key={historyRefreshKey}
                 studentId={selectedStudent._id || selectedStudent.id}
+                refreshKey={historyRefreshKey}
                 onSelect={(cycle) => {
                   setSelectedCycle(cycle);
                   setView("snapshot");
                 }}
                 onCyclesLoaded={() => {}}
               />
+
+              {historyWizardOpen && (
+                <ExamCycleWizard
+                  studentId={selectedStudent._id || selectedStudent.id}
+                  instrument={selectedStudent?.instrument}
+                  onSuccess={() => {
+                    setHistoryWizardOpen(false);
+                    setHistoryRefreshKey((k) => k + 1);
+                    showToast("Exam cycle created", "success");
+                  }}
+                  onClose={() => setHistoryWizardOpen(false)}
+                />
+              )}
             </div>
           ) : (
             <StudentInformationView student={selectedStudent} user={user} />
