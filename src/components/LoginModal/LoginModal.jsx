@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import Modal from "../Modal/Modal";
+import PasswordInput from "../PasswordInput/PasswordInput";
 import "./LoginModal.css";
 
 export default function LoginModal({ open, onClose, onSwitch, onSubmit }) {
@@ -111,11 +112,10 @@ export default function LoginModal({ open, onClose, onSwitch, onSubmit }) {
               />
             </label>
 
-            <label className="loginModal__group">
+            <div className="loginModal__group">
               <span className="loginModal__label">Password</span>
-              <input
+              <PasswordInput
                 className="loginModal__input"
-                type="password"
                 name="password"
                 placeholder="Enter your password"
                 autoComplete="current-password"
@@ -124,7 +124,7 @@ export default function LoginModal({ open, onClose, onSwitch, onSubmit }) {
                 disabled={busy}
                 required
               />
-            </label>
+            </div>
 
             <div className="loginModal__helperRow">
               <label className="loginModal__checkboxLabel">
