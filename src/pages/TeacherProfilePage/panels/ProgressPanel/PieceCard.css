@@ -459,7 +459,7 @@
 @media (max-width: 768px) {
   /* Hide two-column header */
   .pc__colsHead {
-    display: none;
+    display: none !important;
   }
 
   /* Each criterion stacks vertically */
@@ -471,26 +471,29 @@
     border-bottom: 0.5px solid rgba(0, 0, 0, 0.08);
   }
 
-  /* FIX 1: criterion label left-aligned */
+  /* FIX 1: criterion label left-aligned, full width */
   .pc__label {
-    text-align: left;
+    text-align: left !important;
+    width: 100%;
     font-size: 14px;
     font-weight: 600;
     padding-bottom: 0;
     margin-bottom: 2px;
   }
 
-  /* Last class: full-width muted row */
+  /* FIX 2: last class note full width */
   .pc__last {
     flex-direction: row;
     gap: 8px;
-    max-width: 100%;
+    max-width: 100% !important;
+    width: 100%;
     opacity: 0.7;
     font-size: 12px;
   }
 
   .pc__lastNote {
-    width: 100%;
+    width: 100% !important;
+    max-width: 100% !important;
     flex: 1;
     min-width: 0;
     font-size: 11px;
@@ -503,7 +506,7 @@
     min-width: auto;
   }
 
-  /* Today: score buttons + note stacked full width */
+  /* FIX 2: today section full width */
   .pc__today {
     display: flex;
     flex-direction: column;
@@ -511,7 +514,7 @@
     width: 100%;
   }
 
-  /* FIX 2: score buttons grid, square-shaped */
+  /* FIX 3: score buttons grid, truly square */
   .pc__scale {
     display: grid;
     grid-template-columns: repeat(7, 1fr);
@@ -521,23 +524,22 @@
 
   .pc__pill {
     width: 100%;
-    min-width: 36px;
-    min-height: 36px;
     aspect-ratio: 1 / 1;
+    min-height: 40px;
     padding: 0;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 14px;
+    font-size: 15px;
     height: auto;
     box-sizing: border-box;
   }
 
-  /* FIX 1: note input full width */
+  /* FIX 2: note input full width, no constraints */
   .pc__note {
     margin-right: 0;
-    width: 100%;
-    max-width: 100%;
+    width: 100% !important;
+    max-width: 100% !important;
     box-sizing: border-box;
   }
 
