@@ -309,21 +309,75 @@
 }
 
 /* responsive */
-@media (max-width: 720px) {
-  .sc__colsHead--3,
+@media (max-width: 768px) {
+  /* Hide column headers on mobile */
+  .sc__colsHead,
+  .sc__colsHead--3 {
+    display: none;
+  }
+
+  /* Each scale row stacks vertically */
   .sc__row {
     grid-template-columns: 1fr;
+    gap: 6px;
+    padding: 10px;
   }
 
   .sc__scaleName {
     text-align: left;
+    font-size: 13px;
+    font-weight: 700;
   }
 
+  /* Last class: compact muted row */
+  .sc__last {
+    opacity: 0.6;
+    font-size: 11px;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .sc__lastNote {
+    width: auto;
+    flex: 1;
+    min-width: 0;
+    font-size: 11px;
+    padding: 6px 8px;
+  }
+
+  .sc__status {
+    font-size: 8px;
+    min-width: auto;
+    margin-left: 0;
+  }
+
+  /* Today: checkbox + note stack */
+  .sc__today {
+    grid-template-columns: auto 1fr;
+    gap: 8px;
+    margin-right: 0;
+  }
+
+  .sc__check {
+    font-size: 11px;
+  }
+
+  .sc__note {
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  /* Readiness bars */
   .sc__barRow {
-    grid-template-columns: 1fr;
+    grid-template-columns: 70px 1fr 36px;
+    gap: 6px;
+  }
+
+  .sc__barLabel {
+    font-size: 11px;
   }
 
   .sc__barPct {
-    text-align: left;
+    text-align: right;
   }
 }
