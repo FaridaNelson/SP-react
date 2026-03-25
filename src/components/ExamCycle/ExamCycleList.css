@@ -168,3 +168,23 @@
 .ecl__actionBtn--withdraw:hover {
   background: rgba(212, 128, 106, 0.08);
 }
+
+@media (max-width: 768px) {
+  .ecl__grid {
+    grid-template-columns: 1fr;
+  }
+
+  .ecl__gradeType {
+    font-size: 17px;
+  }
+
+  .ecl__actions {
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .ecl__actionBtn {
+    font-size: 11px;
+    padding: 6px 12px;
+  }
+}

@@ -295,6 +295,11 @@ export default function TeacherDashboard({
   const [addOpen, setAddOpen] = useState(false);
   const [toast, setToast] = useState(null);
 
+  // Mobile sidebar toggle
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  // Mobile collapsible student list
+  const [studentsExpanded, setStudentsExpanded] = useState(false);
+
   const showToast = useCallback((message, variant = "success") => {
     setToast({ message, variant, key: Date.now() });
   }, []);
@@ -408,9 +413,31 @@ export default function TeacherDashboard({
 
   return (
     <main className="td__shell">
+      {/* Mobile hamburger */}
+      <button
+        type="button"
+        className="td__hamburger"
+        onClick={() => setSidebarOpen(true)}
+        aria-label="Open sidebar"
+      >
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+          <line x1="3" y1="6" x2="21" y2="6" />
+          <line x1="3" y1="12" x2="21" y2="12" />
+          <line x1="3" y1="18" x2="21" y2="18" />
+        </svg>
+      </button>
+
+      {/* Mobile overlay */}
+      {sidebarOpen && (
+        <div
+          className="td__overlay"
+          onClick={() => setSidebarOpen(false)}
+        />
+      )}
+
       <div className="td__grid">
         {/* LEFT SIDEBAR */}
-        <aside className="td__sidebar">
+        <aside className={`td__sidebar ${sidebarOpen ? "td__sidebar--open" : ""}`}>
           <div className="td__greeting">
             <div className="td__greetHi">{greeting}</div>{" "}
             <div className="td__greetName">
@@ -432,13 +459,22 @@ export default function TeacherDashboard({
           </div>
 
           <div className="td__sectionHead">
-            <div className="td__sectionTitle">Your students</div>
+            <button
+              type="button"
+              className="td__sectionToggle"
+              onClick={() => setStudentsExpanded((v) => !v)}
+            >
+              <span className="td__sectionToggleIcon">
+                {studentsExpanded ? "▴" : "▾"}
+              </span>{" "}
+              Your students
+            </button>
             <button className="td__addStudent" onClick={() => setAddOpen(true)}>
               + Add student
             </button>
           </div>
 
-          <div className="td__studentListWrap">
+          <div className={`td__studentListWrap ${studentsExpanded ? "td__studentListWrap--expanded" : ""}`}>
             <ul className="td__studentList" role="list">
               {filteredRoster.map((s) => {
                 const id = s._id || s.id;
@@ -456,6 +492,8 @@ export default function TeacherDashboard({
                           onSelectStudent?.(id);
                           setSelectedCycle(null);
                           setView("snapshot");
+                          setSidebarOpen(false);
+                          setStudentsExpanded(false);
                         }}
                       >
                         <div
