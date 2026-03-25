@@ -512,35 +512,10 @@
   color: var(--td-ink);
 }
 
-/* ── Mobile hamburger button ── */
-
-.td__hamburger {
-  display: none;
-  position: fixed;
-  top: 12px;
-  left: 12px;
-  z-index: 1200;
-  width: 40px;
-  height: 40px;
-  border-radius: 10px;
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  background: rgba(18, 17, 15, 0.92);
-  color: rgba(255, 255, 255, 0.85);
-  cursor: pointer;
-  align-items: center;
-  justify-content: center;
-}
-
-/* ── Mobile overlay ── */
-
-.td__overlay {
-  display: none;
-}
-
-/* ── Collapsible student list toggle ── */
+/* ── Collapsible student list toggle (mobile only) ── */
 
 .td__sectionToggle {
-  display: none; /* visible only on mobile */
+  display: none;
   align-items: center;
   gap: 6px;
   border: none;
@@ -557,70 +532,106 @@
   font-size: 10px;
 }
 
+/* Add student button variants */
+.td__addStudent--mobile {
+  display: none;
+}
+
 /* ── Mobile responsive ── */
 
 @media (max-width: 768px) {
-  .td__hamburger {
-    display: flex;
-  }
-
-  .td__overlay {
-    display: block;
-    position: fixed;
-    inset: 0;
-    z-index: 1300;
-    background: rgba(0, 0, 0, 0.4);
-  }
-
+  /* Grid becomes single column, sidebar renders inline */
   .td__grid {
-    grid-template-columns: 1fr;
+    display: flex;
+    flex-direction: column;
+    min-height: calc(100vh - 84px);
   }
 
+  /* Sidebar: static inline, full width, auto height */
   .td__sidebar {
-    position: fixed;
-    top: 0;
-    left: 0;
-    bottom: 0;
-    width: 85vw;
-    max-width: 340px;
-    z-index: 1400;
-    transform: translateX(-100%);
-    transition: transform 0.25s ease;
-  }
-
-  .td__sidebar--open {
-    transform: translateX(0);
+    position: static;
+    width: 100%;
+    height: auto;
+    min-height: auto;
+    overflow: visible;
+    padding: 10px 12px;
   }
 
   .td__sidebarFade {
     display: none;
   }
 
-  /* Collapsible student list */
+  .td__greeting {
+    padding: 6px 4px 8px;
+  }
+
+  .td__greetHi {
+    font-size: 16px;
+  }
+
+  .td__greetName {
+    font-size: 18px;
+    margin-top: 2px;
+  }
+
+  .td__greetMeta {
+    font-size: 11px;
+    margin-top: 4px;
+  }
+
+  .td__searchWrap {
+    margin: 4px 0;
+    padding: 8px 0;
+  }
+
+  .td__search {
+    width: 100%;
+  }
+
+  /* Section head: toggle replaces title */
   .td__sectionToggle {
     display: flex;
   }
 
   .td__sectionHead .td__sectionTitle {
-    display: none; /* replaced by toggle button */
+    display: none;
   }
 
+  .td__addStudent--desktop {
+    display: none;
+  }
+
+  .td__addStudent--mobile {
+    display: flex;
+    margin: 0 0 4px;
+  }
+
+  /* Collapsible student list */
   .td__studentListWrap {
     max-height: 0;
     overflow: hidden;
     transition: max-height 0.3s ease;
-    padding-bottom: 0;
+    padding: 0;
   }
 
   .td__studentListWrap--expanded {
-    max-height: 60vh;
+    max-height: 500px;
     overflow-y: auto;
   }
 
-  /* Main canvas adjustments */
+  .td__studentList {
+    padding-bottom: 8px;
+  }
+
+  /* Main canvas: fills remaining space */
+  .td__main {
+    flex: 1;
+    min-height: 0;
+  }
+
   .td__canvasEmpty {
-    min-height: 50vh;
-    padding: 40px 16px;
+    min-height: 40vh;
+    padding: 30px 16px;
   }
 
   .td__historyView {
