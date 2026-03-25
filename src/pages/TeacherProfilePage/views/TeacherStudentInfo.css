@@ -486,6 +486,7 @@
     padding: 12px 10px;
   }
 
+  /* CHANGE 5: single column layout */
   .tsi__layout {
     grid-template-columns: 1fr;
     gap: 12px;
@@ -506,17 +507,20 @@
     font-size: 18px;
   }
 
+  /* CHANGE 3: action buttons full width */
   .tsi__pageActions {
-    flex-wrap: wrap;
+    flex-direction: column;
     gap: 6px;
-    justify-content: flex-start;
   }
 
   .tsi__pageActions .td__pillBtn {
-    font-size: 11px;
-    padding: 6px 10px;
+    width: 100%;
+    justify-content: center;
+    font-size: 12px;
+    padding: 10px 12px;
   }
 
+  /* Exam card body stacks */
   .tsi__examBody {
     grid-template-columns: 1fr;
     gap: 12px;
@@ -527,25 +531,34 @@
     justify-self: center;
   }
 
+  /* CHANGE 4: pill grid 2-column, no overlap */
   .tsi__pillGrid {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: 1fr 1fr;
     gap: 8px;
   }
 
   .tsi__pill {
     width: 100%;
+    min-width: 0;
     font-size: 10px;
     padding: 6px 8px;
+    box-sizing: border-box;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 
+  /* Complete/Withdraw buttons full width */
   .tsi__cycleActions {
-    flex-wrap: wrap;
+    flex-direction: column;
     gap: 8px;
   }
 
   .tsi__cycleBtn {
+    width: 100%;
+    justify-content: center;
     font-size: 12px;
-    padding: 7px 14px;
+    padding: 10px 14px;
   }
 
   .tsi__examGradeLabel {
@@ -564,5 +577,18 @@
   .tsi__cardPaper {
     border-radius: 12px;
     padding: 10px;
+  }
+}
+
+/* Extra-small screens: tighter pill grid */
+@media (max-width: 480px) {
+  .tsi__pillGrid {
+    grid-template-columns: 1fr 1fr;
+    gap: 6px;
+  }
+
+  .tsi__pill {
+    font-size: 9px;
+    padding: 5px 6px;
   }
 }
