@@ -455,6 +455,27 @@
     text-align: left;
   }
 }
+
+@media (max-width: 768px) {
+  .pc__scale {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 6px;
+    width: 100%;
+  }
+
+  .pc__pill {
+    width: 100%;
+    min-width: 0;
+    padding: 10px 4px;
+    font-size: 14px;
+    height: auto;
+  }
+
+  .pc__today {
+    grid-template-columns: 1fr;
+  }
+}
 /* pass/fail colors */
 .pc__fill--pass {
   background: #2e7d32;
