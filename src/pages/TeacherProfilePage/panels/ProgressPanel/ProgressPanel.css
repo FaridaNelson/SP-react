@@ -314,6 +314,24 @@
     font-size: 14px;
   }
 
+  .pp__dateInput {
+    color: transparent;
+    -webkit-text-fill-color: transparent;
+    opacity: 1;
+  }
+
+  .pp__dateInput::-webkit-calendar-picker-indicator {
+    opacity: 1;
+    cursor: pointer;
+    filter: invert(0.2);
+    width: 18px;
+    height: 18px;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+  }
+
   .pp__close {
     font-size: 18px;
     padding: 4px 8px;
