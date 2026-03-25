@@ -123,46 +123,50 @@
 @media (max-width: 768px) {
   /* Hide two-column header on mobile */
   .sk__colsHead {
-    display: none;
+    display: none !important;
   }
 
   /* Each criterion stacks vertically */
   .sk__row2 {
     display: flex;
     flex-direction: column;
-    gap: 6px;
+    gap: 8px;
     padding: 12px 10px;
     border-bottom: 0.5px solid rgba(0, 0, 0, 0.08);
   }
 
-  /* Criterion label left-aligned */
+  /* Criterion label: left-aligned, full width */
   .sk__label {
-    text-align: left;
+    text-align: left !important;
+    width: 100%;
     font-size: 14px;
     font-weight: 600;
     margin-bottom: 2px;
   }
 
-  /* Last class: full width, muted, with inline "Last class" label */
+  /* Last class: full width, muted, with inline label */
   .sk__last {
     width: 100%;
-    padding-bottom: 6px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding-bottom: 8px;
     border-bottom: 0.5px solid rgba(0, 0, 0, 0.06);
   }
 
   .sk__last::before {
-    content: "Last class";
+    content: "LAST CLASS";
     display: block;
-    font-size: 10px;
+    font-size: 11px;
     font-weight: 600;
     letter-spacing: 0.08em;
-    text-transform: uppercase;
     color: rgba(0, 0, 0, 0.4);
-    margin-bottom: 4px;
+    margin-bottom: 2px;
   }
 
   .sk__lastNote {
-    width: 100%;
+    width: 100% !important;
+    max-width: 100% !important;
     box-sizing: border-box;
     opacity: 0.7;
   }
@@ -170,23 +174,25 @@
   /* Today class: full width with inline label */
   .sk__today {
     width: 100%;
+    display: flex;
     flex-direction: column;
+    gap: 6px;
     align-items: stretch;
   }
 
   .sk__today::before {
-    content: "Today's class";
+    content: "TODAY'S CLASS";
     display: block;
-    font-size: 10px;
+    font-size: 11px;
     font-weight: 600;
     letter-spacing: 0.08em;
-    text-transform: uppercase;
     color: rgba(0, 0, 0, 0.4);
-    margin-bottom: 4px;
+    margin-bottom: 2px;
   }
 
   .sk__input {
-    width: 100%;
+    width: 100% !important;
+    max-width: 100% !important;
     box-sizing: border-box;
   }
 }
