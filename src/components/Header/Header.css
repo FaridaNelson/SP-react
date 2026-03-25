@@ -255,3 +255,48 @@
     font-size: 14px;
   }
 }
+
+@media (max-width: 768px) {
+  .header--home,
+  .header--app {
+    padding: 8px 0;
+  }
+
+  .header__inner {
+    padding: 0 12px;
+  }
+
+  .header__row {
+    gap: 8px;
+  }
+
+  .header__actions {
+    gap: 6px;
+  }
+
+  .header__signOutBtn {
+    padding: 6px 8px;
+    font-size: 12px;
+  }
+
+  .header__userText {
+    display: none;
+  }
+
+  .header--app .header__avatar,
+  .header--home .header__avatar {
+    width: 32px;
+    height: 32px;
+    font-size: 11px;
+  }
+
+  .header__cta {
+    padding: 8px 14px;
+    font-size: 13px;
+  }
+
+  .header__signIn {
+    padding: 6px 8px;
+    font-size: 13px;
+  }
+}

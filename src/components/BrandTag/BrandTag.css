@@ -80,3 +80,28 @@
   font-weight: 800;
   text-decoration: none;
 }
+
+@media (max-width: 768px) {
+  .brandTag {
+    padding: 4px 10px;
+    gap: 6px;
+  }
+
+  .brandTag__text {
+    font-size: 13px;
+  }
+
+  .brandTag__pulse {
+    width: 20px;
+    height: 16px;
+  }
+
+  .brandTag--compact {
+    padding: 5px 8px;
+    gap: 5px;
+  }
+
+  .brandTag--compact .brandTag__text {
+    font-size: 11px;
+  }
+}

@@ -281,21 +281,38 @@
   100% { opacity: 0; }
 }
 
-@media (max-width: 720px) {
+@media (max-width: 768px) {
   .siv__topbar {
     flex-direction: column;
     align-items: stretch;
+    padding: 14px 12px;
+  }
+
+  .siv__name {
+    font-size: 22px;
   }
 
   .siv__content {
-    padding-inline: 12px;
+    padding: 12px;
+  }
+
+  .siv__grid--2 {
+    grid-template-columns: 1fr;
+  }
+
+  .siv__bottomGrid {
+    grid-template-columns: 1fr;
   }
 
   .siv__card {
-    padding: 18px;
+    padding: 14px;
   }
 
   .siv__value--serif {
     font-size: 22px;
+  }
+
+  .siv__editInput {
+    max-width: 100%;
   }
 }
