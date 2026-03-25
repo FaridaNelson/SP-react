@@ -335,14 +335,20 @@
     padding: 10px 14px 16px;
   }
 
+  /* FIX 3: Save & Share less tall, cancel/draft compact */
   .pp__btn--primary {
     width: 100%;
     text-align: center;
-    padding: 12px;
+    padding: 10px 16px;
+    font-size: 14px;
+    min-height: unset;
+    height: auto;
   }
 
   .pp__btn:not(.pp__btn--primary) {
     flex: 1;
+    padding: 8px 12px;
+    font-size: 13px;
   }
 
   /* Wrap cancel + draft side by side */

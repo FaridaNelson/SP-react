@@ -120,9 +120,73 @@
 }
 
 /* responsive */
-@media (max-width: 720px) {
-  .sk__colsHead,
+@media (max-width: 768px) {
+  /* Hide two-column header on mobile */
+  .sk__colsHead {
+    display: none;
+  }
+
+  /* Each criterion stacks vertically */
   .sk__row2 {
-    grid-template-columns: 1fr;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding: 12px 10px;
+    border-bottom: 0.5px solid rgba(0, 0, 0, 0.08);
+  }
+
+  /* Criterion label left-aligned */
+  .sk__label {
+    text-align: left;
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 2px;
+  }
+
+  /* Last class: full width, muted, with inline "Last class" label */
+  .sk__last {
+    width: 100%;
+    padding-bottom: 6px;
+    border-bottom: 0.5px solid rgba(0, 0, 0, 0.06);
+  }
+
+  .sk__last::before {
+    content: "Last class";
+    display: block;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: rgba(0, 0, 0, 0.4);
+    margin-bottom: 4px;
+  }
+
+  .sk__lastNote {
+    width: 100%;
+    box-sizing: border-box;
+    opacity: 0.7;
+  }
+
+  /* Today class: full width with inline label */
+  .sk__today {
+    width: 100%;
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .sk__today::before {
+    content: "Today's class";
+    display: block;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: rgba(0, 0, 0, 0.4);
+    margin-bottom: 4px;
+  }
+
+  .sk__input {
+    width: 100%;
+    box-sizing: border-box;
   }
 }
