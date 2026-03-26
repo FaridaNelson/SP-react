@@ -58,26 +58,28 @@ export default function OnboardingGuide({ onAddStudent }) {
 
       <div className="ob__steps">
         {/* Step 1 */}
-        <div
-          className="ob__arrowLeft"
-          onClick={onAddStudent}
-          style={{ cursor: "pointer" }}
-        >
-          <svg
-            width="16"
-            height="16"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2.5"
-            strokeLinecap="round"
-            strokeLinejoin="round"
+        <div className="ob__step">
+          <div
+            className="ob__arrowLeft"
+            onClick={onAddStudent}
+            style={{ cursor: "pointer" }}
           >
-            <line x1="19" y1="12" x2="5" y2="12" />
-            <polyline points="12 19 5 12 12 5" />
-          </svg>
-          Click <strong style={{ margin: "0 3px" }}>＋ Add student</strong> in
-          the sidebar
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <line x1="19" y1="12" x2="5" y2="12" />
+              <polyline points="12 19 5 12 12 5" />
+            </svg>
+            Click <strong style={{ margin: "0 3px" }}>＋ Add student</strong> in
+            the sidebar
+          </div>
         </div>
 
         {/* Step 2 */}
