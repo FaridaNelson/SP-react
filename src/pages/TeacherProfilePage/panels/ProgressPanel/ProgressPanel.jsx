@@ -300,6 +300,26 @@ export default function ProgressPanel({
       setBusy(false);
     }
   }
+
+  // Returns true if teacher entered at least one score for this piece today
+  function isPieceTouched(pieceValue) {
+    if (!pieceValue?.criteria) return false;
+    return Object.values(pieceValue.criteria).some((c) =>
+      Number.isFinite(c?.score),
+    );
+  }
+
+  // Returns true if teacher explicitly changed any scale today
+  function isScalesTouched(scalesMap) {
+    if (!scalesMap) return false;
+    return Object.values(scalesMap).some((s) => s?.ready === true);
+  }
+
+  // Returns true if teacher entered a sight/aural score today
+  function isSightAuralTouched(val) {
+    return val?.score !== undefined && val?.score !== null && val?.score !== "";
+  }
+
   async function handleSave({ share = false } = {}) {
     setErr("");
     // Phase 1: just update the existing progress snapshot with new scores (no lesson creation yet)
@@ -310,18 +330,17 @@ export default function ProgressPanel({
       return;
     }
 
-    // REQUIRED: all criteria for each piece must be filled
+    // Only validate pieces that were actually touched today
     const nextErrors = {};
     for (const p of activePieces) {
-      const missing = getMissingPieceCriteria(pieces?.[p.id], p.criteria);
-      if (missing.length) nextErrors[p.id] = missing;
+      if (isPieceTouched(pieces[p.id])) {
+        const missing = getMissingPieceCriteria(pieces?.[p.id], p.criteria);
+        if (missing.length) nextErrors[p.id] = missing;
+      }
     }
-
     if (Object.keys(nextErrors).length) {
       setPieceErrors(nextErrors);
-      setErr(
-        "Kind reminder: please fill out all piece criteria before saving.",
-      );
+      setErr("Please fill out all criteria for pieces you've started grading.");
       return;
     } else {
       setPieceErrors({});
@@ -332,16 +351,16 @@ export default function ProgressPanel({
 
       // 1) Update your EXISTING progress snapshot items (Phase 1)
       const scoreMap = {
-        pieceA: piecePercents.pieceA,
-        pieceB: piecePercents.pieceB,
-        pieceC: piecePercents.pieceC,
+        pieceA: finalPiecePercents.pieceA ?? piecePercents.pieceA,
+        pieceB: finalPiecePercents.pieceB ?? piecePercents.pieceB,
+        pieceC: finalPiecePercents.pieceC ?? piecePercents.pieceC,
       };
       if (isPerformance) {
-        scoreMap.pieceD = piecePercents.pieceD;
+        scoreMap.pieceD = finalPiecePercents.pieceD ?? piecePercents.pieceD;
       }
-      if (showScales) scoreMap.scales = scalesPercent;
-      if (showSightReading) scoreMap.sightReading = sight.score ?? null;
-      if (showAural) scoreMap.auralTraining = aural.score ?? null;
+      if (showScales) scoreMap.scales = finalScalesPercent;
+      if (showSightReading) scoreMap.sightReading = finalSight?.score ?? null;
+      if (showAural) scoreMap.auralTraining = finalAural?.score ?? null;
       const nextItems = mergeIntoProgressItems(items, scoreMap);
 
       if (onSaveScores) {
@@ -354,17 +373,47 @@ export default function ProgressPanel({
 
       // 2) Also save a full lesson payload (Phase 2)
 
+      // For each element — if not touched today, carry forward from last lesson
+      const finalPieces = {};
+      for (const p of activePieces) {
+        const touched = isPieceTouched(pieces[p.id]);
+        finalPieces[p.id] = touched
+          ? pieces[p.id]
+          : lastPiecesMap[p.id] || { criteria: {} };
+      }
+
+      const scalesTouched = isScalesTouched(scales);
+      const finalScales = scalesTouched ? scales : lastScalesMap;
+      const finalScalesPercent = scalesTouched
+        ? scalesPercent
+        : lastScalesPercent;
+
+      const sightTouched = isSightAuralTouched(sight);
+      const finalSight = sightTouched ? sight : lastSight || null;
+
+      const auralTouched = isSightAuralTouched(aural);
+      const finalAural = auralTouched ? aural : lastAural || null;
+
+      // Recompute piece percents using final (merged) pieces
+      const finalPiecePercents = {};
+      for (const p of activePieces) {
+        finalPiecePercents[p.id] = computePiecePercent(
+          finalPieces[p.id],
+          p.criteria,
+        );
+      }
+
       const lessonPayload = buildLessonPayload({
         lessonDate,
         studentId,
         examPreparationCycleId: activeCycle?._id,
         instrument: activeCycle?.instrument,
-        pieces,
-        piecePercents,
-        scales,
-        scalesPercent,
-        sight,
-        aural,
+        pieces: finalPieces,
+        piecePercents: finalPiecePercents,
+        scales: finalScales,
+        scalesPercent: finalScalesPercent,
+        sight: finalSight,
+        aural: finalAural,
         teacherNarrative,
         share,
       });
