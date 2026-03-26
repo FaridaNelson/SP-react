@@ -114,6 +114,8 @@ export function mergeIntoProgressItems(items, scores) {
 export function buildLessonPayload({
   lessonDate,
   studentId,
+  examPreparationCycleId,
+  insturument,
   pieces,
   piecePercents,
   scales,
@@ -126,6 +128,8 @@ export function buildLessonPayload({
   return {
     lessonDate,
     studentId,
+    examPreparationCycleId,
+    insturument,
     share,
     pieces: Object.entries(pieces || {}).map(([pieceId, pv]) => ({
       pieceId,
