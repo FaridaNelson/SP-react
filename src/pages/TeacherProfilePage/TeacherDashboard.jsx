@@ -15,6 +15,7 @@ import "./TeacherDashboard.css";
 import BrandTag from "../../components/BrandTag/BrandTag";
 import StudentInformationView from "./views/StudentInformationView";
 import StudentDropdownMenu from "./components/StudentDropdownMenu";
+import OnboardingGuide from "../../components/OnboardingGuide/OnboardingGuide";
 
 /** Compose a display name from whichever fields are available. */
 function studentDisplayName(s) {
@@ -149,7 +150,7 @@ function SelectedStudentPane({
     listExamCycles(studentId)
       .then((data) => {
         if (cancelled) return;
-        const cycles = Array.isArray(data) ? data : data?.cycles ?? [];
+        const cycles = Array.isArray(data) ? data : (data?.cycles ?? []);
         const active = cycles.find(cycleIsActive);
         setFetchedCycle(active || null);
         setCyclesFetched(true);
@@ -157,7 +158,9 @@ function SelectedStudentPane({
       .catch(() => {
         if (!cancelled) setCyclesFetched(true);
       });
-    return () => { cancelled = true; };
+    return () => {
+      cancelled = true;
+    };
   }, [studentId, initialCycle]);
 
   // The cycle to pass down: prefer initialCycle (from history), else auto-fetched
@@ -170,7 +173,7 @@ function SelectedStudentPane({
     if (studentId) {
       listExamCycles(studentId)
         .then((data) => {
-          const cycles = Array.isArray(data) ? data : data?.cycles ?? [];
+          const cycles = Array.isArray(data) ? data : (data?.cycles ?? []);
           const active = cycles.find(cycleIsActive);
           setFetchedCycle(active || null);
         })
@@ -186,7 +189,7 @@ function SelectedStudentPane({
       if (studentId) {
         listExamCycles(studentId)
           .then((data) => {
-            const cycles = Array.isArray(data) ? data : data?.cycles ?? [];
+            const cycles = Array.isArray(data) ? data : (data?.cycles ?? []);
             const active = cycles.find(cycleIsActive);
             setFetchedCycle(active || null);
           })
@@ -200,7 +203,7 @@ function SelectedStudentPane({
   const handleNewExamCycle = useCallback(async () => {
     try {
       const data = await listExamCycles(studentId);
-      const cycles = Array.isArray(data) ? data : data?.cycles ?? [];
+      const cycles = Array.isArray(data) ? data : (data?.cycles ?? []);
       const instrument = student?.instrument || "Piano";
       const active = cycles.find(
         (c) => cycleIsActive(c) && c.instrument === instrument,
@@ -385,21 +388,11 @@ export default function TeacherDashboard({
 
   if (error || roster.length === 0) {
     return (
-      <main className="td__shell">
-        <div className="td__emptyCard">
-          <h2>To get started</h2>
-          <p className="td__emptySub">
-            Add your first student to begin tracking progress and attendance.
-          </p>
-          <button
-            className="td__btn td__btn--primary"
-            type="button"
-            onClick={() => setAddOpen(true)}
-          >
-            Add a student
-          </button>
-        </div>
-
+      <main
+        className="td__shell"
+        style={{ display: "flex", flexDirection: "column", height: "100vh" }}
+      >
+        <OnboardingGuide onAddStudent={() => setAddOpen(true)} />
         <AddStudentModal
           open={addOpen}
           onClose={() => setAddOpen(false)}
@@ -446,13 +439,21 @@ export default function TeacherDashboard({
               Your students
             </button>
             <div className="td__sectionTitle">Your students</div>
-            <button className="td__addStudent td__addStudent--desktop" onClick={() => setAddOpen(true)}>
+            <button
+              className="td__addStudent td__addStudent--desktop"
+              onClick={() => setAddOpen(true)}
+            >
               + Add student
             </button>
           </div>
 
-          <div className={`td__studentListWrap ${studentsExpanded ? "td__studentListWrap--expanded" : ""}`}>
-            <button className="td__addStudent td__addStudent--mobile" onClick={() => setAddOpen(true)}>
+          <div
+            className={`td__studentListWrap ${studentsExpanded ? "td__studentListWrap--expanded" : ""}`}
+          >
+            <button
+              className="td__addStudent td__addStudent--mobile"
+              onClick={() => setAddOpen(true)}
+            >
               + Add student
             </button>
             <ul className="td__studentList" role="list">
@@ -477,13 +478,17 @@ export default function TeacherDashboard({
                       >
                         <div
                           className="td__avatar"
-                          style={{ background: avatarGradient(studentDisplayName(s)) }}
+                          style={{
+                            background: avatarGradient(studentDisplayName(s)),
+                          }}
                         >
                           {initials(studentDisplayName(s))}
                         </div>
 
                         <div className="td__studentMain">
-                          <div className="td__studentName">{studentDisplayName(s)}</div>
+                          <div className="td__studentName">
+                            {studentDisplayName(s)}
+                          </div>
                           <div className="td__studentMeta">
                             {s.grade ? `Grade ${s.grade}` : "Grade —"} •{" "}
                             {s.instrument || "Piano"}
@@ -542,7 +547,9 @@ export default function TeacherDashboard({
                     const sid = selectedStudent._id || selectedStudent.id;
                     try {
                       const data = await listExamCycles(sid);
-                      const cycles = Array.isArray(data) ? data : data?.cycles ?? [];
+                      const cycles = Array.isArray(data)
+                        ? data
+                        : (data?.cycles ?? []);
                       const instrument = selectedStudent?.instrument || "Piano";
                       const active = cycles.find(
                         (c) => cycleIsActive(c) && c.instrument === instrument,
