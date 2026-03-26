@@ -58,94 +58,95 @@ export default function OnboardingGuide({ onAddStudent }) {
 
       <div className="ob__steps">
         {/* Step 1 */}
-        <div class="ob-step">
-          <div class="ob-step-num">1</div>
-          <div class="ob-step-body">
-            <div class="ob-step-title">
+        <div className="ob-step">
+          <div className="ob-step-num">1</div>
+          <div className="ob-step-body">
+            <div className="ob-step-title">
               Start your teaching journey by adding a student
             </div>
-            <div class="ob-step-desc">
+            <div className="ob-step-desc">
               Add each student you're preparing for an exam. Their profile holds
               all lesson history, grades, and homework in one place.
             </div>
-            <div class="ob-arrow-left">
+            <div className="ob-arrow-left">
               <svg
                 width="16"
                 height="16"
                 viewBox="0 0 24 24"
                 fill="none"
                 stroke="currentColor"
-                stroke-width="2.5"
-                stroke-linecap="round"
-                stroke-linejoin="round"
+                strokeWidth="2.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
               >
                 <line x1="19" y1="12" x2="5" y2="12" />
                 <polyline points="12 19 5 12 12 5" />
               </svg>
-              Click <strong style="margin:0 3px;">＋ Add student</strong> in the
-              sidebar to begin
+              Click <strong style={{ margin: "0 3px" }}>＋ Add student</strong>{" "}
+              in the sidebar to begin
             </div>
           </div>
         </div>
 
         {/* Step 2 */}
-        <div class="ob-step">
-          <div class="ob-step-num">2</div>
-          <div class="ob-step-body">
-            <div class="ob-step-title">
+        <div className="ob-step">
+          <div className="ob-step-num">2</div>
+          <div className="ob-step-body">
+            <div className="ob-step-title">
               Create a new exam cycle for your student
             </div>
-            <div class="ob-step-desc">
+            <div className="ob-step-desc">
               Set up their ABRSM grade, exam type, repertoire pieces, and target
               date. StudioPulse will track readiness automatically each lesson.
             </div>
-            <div class="ob-arrow-up">
+            <div className="ob-arrow-up">
               <svg
                 width="16"
                 height="16"
                 viewBox="0 0 24 24"
                 fill="none"
                 stroke="currentColor"
-                stroke-width="2.5"
-                stroke-linecap="round"
-                stroke-linejoin="round"
+                strokeWidth="2.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
               >
                 <line x1="12" y1="19" x2="12" y2="5" />
                 <polyline points="5 12 12 5 19 12" />
               </svg>
-              Use <strong style="margin:0 3px;">＋ New Exam Cycle</strong> in
-              the top bar
+              Use <strong style={{ margin: "0 3px" }}>＋ New Exam Cycle</strong>{" "}
+              in the top bar
             </div>
           </div>
         </div>
 
         {/* Step 3 */}
-        <div class="ob-step">
-          <div class="ob-step-num">3</div>
-          <div class="ob-step-body">
-            <div class="ob-step-title">
+        <div className="ob-step">
+          <div className="ob-step-num">3</div>
+          <div className="ob-step-body">
+            <div className="ob-step-title">
               Track progress &amp; share results with parents
             </div>
-            <div class="ob-step-desc">
+            <div className="ob-step-desc">
               After each lesson, log grades and set homework. Parents receive a
               clear summary so everyone stays aligned on exam readiness.
             </div>
-            <div class="ob-arrow-up">
+            <div className="ob-arrow-up">
               <svg
                 width="16"
                 height="16"
                 viewBox="0 0 24 24"
                 fill="none"
                 stroke="currentColor"
-                stroke-width="2.5"
-                stroke-linecap="round"
-                stroke-linejoin="round"
+                strokeWidth="2.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
               >
                 <line x1="12" y1="19" x2="12" y2="5" />
                 <polyline points="5 12 12 5 19 12" />
               </svg>
-              Use <strong style="margin:0 3px;">✏️ Today's progress</strong> in
-              the top bar
+              Use{" "}
+              <strong style={{ margin: "0 3px" }}>✏️ Today's progress</strong>{" "}
+              in the top bar
             </div>
           </div>
         </div>
