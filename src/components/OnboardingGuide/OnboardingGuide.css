@@ -8,6 +8,7 @@
   position: relative;
   overflow: hidden;
   animation: ob-fade-in 0.7s ease both;
+  background-color: var(--cream);
 }
 
 @keyframes ob-fade-in {
@@ -192,6 +193,27 @@
   color: #c9a84c;
   margin-top: 8px;
   animation: ob-bounce-up 1.4s ease-in-out infinite;
+}
+
+.ob__arrowLeft {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11px;
+  font-weight: 600;
+  color: #c9a84c;
+  margin-top: 8px;
+  animation: ob-bounce-left 1.4s ease-in-out infinite;
+}
+
+@keyframes ob-bounce-left {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  50% {
+    transform: translateX(-5px);
+  }
 }
 
 @keyframes ob-bounce-up {

@@ -386,22 +386,6 @@ export default function TeacherDashboard({
     );
   }
 
-  if (error || roster.length === 0) {
-    return (
-      <main
-        className="td__shell"
-        style={{ display: "flex", flexDirection: "column", height: "100vh" }}
-      >
-        <OnboardingGuide onAddStudent={() => setAddOpen(true)} />
-        <AddStudentModal
-          open={addOpen}
-          onClose={() => setAddOpen(false)}
-          onSubmit={handleAddStudent}
-        />
-      </main>
-    );
-  }
-
   return (
     <main className="td__shell">
       <div className="td__grid">
@@ -517,13 +501,7 @@ export default function TeacherDashboard({
         {/* MAIN CANVAS */}
         <section className="td__main">
           {!selectedStudent ? (
-            <div className="td__canvasEmpty">
-              <div className="td__emptyIcon">▥</div>
-              <h2 className="td__emptyTitle">Choose a student from the left</h2>
-              <p className="td__emptySub">
-                Their full progress will appear here
-              </p>
-            </div>
+            <OnboardingGuide onAddStudent={() => setAddOpen(true)} />
           ) : view === "snapshot" ? (
             <SelectedStudentPane
               student={selectedStudent}
