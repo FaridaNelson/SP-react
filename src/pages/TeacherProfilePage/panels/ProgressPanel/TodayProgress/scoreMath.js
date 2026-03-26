@@ -133,7 +133,7 @@ export function buildLessonPayload({
     lessonDate,
     studentId,
     examPreparationCycleId,
-    insturument,
+    instrument,
     lessonStartAt,
     share,
     pieces: Object.entries(pieces || {}).map(([pieceId, pv]) => ({
