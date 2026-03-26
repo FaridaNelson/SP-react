@@ -266,7 +266,12 @@ export default function ProgressPanel({
         auralTraining: baselineAural?.score ?? null,
       });
 
-      if (onSaveScores) await onSaveScores(nextItems);
+      if (onSaveScores)
+        await onSaveScores(nextItems, {
+          examPreparationCycleId: activeCycle?._id,
+          instrument: activeCycle?.instrument,
+          lessonDate,
+        });
 
       // Save a FULL lesson snapshot (Phase 2) so backend upsert doesn't wipe other fields
       const lessonPayload = buildLessonPayload({
@@ -340,7 +345,11 @@ export default function ProgressPanel({
       const nextItems = mergeIntoProgressItems(items, scoreMap);
 
       if (onSaveScores) {
-        await onSaveScores(nextItems);
+        await onSaveScores(nextItems, {
+          examPreparationCycleId: activeCycle?._id,
+          instrument: activeCycle?.instrument,
+          lessonDate,
+        });
       }
 
       // 2) Also save a full lesson payload (Phase 2)

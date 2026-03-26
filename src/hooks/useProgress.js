@@ -61,12 +61,14 @@ export function useProgress(studentId, { scope = "teacher" } = {}) {
 
   // Save scores — POST /api/score-entries/
   const saveScores = useCallback(
-    async (nextItems) => {
+    async (
+      nextItems,
+      { examPreparationCycleId, instrument, lessonDate } = {},
+    ) => {
       setItems(nextItems); // optimistic
       try {
         if (!studentId) return;
 
-        // Send each item as an individual score entry
         const promises = nextItems
           .filter((it) => it.score != null && it.score > 0)
           .map((it) =>
@@ -74,6 +76,9 @@ export function useProgress(studentId, { scope = "teacher" } = {}) {
               method: "POST",
               body: {
                 studentId,
+                examPreparationCycleId,
+                instrument,
+                lessonDate: lessonDate || new Date().toISOString().slice(0, 10),
                 elementId: it.id,
                 score: it.score,
               },
