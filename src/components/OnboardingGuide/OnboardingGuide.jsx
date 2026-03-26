@@ -58,87 +58,94 @@ export default function OnboardingGuide({ onAddStudent }) {
 
       <div className="ob__steps">
         {/* Step 1 */}
-        <div
-          className="ob__arrowLeft"
-          onClick={onAddStudent}
-          style={{ cursor: "pointer" }}
-        >
-          <svg
-            width="16"
-            height="16"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2.5"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
-            <line x1="19" y1="12" x2="5" y2="12" />
-            <polyline points="12 19 5 12 12 5" />
-          </svg>
-          Click <strong style={{ margin: "0 3px" }}>＋ Add student</strong> in
-          the sidebar
-        </div>
-
-        {/* Step 2 */}
-        <div className="ob__step">
-          <div className="ob__stepNum">2</div>
-          <div className="ob__stepBody">
-            <div className="ob__stepTitle">
-              Create a new exam cycle for your student
+        <div class="ob-step">
+          <div class="ob-step-num">1</div>
+          <div class="ob-step-body">
+            <div class="ob-step-title">
+              Start your teaching journey by adding a student
             </div>
-            <div className="ob__stepDesc">
-              Set up their ABRSM grade, exam type, repertoire pieces, and target
-              date. StudioPulse will track readiness automatically each lesson.
+            <div class="ob-step-desc">
+              Add each student you're preparing for an exam. Their profile holds
+              all lesson history, grades, and homework in one place.
             </div>
-            <div className="ob__arrowUp">
+            <div class="ob-arrow-left">
               <svg
                 width="16"
                 height="16"
                 viewBox="0 0 24 24"
                 fill="none"
                 stroke="currentColor"
-                strokeWidth="2.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
+                stroke-width="2.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <line x1="19" y1="12" x2="5" y2="12" />
+                <polyline points="12 19 5 12 12 5" />
+              </svg>
+              Click <strong style="margin:0 3px;">＋ Add student</strong> in the
+              sidebar to begin
+            </div>
+          </div>
+        </div>
+
+        {/* Step 2 */}
+        <div class="ob-step">
+          <div class="ob-step-num">2</div>
+          <div class="ob-step-body">
+            <div class="ob-step-title">
+              Create a new exam cycle for your student
+            </div>
+            <div class="ob-step-desc">
+              Set up their ABRSM grade, exam type, repertoire pieces, and target
+              date. StudioPulse will track readiness automatically each lesson.
+            </div>
+            <div class="ob-arrow-up">
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
               >
                 <line x1="12" y1="19" x2="12" y2="5" />
                 <polyline points="5 12 12 5 19 12" />
               </svg>
-              Use <strong style={{ margin: "0 3px" }}>＋ New Exam Cycle</strong>{" "}
-              from the student's Progress History
+              Use <strong style="margin:0 3px;">＋ New Exam Cycle</strong> in
+              the top bar
             </div>
           </div>
         </div>
 
         {/* Step 3 */}
-        <div className="ob__step">
-          <div className="ob__stepNum">3</div>
-          <div className="ob__stepBody">
-            <div className="ob__stepTitle">
+        <div class="ob-step">
+          <div class="ob-step-num">3</div>
+          <div class="ob-step-body">
+            <div class="ob-step-title">
               Track progress &amp; share results with parents
             </div>
-            <div className="ob__stepDesc">
+            <div class="ob-step-desc">
               After each lesson, log grades and set homework. Parents receive a
               clear summary so everyone stays aligned on exam readiness.
             </div>
-            <div className="ob__arrowUp">
+            <div class="ob-arrow-up">
               <svg
                 width="16"
                 height="16"
                 viewBox="0 0 24 24"
                 fill="none"
                 stroke="currentColor"
-                strokeWidth="2.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
+                stroke-width="2.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
               >
                 <line x1="12" y1="19" x2="12" y2="5" />
                 <polyline points="5 12 12 5 19 12" />
               </svg>
-              Use{" "}
-              <strong style={{ margin: "0 3px" }}>✏️ Today's progress</strong>{" "}
-              in the top bar
+              Use <strong style="margin:0 3px;">✏️ Today's progress</strong> in
+              the top bar
             </div>
           </div>
         </div>
