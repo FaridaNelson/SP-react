@@ -19,6 +19,22 @@ import SightreadingCard from "./SightreadingCard";
 import AuralCard from "./AuralCard";
 import { upsertLesson, getLatestLesson } from "../../../../lib/lessons";
 
+function isPieceTouched(pieceValue) {
+  if (!pieceValue?.criteria) return false;
+  return Object.values(pieceValue.criteria).some((c) =>
+    Number.isFinite(c?.score),
+  );
+}
+
+function isScalesTouched(scalesMap) {
+  if (!scalesMap) return false;
+  return Object.values(scalesMap).some((s) => s?.ready === true);
+}
+
+function isSightAuralTouched(val) {
+  return val?.score !== undefined && val?.score !== null && val?.score !== "";
+}
+
 export default function ProgressPanel({
   open,
   onClose,
@@ -301,28 +317,8 @@ export default function ProgressPanel({
     }
   }
 
-  // Returns true if teacher entered at least one score for this piece today
-  function isPieceTouched(pieceValue) {
-    if (!pieceValue?.criteria) return false;
-    return Object.values(pieceValue.criteria).some((c) =>
-      Number.isFinite(c?.score),
-    );
-  }
-
-  // Returns true if teacher explicitly changed any scale today
-  function isScalesTouched(scalesMap) {
-    if (!scalesMap) return false;
-    return Object.values(scalesMap).some((s) => s?.ready === true);
-  }
-
-  // Returns true if teacher entered a sight/aural score today
-  function isSightAuralTouched(val) {
-    return val?.score !== undefined && val?.score !== null && val?.score !== "";
-  }
-
   async function handleSave({ share = false } = {}) {
     setErr("");
-    // Phase 1: just update the existing progress snapshot with new scores (no lesson creation yet)
 
     const todayStr = new Date().toISOString().slice(0, 10);
     if (lessonDate > todayStr) {
@@ -349,31 +345,8 @@ export default function ProgressPanel({
     try {
       setBusy(true);
 
-      // 1) Update your EXISTING progress snapshot items (Phase 1)
-      const scoreMap = {
-        pieceA: finalPiecePercents.pieceA ?? piecePercents.pieceA,
-        pieceB: finalPiecePercents.pieceB ?? piecePercents.pieceB,
-        pieceC: finalPiecePercents.pieceC ?? piecePercents.pieceC,
-      };
-      if (isPerformance) {
-        scoreMap.pieceD = finalPiecePercents.pieceD ?? piecePercents.pieceD;
-      }
-      if (showScales) scoreMap.scales = finalScalesPercent;
-      if (showSightReading) scoreMap.sightReading = finalSight?.score ?? null;
-      if (showAural) scoreMap.auralTraining = finalAural?.score ?? null;
-      const nextItems = mergeIntoProgressItems(items, scoreMap);
-
-      if (onSaveScores) {
-        await onSaveScores(nextItems, {
-          examPreparationCycleId: activeCycle?._id,
-          instrument: activeCycle?.instrument,
-          lessonDate,
-        });
-      }
-
-      // 2) Also save a full lesson payload (Phase 2)
-
-      // For each element — if not touched today, carry forward from last lesson
+      // ── Carry-forward logic ──
+      // For each element — if not touched today, use last lesson's data
       const finalPieces = {};
       for (const p of activePieces) {
         const touched = isPieceTouched(pieces[p.id]);
@@ -403,6 +376,29 @@ export default function ProgressPanel({
         );
       }
 
+      // 1) Update progress snapshot
+      const scoreMap = {
+        pieceA: finalPiecePercents.pieceA ?? piecePercents.pieceA,
+        pieceB: finalPiecePercents.pieceB ?? piecePercents.pieceB,
+        pieceC: finalPiecePercents.pieceC ?? piecePercents.pieceC,
+      };
+      if (isPerformance) {
+        scoreMap.pieceD = finalPiecePercents.pieceD ?? piecePercents.pieceD;
+      }
+      if (showScales) scoreMap.scales = finalScalesPercent;
+      if (showSightReading) scoreMap.sightReading = finalSight?.score ?? null;
+      if (showAural) scoreMap.auralTraining = finalAural?.score ?? null;
+      const nextItems = mergeIntoProgressItems(items, scoreMap);
+
+      if (onSaveScores) {
+        await onSaveScores(nextItems, {
+          examPreparationCycleId: activeCycle?._id,
+          instrument: activeCycle?.instrument,
+          lessonDate,
+        });
+      }
+
+      // 2) Save full lesson payload
       const lessonPayload = buildLessonPayload({
         lessonDate,
         studentId,
@@ -417,13 +413,13 @@ export default function ProgressPanel({
         teacherNarrative,
         share,
       });
+
       const savedLesson = await upsertLesson(lessonPayload);
       console.log("SAVED LESSON:", savedLesson);
 
-      // update the "Last class" UI immediately
       setLatestLesson(savedLesson);
       onLessonSaved?.(savedLesson);
-      localStorage.removeItem(draftKey); // clear draft on successful save
+      localStorage.removeItem(draftKey);
       resetForm();
       onClose?.();
     } catch (e) {
