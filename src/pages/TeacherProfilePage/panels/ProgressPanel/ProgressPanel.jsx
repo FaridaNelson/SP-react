@@ -46,11 +46,14 @@ export default function ProgressPanel({
   const activePieces = useMemo(() => {
     const base = isPerformance ? ALL_PIECES : PIECES;
     // Only show pieces that are in requiredElements (if available)
-    const filtered = requiredElements.length > 0
-      ? base.filter((p) => requiredElements.includes(p.id))
-      : base;
+    const filtered =
+      requiredElements.length > 0
+        ? base.filter((p) => requiredElements.includes(p.id))
+        : base;
     return filtered.map((p) => {
-      const match = cyclePieces.find((cp) => cp.key === p.id || cp.label === p.title);
+      const match = cyclePieces.find(
+        (cp) => cp.key === p.id || cp.label === p.title,
+      );
       const pieceName = match?.title || "";
       return {
         ...p,
@@ -59,9 +62,17 @@ export default function ProgressPanel({
     });
   }, [isPerformance, requiredElements, cyclePieces]);
 
-  const showScales = !isPerformance && (requiredElements.length === 0 || requiredElements.includes("scales"));
-  const showSightReading = !isPerformance && (requiredElements.length === 0 || requiredElements.includes("sightReading"));
-  const showAural = !isPerformance && (requiredElements.length === 0 || requiredElements.includes("auralTraining"));
+  const showScales =
+    !isPerformance &&
+    (requiredElements.length === 0 || requiredElements.includes("scales"));
+  const showSightReading =
+    !isPerformance &&
+    (requiredElements.length === 0 ||
+      requiredElements.includes("sightReading"));
+  const showAural =
+    !isPerformance &&
+    (requiredElements.length === 0 ||
+      requiredElements.includes("auralTraining"));
 
   // Scales curriculum for this student (used to show scale names and which scales are relevant for this student's grade level)
   const gradeScales = useMemo(() => {
@@ -261,6 +272,8 @@ export default function ProgressPanel({
       const lessonPayload = buildLessonPayload({
         lessonDate,
         studentId,
+        examPreparationCycleId: activeCycle?._id,
+        instrument: activeCycle?.instrument,
         pieces: mergedPieces,
         piecePercents: mergedPiecePercents,
         scales: baselineScales,
@@ -335,6 +348,8 @@ export default function ProgressPanel({
       const lessonPayload = buildLessonPayload({
         lessonDate,
         studentId,
+        examPreparationCycleId: activeCycle?._id,
+        instrument: activeCycle?.instrument,
         pieces,
         piecePercents,
         scales,
