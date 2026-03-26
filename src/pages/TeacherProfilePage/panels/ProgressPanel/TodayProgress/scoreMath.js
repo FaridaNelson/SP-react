@@ -125,11 +125,16 @@ export function buildLessonPayload({
   teacherNarrative,
   share,
 }) {
+  // Build lessonStartAt from lessonDate (Using noon to avoid timezone issues)
+  const [y, m, d] = String(lessonDate).split("-").map(Number);
+  const lessonStartAt = new Date(y, m - 1, d, 12, 0, 0).toISOString();
+
   return {
     lessonDate,
     studentId,
     examPreparationCycleId,
     insturument,
+    lessonStartAt,
     share,
     pieces: Object.entries(pieces || {}).map(([pieceId, pv]) => ({
       pieceId,
