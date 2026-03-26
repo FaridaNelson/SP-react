@@ -115,7 +115,7 @@ export function buildLessonPayload({
   lessonDate,
   studentId,
   examPreparationCycleId,
-  insturument,
+  instrument,
   pieces,
   piecePercents,
   scales,
