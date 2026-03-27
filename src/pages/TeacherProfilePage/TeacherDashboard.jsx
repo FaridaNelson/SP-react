@@ -117,6 +117,7 @@ function SelectedStudentPane({
   onToast,
   initialCycle,
   onGoToHistory,
+  obHoveredStep,
 }) {
   const studentId = student?._id || student?.id;
 
@@ -243,6 +244,7 @@ function SelectedStudentPane({
         onToast={handleExamCycleAction}
         initialCycle={resolvedCycle}
         onGoToHistory={onGoToHistory}
+        obHoveredStep={obHoveredStep}
       />
 
       <ProgressPanel
@@ -297,6 +299,8 @@ export default function TeacherDashboard({
   const [query, setQuery] = useState("");
   const [addOpen, setAddOpen] = useState(false);
   const [toast, setToast] = useState(null);
+
+  const [obHoveredStep, setObHoveredStep] = useState(null);
 
   // Mobile collapsible student list
   const [studentsExpanded, setStudentsExpanded] = useState(false);
@@ -386,6 +390,8 @@ export default function TeacherDashboard({
     );
   }
 
+  console.log("obHoveredStep:", obHoveredStep);
+
   return (
     <main className="td__shell">
       <div className="td__grid">
@@ -424,7 +430,7 @@ export default function TeacherDashboard({
             </button>
             <div className="td__sectionTitle">Your students</div>
             <button
-              className="td__addStudent td__addStudent--desktop"
+              className={`td__addStudent td__addStudent--desktop ${obHoveredStep === 1 ? "ob-btn-flash-sidebar" : ""}`}
               onClick={() => setAddOpen(true)}
             >
               + Add student
@@ -435,7 +441,7 @@ export default function TeacherDashboard({
             className={`td__studentListWrap ${studentsExpanded ? "td__studentListWrap--expanded" : ""}`}
           >
             <button
-              className="td__addStudent td__addStudent--mobile"
+              className={`td__addStudent td__addStudent--mobile ${obHoveredStep === 1 ? "ob-btn-flash-sidebar" : ""}`}
               onClick={() => setAddOpen(true)}
             >
               + Add student
@@ -501,7 +507,12 @@ export default function TeacherDashboard({
         {/* MAIN CANVAS */}
         <section className="td__main">
           {!selectedStudent ? (
-            <OnboardingGuide onAddStudent={() => setAddOpen(true)} />
+            <OnboardingGuide
+              onAddStudent={() => setAddOpen(true)}
+              onStepHover={(step) => setObHoveredStep(step)}
+              onStepLeave={() => setObHoveredStep(null)}
+              obHoveredStep={obHoveredStep}
+            />
           ) : view === "snapshot" ? (
             <SelectedStudentPane
               student={selectedStudent}
@@ -511,6 +522,7 @@ export default function TeacherDashboard({
               onToast={showToast}
               initialCycle={selectedCycle}
               onGoToHistory={() => setView("history")}
+              obHoveredStep={obHoveredStep}
             />
           ) : view === "history" ? (
             <div className="td__historyView">

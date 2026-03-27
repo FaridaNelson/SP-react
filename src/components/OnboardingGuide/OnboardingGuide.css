@@ -8,7 +8,11 @@
   position: relative;
   overflow: hidden;
   animation: ob-fade-in 0.7s ease both;
-  background-color: var(--cream);
+}
+
+.ob__screen .panelHeader {
+  width: 100%;
+  align-self: stretch;
 }
 
 @keyframes ob-fade-in {
@@ -51,44 +55,46 @@
   position: relative;
   z-index: 1;
 }
-
-.ob__welcomeRow {
+.ob__welcome-row {
   display: inline-flex;
   align-items: center;
   gap: 10px;
   margin-bottom: 8px;
 }
-
-.ob__welcomeLabel {
+.ob__logo-mark {
+  display: none;
+}
+.ob__welcome-label {
   font-size: 11px;
   font-weight: 600;
   letter-spacing: 0.16em;
   text-transform: uppercase;
-  color: #c9a84c;
+  color: var(--gold);
+  margin-bottom: 0;
   white-space: nowrap;
 }
-
 .ob__title {
   font-family: "Cormorant Garamond", serif;
   font-size: 32px;
   font-weight: 400;
-  color: #1c1a17;
+  color: var(--ink);
   line-height: 1.15;
   margin-bottom: 10px;
+  white-space: nowrap;
 }
-
 .ob__title em {
   font-style: italic;
-  color: #c9a84c;
+  color: var(--gold);
 }
-
 .ob__subtitle {
   font-size: 15px;
-  color: #7a766d;
+  color: var(--ink-muted);
   line-height: 1.6;
   margin: 0 auto;
+  white-space: nowrap;
 }
 
+/* steps */
 .ob__steps {
   display: flex;
   flex-direction: column;
@@ -99,37 +105,25 @@
   z-index: 1;
 }
 
-.ob__step {
+.ob-step {
   display: flex;
   align-items: flex-start;
   gap: 20px;
-  background: #fdf9f4;
-  border: 1px solid rgba(28, 26, 23, 0.1);
+  background: var(--warm-white);
+  border: 1px solid var(gray);
   border-radius: 16px;
   padding: 20px 22px;
   position: relative;
+  cursor: pointer;
   transition:
     border-color 0.2s,
     box-shadow 0.2s;
 }
-
-.ob__step:hover {
+.ob-step:hover {
   border-color: rgba(201, 168, 76, 0.35);
   box-shadow: 0 4px 20px rgba(201, 168, 76, 0.08);
 }
-
-/* connector line between steps */
-.ob__step:not(:last-child)::after {
-  content: "";
-  position: absolute;
-  left: 38px;
-  bottom: -21px;
-  width: 1px;
-  height: 21px;
-  background: linear-gradient(to bottom, rgba(28, 26, 23, 0.1), transparent);
-}
-
-.ob__stepNum {
+.ob-step-num {
   width: 36px;
   height: 36px;
   flex-shrink: 0;
@@ -140,72 +134,54 @@
   font-family: "Cormorant Garamond", serif;
   font-size: 17px;
   font-weight: 600;
-  color: #c9a84c;
-  background: #f5edd0;
+  color: var(--gold);
+  background: var(--gold-pale);
   border: 1.5px solid rgba(201, 168, 76, 0.3);
 }
-
-.ob__stepBody {
+.ob-step-body {
   flex: 1;
   min-width: 0;
 }
-
-.ob__stepTitle {
+.ob-step-title {
   font-size: 14px;
   font-weight: 600;
-  color: #1c1a17;
+  color: var(--ink);
   margin-bottom: 3px;
   line-height: 1.3;
 }
-
-.ob__stepDesc {
+.ob-step-desc {
   font-size: 12px;
-  color: #7a766d;
+  color: var(--ink-muted);
   line-height: 1.5;
 }
 
-.ob__arrowBadge {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  background: #c9a84c;
-  color: white;
-  border: none;
-  border-radius: 20px;
-  padding: 7px 16px;
-  font-size: 12px;
-  font-weight: 600;
-  cursor: pointer;
-  margin-top: 10px;
-  transition: background 0.15s;
-}
-
-.ob__arrowBadge:hover {
-  background: #b8932a;
-}
-
-.ob__arrowUp {
+/* arrow pointing to sidebar / topbar buttons */
+.ob-arrow-badge {
   display: inline-flex;
   align-items: center;
   gap: 5px;
+  background: rgba(201, 168, 76, 0.1);
+  border: 1px solid rgba(201, 168, 76, 0.25);
+  border-radius: 8px;
+  padding: 4px 10px;
   font-size: 11px;
   font-weight: 600;
-  color: #c9a84c;
+  color: var(--gold);
   margin-top: 8px;
-  animation: ob-bounce-up 1.4s ease-in-out infinite;
+  white-space: nowrap;
 }
 
-.ob__arrowLeft {
+/* animated arrow pointing left toward sidebar */
+.ob-arrow-left {
   display: inline-flex;
   align-items: center;
   gap: 5px;
   font-size: 11px;
   font-weight: 600;
-  color: #c9a84c;
+  color: var(--gold);
   margin-top: 8px;
   animation: ob-bounce-left 1.4s ease-in-out infinite;
 }
-
 @keyframes ob-bounce-left {
   0%,
   100% {
@@ -216,6 +192,17 @@
   }
 }
 
+/* animated arrow pointing up toward topbar */
+.ob-arrow-up {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--gold);
+  margin-top: 8px;
+  animation: ob-bounce-up 1.4s ease-in-out infinite;
+}
 @keyframes ob-bounce-up {
   0%,
   100% {
@@ -226,16 +213,13 @@
   }
 }
 
-@media (max-width: 768px) {
-  .ob__screen {
-    padding: 20px 16px;
-  }
-  .ob__title {
-    font-size: 22px;
-    white-space: normal;
-  }
-  .ob__subtitle {
-    font-size: 13px;
-    white-space: normal;
-  }
+/* connector line between steps */
+.ob-steps .ob-step:not(:last-child)::after {
+  content: "";
+  position: absolute;
+  left: 38px;
+  bottom: -21px;
+  width: 1px;
+  height: 21px;
+  background: linear-gradient(to bottom, var(--border), transparent);
 }
