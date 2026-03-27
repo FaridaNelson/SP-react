@@ -389,13 +389,15 @@
   border-radius: 20px;
   font: 500 13px/1 var(--font-sans, "DM Sans", sans-serif);
   cursor: pointer;
-  transition: filter 0.12s, background 0.12s;
+  transition:
+    filter 0.12s,
+    background 0.12s;
 }
 
 .tsi__cycleBtn--complete {
-  background: #7A9E87;
-  color: #fff;
-  border: none;
+  background: transparent;
+  border: 1.5px solid #7a9e87;
+  color: #7a9e87;
 }
 
 .tsi__cycleBtn--complete:hover {
@@ -404,7 +406,7 @@
 
 .tsi__cycleBtn--withdraw {
   background: transparent;
-  border: 1.5px solid #D4806A;
+  border: 1.5px solid #d4806a;
   color: #8b3a22;
 }
 
@@ -417,7 +419,7 @@
 .tsi__examGradeLabel {
   font: 600 11px/1 var(--font-sans, "DM Sans", sans-serif);
   letter-spacing: 0.1em;
-  color: #C9A84C;
+  color: #c9a84c;
   padding: 14px 14px 0;
 }
 
@@ -437,7 +439,7 @@
 .tsi__daysToGo {
   font: 700 12px/1 var(--font-sans, "DM Sans", sans-serif);
   letter-spacing: 0.08em;
-  color: #C9A84C;
+  color: #c9a84c;
   text-align: right;
   margin-top: auto;
   padding-top: 8px;
@@ -458,7 +460,10 @@
 /* Empty state when no active exam cycle */
 .tsi__emptyState {
   margin: 8px 0 0;
-  font: 500 14px/1.5 "DM Sans", var(--td-sans), sans-serif;
+  font:
+    500 14px/1.5 "DM Sans",
+    var(--td-sans),
+    sans-serif;
   color: rgba(31, 28, 24, 0.55);
   text-align: center;
 }
@@ -470,7 +475,7 @@
   border: none;
   background: none;
   font: inherit;
-  color: var(--td-gold, #C9A84C);
+  color: var(--td-gold, #c9a84c);
   text-decoration: underline;
   cursor: pointer;
 }

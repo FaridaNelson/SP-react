@@ -5,6 +5,7 @@ import CycleCompleteWizard from "../../../components/ExamCycle/CycleCompleteWiza
 import AttendanceCalendar from "../attendance/AttendanceCalendar";
 import { api } from "../../../lib/api";
 import "./TeacherStudentInfo.css";
+import PanelHeader from "../../../components/PanelHeader/PanelHeader";
 
 function cycleStatus(c) {
   return c?.cycleStatus || c?.status || "";
@@ -42,6 +43,7 @@ export default function TeacherStudentInfo({
   onToast,
   initialCycle,
   onGoToHistory,
+  obHoveredStep,
 }) {
   const { id: studentId, _id } = student || {};
   const sid = _id || studentId || "";
@@ -94,7 +96,9 @@ export default function TeacherStudentInfo({
     setHistoryLoading(true);
     try {
       const cycleParam = activeCycleId ? `&cycleId=${activeCycleId}` : "";
-      const data = await api(`/api/score-entries/student/${sid}?limit=50${cycleParam}`);
+      const data = await api(
+        `/api/score-entries/student/${sid}?limit=50${cycleParam}`,
+      );
       setHistory(Array.isArray(data) ? data : data.items || data.entries || []);
     } catch (e) {
       console.error("Failed to load score history", e);
@@ -124,8 +128,13 @@ export default function TeacherStudentInfo({
   };
 
   const ALL_ELEMENT_IDS = [
-    "pieceA", "pieceB", "pieceC", "pieceD",
-    "scales", "sightReading", "auralTraining",
+    "pieceA",
+    "pieceB",
+    "pieceC",
+    "pieceD",
+    "scales",
+    "sightReading",
+    "auralTraining",
   ];
 
   const requiredElements = activeCycle?.progressSummary?.requiredElements;
@@ -159,43 +168,13 @@ export default function TeacherStudentInfo({
 
   return (
     <section className="teacherStudentInfo">
-      <header className="tsi__pageHead">
-        <div className="tsi__pageTitleWrap">
-          <h1 className="tsi__pageTitle">{displayName}</h1>
-          <div className="tsi__pageMeta">
-            {activeCycle?.examGrade
-              ? `Grade ${activeCycle.examGrade}`
-              : student.grade
-                ? `Grade ${student.grade}`
-                : "Grade —"}{" "}
-            • {activeCycle?.instrument || student.instrument || "Piano"}
-            {activeCycle?.examType ? ` • ${activeCycle.examType}` : ""}
-          </div>
-        </div>
-
-        <div className="tsi__pageActions">
-          {!isActiveCycleReadOnly && hasActiveCycle && (
-            <>
-              <button type="button" className="td__pillBtn">
-                <span className="td__pillIcon">📅</span> Schedule a lesson
-              </button>
-
-              <button type="button" className="td__pillBtn td__pillBtn--dark">
-                ✉️ Message parent
-              </button>
-
-              <button
-                type="button"
-                className="td__pillBtn td__pillBtn--gold"
-                onClick={onOpenProgress}
-              >
-                ✏️ Today's progress
-              </button>
-            </>
-          )}
-        </div>
-      </header>
-
+      <PanelHeader
+        displayName={displayName}
+        subtitle={`${activeCycle?.examGrade ? `Grade ${activeCycle.examGrade}` : student.grade ? `Grade ${student.grade}` : "Grade —"} • ${activeCycle?.instrument || student.instrument || "Piano"}${activeCycle?.examType ? ` • ${activeCycle.examType}` : ""}`}
+        onOpenProgress={onOpenProgress}
+        obHoveredStep={obHoveredStep}
+        showActions={!isActiveCycleReadOnly && hasActiveCycle}
+      />
       {/* Main 2-column layout */}
       <div className="tsi__layout">
         {/* LEFT COLUMN */}
@@ -234,18 +213,19 @@ export default function TeacherStudentInfo({
                 </div>
 
                 {/* Exam name */}
-                {examLabel && (
-                  <div className="tsi__examName">{examLabel}</div>
-                )}
+                {examLabel && <div className="tsi__examName">{examLabel}</div>}
 
                 {/* Exam date */}
                 {activeCycle?.examDate && (
                   <div className="tsi__examDate">
-                    {new Date(activeCycle.examDate).toLocaleDateString("en-GB", {
-                      day: "numeric",
-                      month: "long",
-                      year: "numeric",
-                    })}
+                    {new Date(activeCycle.examDate).toLocaleDateString(
+                      "en-GB",
+                      {
+                        day: "numeric",
+                        month: "long",
+                        year: "numeric",
+                      },
+                    )}
                   </div>
                 )}
 
@@ -261,7 +241,8 @@ export default function TeacherStudentInfo({
                       value={
                         isActiveCycleReadOnly
                           ? Math.round(
-                              activeCycle?.progressSummary?.overallReadiness ?? 0,
+                              activeCycle?.progressSummary?.overallReadiness ??
+                                0,
                             )
                           : readiness
                       }
@@ -429,7 +410,8 @@ export default function TeacherStudentInfo({
                               ) : null}
                               {h.articulation ? (
                                 <div className="tsi__historyNote">
-                                  <strong>Articulation:</strong> {h.articulation}
+                                  <strong>Articulation:</strong>{" "}
+                                  {h.articulation}
                                 </div>
                               ) : null}
                               <div className="tsi__entryTime">

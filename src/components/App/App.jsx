@@ -24,6 +24,7 @@ import ConfirmationModal from "../ConfirmationModal/ConfirmationModal";
 import ProtectedRoute from "../ProtectedRoute";
 import { api } from "../../lib/api.js";
 import NotFound from "../../pages/NotFound.jsx";
+import "../../styles/globals.css";
 
 const normalizeRoles = (user) =>
   Array.isArray(user?.roles) ? user.roles : user?.role ? [user.role] : [];

@@ -1,0 +1,48 @@
+.panelHeader {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 14px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid rgba(31, 28, 24, 0.1);
+}
+
+.panelHeader__titleWrap {
+  flex: 1;
+  min-width: 0;
+}
+
+.panelHeader__title {
+  font-family: "Cormorant Garamond", serif;
+  font-size: 22px;
+
+  font-weight: 500;
+  color: var(--ink);
+  margin: 0;
+  line-height: 1;
+}
+
+.panelHeader__meta {
+  margin-top: 6px;
+  font: 500 12px/1.2 var(--td-sans);
+  color: rgba(31, 28, 24, 0.55);
+}
+
+.panelHeader__actions {
+  display: flex;
+  gap: 10px;
+  align-content: flex-end;
+}
+
+@media (max-width: 768px) {
+  .panelHeader {
+    flex-direction: column;
+    gap: 12px;
+  }
+  .panelHeader__actions {
+    width: 100%;
+    flex-direction: column;
+  }
+  .panelHeader__actions button {
+    width: 100%;
+  }
+}

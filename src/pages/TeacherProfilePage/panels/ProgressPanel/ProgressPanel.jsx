@@ -677,8 +677,6 @@ export default function ProgressPanel({
           </button>
         </footer>
       </div>
-
-      {/* Basic styles so you can see it immediately; move to CSS file later */}
     </div>
   );
 }

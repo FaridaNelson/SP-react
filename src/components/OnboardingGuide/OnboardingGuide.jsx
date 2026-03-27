@@ -1,13 +1,28 @@
 import "./OnboardingGuide.css";
+import PanelHeader from "../PanelHeader/PanelHeader";
 
-export default function OnboardingGuide({ onAddStudent }) {
+export default function OnboardingGuide({
+  onAddStudent,
+  onStepHover,
+  onStepLeave,
+  obHoveredStep,
+}) {
   return (
     <div className="ob__screen">
+      <PanelHeader
+        title="Getting Started"
+        displayName="Your Dashboard Action Buttons   ->"
+        obHoveredStep={obHoveredStep}
+        showActions={true}
+        onSchedule={null}
+        onMessage={null}
+        onOpenProgress={null}
+      />
       {/* decorative staff lines via CSS ::before */}
 
       <div className="ob__hero">
-        <div className="ob__welcomeRow">
-          <span className="ob__welcomeLabel">Welcome to StudioPulse</span>
+        <div className="ob__welcome-row">
+          <span className="ob__welcome-label">Welcome to StudioPulse</span>
           <svg
             width="90"
             height="16"
@@ -58,7 +73,11 @@ export default function OnboardingGuide({ onAddStudent }) {
 
       <div className="ob__steps">
         {/* Step 1 */}
-        <div className="ob-step">
+        <div
+          className="ob-step"
+          onMouseEnter={() => onStepHover(1)}
+          onMouseLeave={onStepLeave}
+        >
           <div className="ob-step-num">1</div>
           <div className="ob-step-body">
             <div className="ob-step-title">
@@ -89,7 +108,11 @@ export default function OnboardingGuide({ onAddStudent }) {
         </div>
 
         {/* Step 2 */}
-        <div className="ob-step">
+        <div
+          className="ob-step"
+          onMouseEnter={() => onStepHover(2)}
+          onMouseLeave={onStepLeave}
+        >
           <div className="ob-step-num">2</div>
           <div className="ob-step-body">
             <div className="ob-step-title">
@@ -120,7 +143,11 @@ export default function OnboardingGuide({ onAddStudent }) {
         </div>
 
         {/* Step 3 */}
-        <div className="ob-step">
+        <div
+          className="ob-step"
+          onMouseEnter={() => onStepHover(3)}
+          onMouseLeave={onStepLeave}
+        >
           <div className="ob-step-num">3</div>
           <div className="ob-step-body">
             <div className="ob-step-title">

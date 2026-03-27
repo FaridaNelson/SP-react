@@ -57,6 +57,83 @@ body {
   padding: 24px;
 }
 
+/* ── ONBOARDING FLASH ANIMATIONS ── */
+@keyframes btn-flash-topbar {
+  0%,
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(201, 168, 76, 0);
+  }
+  30% {
+    transform: scale(1.09);
+    box-shadow: 0 0 0 6px rgba(201, 168, 76, 0.28);
+  }
+  60% {
+    transform: scale(1.05);
+    box-shadow: 0 0 0 12px rgba(201, 168, 76, 0.08);
+  }
+}
+
+@keyframes btn-flash-progress {
+  0%,
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(201, 168, 76, 0);
+  }
+  30% {
+    transform: scale(1.09);
+    box-shadow: 0 0 0 6px rgba(201, 168, 76, 0.4);
+  }
+  60% {
+    transform: scale(1.05);
+    box-shadow: 0 0 0 12px rgba(201, 168, 76, 0.12);
+  }
+}
+
+@keyframes btn-flash-sidebar {
+  0%,
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(201, 168, 76, 0);
+    background: rgba(201, 168, 76, 0.05);
+    border-color: rgba(201, 168, 76, 0.3);
+  }
+  30% {
+    transform: scale(1.08);
+    box-shadow: 0 0 0 6px rgba(201, 168, 76, 0.18);
+    background: rgba(201, 168, 76, 0.22);
+    border-color: rgba(201, 168, 76, 0.8);
+  }
+  60% {
+    transform: scale(1.04);
+    box-shadow: 0 0 0 10px rgba(201, 168, 76, 0.06);
+  }
+}
+
+.ob-btn-flash-sidebar {
+  animation: btn-flash-sidebar 0.9s ease-in-out infinite !important;
+  border-style: solid !important;
+  z-index: 10;
+  position: relative;
+}
+
+.ob-btn-flash-topbar {
+  animation: btn-flash-topbar 0.9s ease-in-out infinite !important;
+  z-index: 10;
+  position: relative;
+}
+
+.ob-btn-flash-progress {
+  animation: btn-flash-progress 0.9s ease-in-out infinite !important;
+  z-index: 10;
+  position: relative;
+}
+
+.ob-topbar-dim {
+  opacity: 0.35;
+  transition: opacity 0.2s;
+}
+
 @media (max-width: 1024px) {
   .container {
     padding: 0 32px;
