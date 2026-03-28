@@ -43,9 +43,11 @@ export function useProgress(studentId, { scope = "teacher" } = {}) {
 
         if (!alive) return;
 
-        // The student record may carry progressSummary or items
+        const payload = scope === "parent" ? data : data?.student || data;
+
         const progressItems =
-          data?.progressSummary?.items || data?.items || null;
+          payload?.progressSummary?.items || payload?.items || null;
+
         setItems(progressItems?.length ? progressItems : DEFAULT_ITEMS);
       } catch {
         if (alive) setItems(DEFAULT_ITEMS);

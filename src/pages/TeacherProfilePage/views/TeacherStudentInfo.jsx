@@ -127,6 +127,16 @@ export default function TeacherStudentInfo({
     auralTraining: "Aural Training",
   };
 
+  const DEFAULT_WEIGHTS = {
+    scales: 14,
+    pieceA: 20,
+    pieceB: 20,
+    pieceC: 20,
+    pieceD: 20,
+    sightReading: 14,
+    auralTraining: 12,
+  };
+
   const ALL_ELEMENT_IDS = [
     "pieceA",
     "pieceB",
@@ -150,17 +160,32 @@ export default function TeacherStudentInfo({
 
   const filteredItems = useMemo(() => {
     const latestScores = activeCycle?.progressSummary?.latestScores || {};
-    return elementIds.map((id) => {
-      const existing = items.find((it) => it.id === id);
-      if (existing) return existing;
-      return {
-        id,
-        label: ELEMENT_LABELS[id] || id,
-        weight: 0,
-        score: latestScores[id] ?? 0,
-      };
-    });
-  }, [items, elementIds, activeCycle]);
+
+    return elementIds.map((id) => ({
+      id,
+      label: ELEMENT_LABELS[id] || id,
+      weight: DEFAULT_WEIGHTS[id] || 0,
+      score: latestScores[id] ?? 0,
+    }));
+  }, [elementIds, activeCycle]);
+
+  const computedReadiness = useMemo(() => {
+    if (!filteredItems.length) return 0;
+
+    const weighted = filteredItems.reduce(
+      (sum, it) => sum + (Number(it.score) || 0) * (Number(it.weight) || 0),
+      0,
+    );
+
+    const totalWeight = filteredItems.reduce(
+      (sum, it) => sum + (Number(it.weight) || 0),
+      0,
+    );
+
+    if (!totalWeight) return 0;
+
+    return Math.round(weighted / totalWeight);
+  }, [filteredItems]);
 
   // Exam card derived data
   const examLabel = getExamLabel(activeCycle);
@@ -174,6 +199,7 @@ export default function TeacherStudentInfo({
         onOpenProgress={onOpenProgress}
         obHoveredStep={obHoveredStep}
         showActions={!isActiveCycleReadOnly && hasActiveCycle}
+        onNewCycle={onGoToHistory}
       />
       {/* Main 2-column layout */}
       <div className="tsi__layout">
@@ -238,14 +264,7 @@ export default function TeacherStudentInfo({
                 <div className="tsi__examBody">
                   <div className="tsi__donutWrap">
                     <ProgressDonut
-                      value={
-                        isActiveCycleReadOnly
-                          ? Math.round(
-                              activeCycle?.progressSummary?.overallReadiness ??
-                                0,
-                            )
-                          : readiness
-                      }
+                      value={computedReadiness}
                       label={isActiveCycleReadOnly ? "Final" : "Ready"}
                       size={176}
                       stroke={14}

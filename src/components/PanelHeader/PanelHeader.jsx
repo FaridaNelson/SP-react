@@ -6,6 +6,8 @@ export default function PanelHeader({
   subtitle,
   obHoveredStep,
   showActions = true,
+  onNewCycle,
+  onOpenProgress,
 }) {
   console.log("PanelHeader obHoveredStep:", obHoveredStep);
   return (
@@ -41,6 +43,7 @@ export default function PanelHeader({
           <button
             type="button"
             className={`td__pillBtn td__pillBtn--gold ${obHoveredStep === 3 ? "ob-btn-flash-progress" : ""} ${obHoveredStep === 2 ? "ob-topbar-dim" : ""}`}
+            onClick={onOpenProgress || undefined}
           >
             ✏️ Today's progress
           </button>

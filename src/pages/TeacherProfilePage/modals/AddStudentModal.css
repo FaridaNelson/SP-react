@@ -8,6 +8,7 @@
   overflow: hidden;
   width: min(760px, 100%);
   margin-top: 0;
+  z-index: 1110;
 }
 
 .spModal__panel,
