@@ -1,9 +1,6 @@
 import { useEffect, useState } from "react";
 import { listExamCycles } from "../../lib/examCycleApi";
-import {
-  CompleteCycleModal,
-  WithdrawCycleModal,
-} from "./ExamCycleActions";
+import { CompleteCycleModal, WithdrawCycleModal } from "./ExamCycleActions";
 import "./ExamCycleList.css";
 
 const STATUS_META = {
@@ -71,7 +68,7 @@ export default function ExamCycleList({
       try {
         const data = await listExamCycles(studentId);
         if (!alive) return;
-        const list = Array.isArray(data) ? data : data?.cycles ?? [];
+        const list = Array.isArray(data) ? data : (data?.cycles ?? []);
         setCycles(list);
         onCyclesLoaded?.(list);
       } catch (e) {
@@ -132,14 +129,24 @@ export default function ExamCycleList({
               : null;
           const isActive = st === "current" || st === "registered";
 
+          const handleSelect = () => onSelect?.(c);
+
+          const handleCardKeyDown = (e) => {
+            if (e.key === "Enter" || e.key === " ") {
+              e.preventDefault();
+              handleSelect();
+            }
+          };
+
           return (
             <div key={id} className="ecl__item" role="listitem">
-              <button
-                type="button"
+              <div
                 className="ecl__card"
-                onClick={() => onSelect?.(c)}
+                role="button"
+                tabIndex={0}
+                onClick={handleSelect}
+                onKeyDown={handleCardKeyDown}
               >
-                {/* Card header — tinted */}
                 <div className="ecl__header">
                   <span className="ecl__headerLabel">
                     {c.instrument || "Piano"} · ABRSM
@@ -149,7 +156,6 @@ export default function ExamCycleList({
                   </span>
                 </div>
 
-                {/* Card body */}
                 <div className="ecl__body">
                   <div className="ecl__gradeType">
                     Grade {c.examGrade ?? "—"} {c.examType || "Practical"}
@@ -181,7 +187,7 @@ export default function ExamCycleList({
                     </div>
                   )}
                 </div>
-              </button>
+              </div>
             </div>
           );
         })}
