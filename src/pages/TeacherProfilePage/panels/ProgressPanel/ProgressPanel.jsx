@@ -98,7 +98,7 @@ export default function ProgressPanel({
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState("");
   // pieces state: { pieceId: { criteria: {criterionId: {score, note}}, overallNote } }
-  const [pieces, setPieces] = useState(() => initPieces(PIECES));
+  const [pieces, setPieces] = useState(() => initPieces(activePieces));
   // scales state: { scaleId: { ready: true|false|null, note } }
   const [scales, setScales] = useState(() => initScales(gradeScales));
   // sight/aural: keep what you already implemented in AddScoreModal (notes)
@@ -118,7 +118,7 @@ export default function ProgressPanel({
   }));
 
   const resetForm = () => {
-    setPieces(initPieces(PIECES));
+    setPieces(initPieces(activePieces));
     setScales(initScales(gradeScales));
     setSight({
       score: undefined,
@@ -145,14 +145,18 @@ export default function ProgressPanel({
   // If you want "draft persists even after closing", remove this effect.
   useEffect(() => {
     if (!open) return;
-    setErr("");
-    // comment these out if you want to persist draft across openings too
-    // setPieces(initPieces(PIECES));
-    // setScales(initScales(DEFAULT_SCALES));
-    // setSight({ score: undefined, pitchAccuracy: "", rhythmAccuracy: "", adequateTempo: "", confidentPresentation: "" });
-    // setAural({ score: undefined, rhythmAccuracy: "", singingInPitch: "", musicalMemory: "", musicalPerceptiveness: "" });
-    // setTeacherNarrative("");
-  }, [open]);
+    setPieces((prev) => {
+      const next = initPieces(activePieces);
+
+      for (const p of activePieces) {
+        if (prev?.[p.id]?.criteria) {
+          next[p.id] = prev[p.id];
+        }
+      }
+
+      return next;
+    });
+  }, [open, activePieces]);
 
   useEffect(() => {
     if (!open) return;
@@ -526,7 +530,7 @@ export default function ProgressPanel({
                 idPrefix={`piece-${p.id}`} // for accessibility; optional but better
                 key={p.id}
                 piece={p}
-                value={pieces[p.id]}
+                value={pieces[p.id] || { criteria: {} }}
                 last={lastPiecesMap[p.id] || { criteria: {} }}
                 percent={piecePercents[p.id]}
                 missingCriteria={pieceErrors[p.id] || []}
