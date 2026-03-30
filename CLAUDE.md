@@ -32,19 +32,23 @@ CSS variables:
 
 ### Done
 
-- [ ] Auth (login/logout/me)
+- [x] Auth (login/logout/me)
+- [x] ExamCycle creation wizard
+- [x] Forgot password / reset password flow
+- [x] Legal pages (PrivacyPolicy, TermsOfService)
 
 ### In progress
 
-- [ ] ExamCycle creation wizard (HTML prototype: teacher-dashboard_exam_completion.html)
-
-### Not started
-
-- [ ] ExamCycle completion flow
+- [ ] ExamCycle creation wizard — needs modifications (describe what)
+- [ ] ExamCycle completion wizard — built, needs modifications (describe what)
 - [ ] ExamCycle withdrawal flow
 - [ ] Lesson upsert
 - [ ] Score entry
+
+### Not started
+
 - [ ] Parent dashboard
+- [ ] Student dashboard
 
 ## Critical enum mapping (wizard → backend)
 

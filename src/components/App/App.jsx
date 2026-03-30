@@ -23,6 +23,7 @@ import RegisterModal from "../RegisterModal/RegisterModal";
 import ConfirmationModal from "../ConfirmationModal/ConfirmationModal";
 import ProtectedRoute from "../ProtectedRoute";
 import { api } from "../../lib/api.js";
+import ResetPasswordPage from "../../pages/ResetPasswordPage.jsx";
 import NotFound from "../../pages/NotFound.jsx";
 import "../../styles/globals.css";
 
@@ -60,7 +61,7 @@ export default function App() {
   const isParentView = pathname.startsWith("/parent");
   const hideFooter = isTeacherView || isParentView;
 
-  const BARE_ROUTES = ["/privacy-policy", "/terms-of-service"];
+  const BARE_ROUTES = ["/privacy-policy", "/terms-of-service", "/reset-password"];
   const hideHeader = BARE_ROUTES.includes(pathname);
 
   const openSignIn = () => setAuthMode("signin");
@@ -176,6 +177,7 @@ export default function App() {
           <Route path="/about" element={<AboutPage onSignUp={openSignUp} />} />
           <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
           <Route path="/terms-of-service" element={<TermsOfServicePage />} />
+          <Route path="/reset-password" element={<ResetPasswordPage />} />
           <Route path="*" element={<NotFound />} />
         </Route>
 

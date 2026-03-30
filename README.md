@@ -143,7 +143,7 @@ npm run dev
 
 Default development URL:
 
-http://localhost:5173
+http://localhost:3000
 
 The frontend expects the backend API running locally or at:
 
