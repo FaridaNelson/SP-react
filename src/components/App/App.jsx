@@ -54,11 +54,14 @@ export default function App() {
   const [confirmSignOutOpen, setConfirmSignOutOpen] = useState(false);
 
   const navigate = useNavigate();
-  const { pathname } = useLocation();
+  const { pathname, state } = useLocation();
 
   const isTeacherView = pathname.startsWith("/teacher");
   const isParentView = pathname.startsWith("/parent");
   const hideFooter = isTeacherView || isParentView;
+
+  const BARE_ROUTES = ["/privacy-policy", "/terms-of-service"];
+  const hideHeader = BARE_ROUTES.includes(pathname);
 
   const openSignIn = () => setAuthMode("signin");
   const openSignUp = () => setAuthMode("signup");
@@ -95,6 +98,12 @@ export default function App() {
       navigate(target, { replace: true });
     }
   }, [booted, user, pathname, navigate]);
+
+  useEffect(() => {
+    if (!booted) return;
+    if (state?.openAuth === "signin") openSignIn();
+    if (state?.openAuth === "signup") openSignUp();
+  }, [booted, state]);
 
   useEffect(() => {
     (async () => {
@@ -152,12 +161,14 @@ export default function App() {
 
   return (
     <>
-      <Header
-        user={user}
-        onSignIn={openSignIn}
-        onSignUp={openSignUp}
-        onSignOutRequest={() => setConfirmSignOutOpen(true)}
-      />
+      {!hideHeader && (
+        <Header
+          user={user}
+          onSignIn={openSignIn}
+          onSignUp={openSignUp}
+          onSignOutRequest={() => setConfirmSignOutOpen(true)}
+        />
+      )}
 
       <Routes>
         <Route element={<DefaultLayout onSignUp={openSignUp} />}>

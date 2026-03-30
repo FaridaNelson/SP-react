@@ -1,11 +1,56 @@
-// PrivacyPolicyPage.jsx
+import { Link } from "react-router-dom";
 import "./LegalPages.css";
 
 export default function PrivacyPolicyPage() {
   return (
     <main className="legalPage">
       <div className="legalPage__container">
-        <h1 className="legalPage__title">STUDIOPULSE</h1>
+        <Link
+          to="/"
+          state={{ openAuth: "signup" }}
+          className="legalPage__backLink"
+        >
+          ← Back to Sign Up
+        </Link>
+        <h1 className="legalPage__title">
+          <svg
+            width="38"
+            height="16"
+            viewBox="0 0 38 16"
+            fill="none"
+            style={{ flexShrink: 0, verticalAlign: "middle" }}
+          >
+            <line
+              x1="0"
+              y1="8"
+              x2="5"
+              y2="8"
+              stroke="#C9A84C"
+              strokeWidth="1.5"
+              strokeLinecap="round"
+              opacity="0.5"
+            />
+            <polyline
+              points="5,8 7.5,8 9,2 11,14 13,4 15,12 17,8 19,8"
+              stroke="#C9A84C"
+              strokeWidth="1.6"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              fill="none"
+            />
+            <line
+              x1="19"
+              y1="8"
+              x2="38"
+              y2="8"
+              stroke="#C9A84C"
+              strokeWidth="1.5"
+              strokeLinecap="round"
+              opacity="0.5"
+            />
+          </svg>
+          STUDIOPULSE
+        </h1>
         <h2 className="legalPage__subtitle">Privacy Policy</h2>
 
         <p className="legalPage__updated">Last Updated: March 12, 2026</p>

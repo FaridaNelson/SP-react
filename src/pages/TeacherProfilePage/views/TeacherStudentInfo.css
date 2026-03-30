@@ -551,6 +551,7 @@
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+    flex-wrap: nowrap;
   }
 
   /* Complete/Withdraw buttons full width */
