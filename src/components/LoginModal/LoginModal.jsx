@@ -1,24 +1,30 @@
 import { useEffect, useMemo, useState } from "react";
 import Modal from "../Modal/Modal";
 import PasswordInput from "../PasswordInput/PasswordInput";
+import { api } from "../../lib/api.js";
 import "./LoginModal.css";
 
 export default function LoginModal({ open, onClose, onSwitch, onSubmit }) {
+  // view: "login" | "forgot" | "sent"
+  const [view, setView] = useState("login");
   const [activeTab, setActiveTab] = useState("studentParent");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [rememberMe, setRememberMe] = useState(true);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
+  const [forgotEmail, setForgotEmail] = useState("");
 
   useEffect(() => {
     if (!open) {
+      setView("login");
       setActiveTab("studentParent");
       setEmail("");
       setPassword("");
       setRememberMe(true);
       setBusy(false);
       setError("");
+      setForgotEmail("");
     }
   }, [open]);
 
@@ -56,6 +62,116 @@ export default function LoginModal({ open, onClose, onSwitch, onSubmit }) {
       setBusy(false);
     }
   };
+
+  const handleForgotSubmit = async (e) => {
+    e.preventDefault();
+    setError("");
+
+    if (!forgotEmail.trim()) {
+      setError("Please enter your email address.");
+      return;
+    }
+
+    setBusy(true);
+    try {
+      await api("/api/auth/forgot-password", {
+        method: "POST",
+        body: { email: forgotEmail.trim().toLowerCase() },
+      });
+      setView("sent");
+    } catch (err) {
+      setError(err?.message || "Something went wrong. Please try again.");
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  if (view === "forgot") {
+    return (
+      <Modal open={open} onClose={onClose} title="" variant="auth">
+        <div className="loginModal">
+          <div className="loginModal__card">
+            <header className="loginModal__header">
+              <h2 className="loginModal__title">Forgot password?</h2>
+              <p className="loginModal__subtitle">
+                Enter your email and we&apos;ll send you a reset link.
+              </p>
+            </header>
+
+            <form onSubmit={handleForgotSubmit} className="loginModal__form" noValidate>
+              <label className="loginModal__group">
+                <span className="loginModal__label">Email address</span>
+                <input
+                  className="loginModal__input"
+                  type="email"
+                  name="email"
+                  placeholder="your.email@example.com"
+                  autoComplete="email"
+                  value={forgotEmail}
+                  onChange={(e) => setForgotEmail(e.target.value)}
+                  disabled={busy}
+                  required
+                />
+              </label>
+
+              {error && <p className="loginModal__error">{error}</p>}
+
+              <button
+                type="submit"
+                className="loginModal__submit"
+                disabled={busy}
+              >
+                {busy ? "Sending..." : "Send Reset Link"}
+              </button>
+            </form>
+
+            <footer className="loginModal__footer">
+              <button
+                type="button"
+                className="loginModal__footerLink"
+                onClick={() => {
+                  setError("");
+                  setView("login");
+                }}
+              >
+                Back to Sign In
+              </button>
+            </footer>
+          </div>
+        </div>
+      </Modal>
+    );
+  }
+
+  if (view === "sent") {
+    return (
+      <Modal open={open} onClose={onClose} title="" variant="auth">
+        <div className="loginModal">
+          <div className="loginModal__card">
+            <header className="loginModal__header">
+              <h2 className="loginModal__title">Check your email</h2>
+              <p className="loginModal__subtitle">
+                If an account exists for{" "}
+                <strong>{forgotEmail}</strong>, we&apos;ve sent a password
+                reset link.
+              </p>
+            </header>
+
+            <button
+              type="button"
+              className="loginModal__submit"
+              onClick={() => {
+                setError("");
+                setView("login");
+              }}
+            >
+              Back to Sign In
+            </button>
+          </div>
+        </div>
+      </Modal>
+    );
+  }
 
   return (
     <Modal open={open} onClose={onClose} title="" variant="auth">
@@ -140,8 +256,11 @@ export default function LoginModal({ open, onClose, onSwitch, onSubmit }) {
               <button
                 type="button"
                 className="loginModal__linkButton"
-                disabled
-                title="Forgot password is not implemented yet"
+                onClick={() => {
+                  setError("");
+                  setForgotEmail(email);
+                  setView("forgot");
+                }}
               >
                 Forgot password?
               </button>

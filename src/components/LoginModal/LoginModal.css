@@ -129,8 +129,11 @@
   background: transparent;
   font: 500 13px/1.2 var(--td-sans, "DM Sans", sans-serif);
   color: #c9a84c;
-  cursor: not-allowed;
-  opacity: 0.6;
+  cursor: pointer;
+}
+
+.loginModal__linkButton:hover {
+  color: #b8932a;
 }
 
 .loginModal__error {
