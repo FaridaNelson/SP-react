@@ -11,6 +11,8 @@
   --legal-shadow: 0 8px 32px rgba(28, 26, 23, 0.08);
 }
 
+/* ─── Page shell ─────────────────────────────────────────── */
+
 .legalPage {
   display: flex;
   justify-content: center;
@@ -22,31 +24,51 @@
   background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23C9A84C' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/svg%3E");
 }
 
+/* ─── Outer wrapper: no card here, just width constraint ─── */
+
 .legalPage__container {
   width: 100%;
   max-width: 800px;
-  background: #ffffff;
-  padding: 48px;
-  border-radius: 20px;
-  border: 1px solid var(--legal-border);
-  box-shadow: var(--legal-shadow);
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* centres the header block */
 }
 
+/* ─── Header: brand pill + page title + date ─────────────── */
+
+/*
+  The JSX renders:
+    <h1 class="legalPage__title">STUDIOPULSE</h1>      ← brand pill
+    <h2 class="legalPage__subtitle">Terms of …</h2>    ← page title
+    <p  class="legalPage__updated">Last Updated…</p>   ← date
+  All three sit above the white card (the sections).
+*/
+
 .legalPage__title {
-  font-family: var(--td-serif, "Cormorant Garamond", serif);
-  font-size: 42px;
-  font-weight: 600;
-  line-height: 1.1;
+  /* Pill tag — matches .brand-tag in the HTML design */
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(201, 168, 76, 0.12);
+  border: 1px solid rgba(201, 168, 76, 0.25);
+  color: var(--legal-gold);
+  font-family: "DM Sans", sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  padding: 6px 14px;
+  border-radius: 20px;
+  margin: 0 0 20px;
   text-align: center;
-  color: var(--legal-ink);
-  margin: 0 0 8px;
 }
 
 .legalPage__subtitle {
-  font-family: var(--td-serif, "Cormorant Garamond", serif);
-  font-size: 28px;
+  /* Main page heading — matches .page-title h1 in the HTML design */
+  font-family: "Cormorant Garamond", serif;
+  font-size: 42px;
   font-weight: 600;
-  line-height: 1.15;
+  line-height: 1.1;
   text-align: center;
   color: var(--legal-ink);
   margin: 0 0 12px;
@@ -60,17 +82,74 @@
   font-style: italic;
 }
 
+/* ─── White content card ─────────────────────────────────── */
+
+/*
+  Because the JSX puts everything (header + sections) inside one
+  container div, we turn the *sections* into the white card rather
+  than the container itself.  A ::before pseudo trick on the first
+  section and ::after on the last gives a single unified card look.
+*/
+
+.legalPage__sections-card {
+  /* If you ever add a wrapper <div class="legalPage__sections-card">
+     around all sections in the JSX, this rule gives the HTML-design
+     card look instantly. */
+  width: 100%;
+  background: #ffffff;
+  padding: 48px;
+  border-radius: 20px;
+  border: 1px solid var(--legal-border);
+  box-shadow: var(--legal-shadow);
+}
+
+/*
+  Without the wrapper div, we approximate the card by giving the
+  first section a top border-radius + top padding, and the last
+  section a bottom border-radius + bottom padding, with shared left/
+  right padding and a box-shadow on the entire column.
+*/
+
 .legalPage__section {
-  margin-bottom: 32px;
-}
-
-.legalPage__section:last-child {
+  width: 100%;
+  background: #ffffff;
+  padding: 0 48px;
   margin-bottom: 0;
+  border-left: 1px solid var(--legal-border);
+  border-right: 1px solid var(--legal-border);
 }
 
-.legalPage__section h2,
+.legalPage__section:first-of-type {
+  padding-top: 48px;
+  border-top: 1px solid var(--legal-border);
+  border-radius: 20px 20px 0 0;
+}
+
+.legalPage__section:last-of-type {
+  padding-bottom: 48px;
+  border-bottom: 1px solid var(--legal-border);
+  border-radius: 0 0 20px 20px;
+  box-shadow: var(--legal-shadow);
+}
+
+/* Single-section edge case */
+.legalPage__section:only-of-type {
+  padding: 48px;
+  border: 1px solid var(--legal-border);
+  border-radius: 20px;
+  box-shadow: var(--legal-shadow);
+}
+
+/* Inner section spacing */
+.legalPage__section + .legalPage__section {
+  padding-top: 0;
+}
+
+/* ─── Section headings ───────────────────────────────────── */
+
 .legalPage__section h3 {
-  font-family: var(--td-serif, "Cormorant Garamond", serif);
+  /* Matches h2 in the HTML design — main section title */
+  font-family: "Cormorant Garamond", serif;
   font-size: 28px;
   font-weight: 600;
   line-height: 1.2;
@@ -78,13 +157,13 @@
   margin: 32px 0 16px;
 }
 
-.legalPage__section h2:first-child,
 .legalPage__section h3:first-child {
   margin-top: 0;
 }
 
 .legalPage__section h4 {
-  font-family: var(--td-serif, "Cormorant Garamond", serif);
+  /* Matches h3 in the HTML design — sub-section title */
+  font-family: "Cormorant Garamond", serif;
   font-size: 20px;
   font-weight: 600;
   line-height: 1.3;
@@ -97,7 +176,10 @@
   font-weight: 600;
   color: var(--legal-ink);
   margin: 18px 0 8px;
+  font-family: "DM Sans", sans-serif;
 }
+
+/* ─── Body text ──────────────────────────────────────────── */
 
 .legalPage__section p {
   margin: 0 0 16px;
@@ -133,6 +215,8 @@
 .legalPage__section a:hover {
   text-decoration: underline;
 }
+
+/* ─── Table ──────────────────────────────────────────────── */
 
 .legalPage__tableWrapper {
   margin: 20px 0 8px;
@@ -171,7 +255,8 @@
   border-bottom: none;
 }
 
-/* Optional callout styling if you later add notice/alert boxes */
+/* ─── Notice / alert callout boxes ──────────────────────── */
+
 .legalPage__notice,
 .legalPage__alert {
   border-radius: 12px;
@@ -190,6 +275,11 @@
   color: var(--legal-gold);
   font-size: 16px;
   font-family: "DM Sans", sans-serif;
+  font-weight: 600;
+}
+
+.legalPage__notice p:last-child {
+  margin-bottom: 0;
 }
 
 .legalPage__alert {
@@ -203,27 +293,49 @@
   color: #5a8a6a;
   font-size: 16px;
   font-family: "DM Sans", sans-serif;
+  font-weight: 600;
 }
+
+/* ─── Back link (add <a className="legalPage__backLink"> to JSX) */
+
+.legalPage__backLink {
+  display: inline-block;
+  align-self: flex-start;
+  margin-bottom: 32px;
+  font-size: 14px;
+  color: var(--legal-gold);
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.legalPage__backLink:hover {
+  text-decoration: underline;
+}
+
+/* ─── Responsive ─────────────────────────────────────────── */
 
 @media (max-width: 700px) {
   .legalPage {
     padding: 40px 16px;
   }
 
-  .legalPage__container {
-    padding: 32px 24px;
-    border-radius: 16px;
-  }
-
-  .legalPage__title {
-    font-size: 32px;
-  }
-
   .legalPage__subtitle {
-    font-size: 24px;
+    font-size: 30px;
   }
 
-  .legalPage__section h2,
+  .legalPage__section {
+    padding-left: 24px;
+    padding-right: 24px;
+  }
+
+  .legalPage__section:first-of-type {
+    padding-top: 32px;
+  }
+
+  .legalPage__section:last-of-type {
+    padding-bottom: 32px;
+  }
+
   .legalPage__section h3 {
     font-size: 24px;
   }
