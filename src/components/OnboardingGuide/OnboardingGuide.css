@@ -96,18 +96,18 @@
 
 /* steps */
 .ob__steps {
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(240px, 1fr));
   gap: 20px;
   width: 100%;
-  max-width: 560px;
   position: relative;
   z-index: 1;
 }
 
 .ob-step {
   display: flex;
-  align-items: flex-start;
+  flex-direction: column;
+  align-items: center;
   gap: 20px;
   background: var(--warm-white);
   border: 1px solid var(gray);
@@ -132,7 +132,7 @@
   align-items: center;
   justify-content: center;
   font-family: "Cormorant Garamond", serif;
-  font-size: 17px;
+  font-size: 20px;
   font-weight: 600;
   color: var(--gold);
   background: var(--gold-pale);
@@ -143,7 +143,7 @@
   min-width: 0;
 }
 .ob-step-title {
-  font-size: 14px;
+  font-size: 15px;
   font-weight: 600;
   color: var(--ink);
   margin-bottom: 3px;
@@ -159,7 +159,7 @@
 .ob-arrow-badge {
   display: inline-flex;
   align-items: center;
-  gap: 5px;
+  gap: 10px;
   background: rgba(201, 168, 76, 0.1);
   border: 1px solid rgba(201, 168, 76, 0.25);
   border-radius: 8px;

@@ -87,8 +87,9 @@ export function useProgress(studentId, { scope = "teacher" } = {}) {
             }),
           );
         await Promise.all(promises);
-      } catch {
-        // TODO: toast/rollback
+      } catch (err) {
+        console.error("Failed to save score entries", err);
+        throw err;
       }
     },
     [studentId],
