@@ -401,7 +401,7 @@
 }
 
 .tsi__cycleBtn--complete:hover {
-  filter: brightness(0.92);
+  background: rgba(51, 104, 72, 0.1);
 }
 
 .tsi__cycleBtn--withdraw {
@@ -411,7 +411,7 @@
 }
 
 .tsi__cycleBtn--withdraw:hover {
-  background: rgba(212, 128, 106, 0.08);
+  background: rgba(212, 128, 106, 0.1);
 }
 
 /* ── Enriched exam card labels ── */
