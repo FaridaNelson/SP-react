@@ -125,6 +125,26 @@ function SelectedStudentPane({
 
   const readiness = useMemo(() => computeReadiness(items), [items]);
 
+  const refreshActiveCycle = useCallback(async () => {
+    if (!studentId) return;
+
+    try {
+      const data = await listExamCycles(studentId);
+      const cycles = Array.isArray(data) ? data : (data?.cycles ?? []);
+      const active = cycles.find(cycleIsActive);
+
+      console.log("refreshActiveCycle active:", active);
+      console.log(
+        "refreshActiveCycle latestScores:",
+        active?.progressSummary?.latestScores,
+      );
+
+      setFetchedCycle(active || null);
+    } catch (err) {
+      console.error("Failed to refresh active cycle", err);
+    }
+  }, [studentId]);
+
   const {
     latestLesson,
     setLatestLesson,
@@ -253,7 +273,10 @@ function SelectedStudentPane({
         student={student}
         items={items}
         onSaveScores={saveScores}
-        onLessonSaved={(saved) => setLatestLesson(saved)}
+        onLessonSaved={async (saved) => {
+          setLatestLesson(saved);
+          await refreshActiveCycle();
+        }}
         activeCycle={resolvedCycle}
       />
 
