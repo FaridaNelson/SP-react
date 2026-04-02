@@ -27,6 +27,7 @@ export default function CycleCompleteWizard({
 }) {
   const cycleId = cycle?._id || cycle?.id;
   const isPerformance = cycle?.examType === "Performance";
+  const displayName = studentName || "this student";
 
   // Navigation: "choose" | "results" | "withdraw"
   const [view, setView] = useState(startOnWithdraw ? "withdraw" : "choose");
@@ -191,7 +192,7 @@ export default function CycleCompleteWizard({
       <div className="ccw__viewBody">
         <h2 className="ccw__title">Complete Current Cycle</h2>
         <p className="ccw__subtitle">
-          {studentName} is preparing for Grade {cycle?.examGrade ?? "—"}{" "}
+          {displayName} is preparing for Grade {cycle?.examGrade ?? "—"}{" "}
           {cycle?.examType ?? "Practical"}
         </p>
 
@@ -306,7 +307,7 @@ export default function CycleCompleteWizard({
       <div className="ccw__viewBody">
         <h2 className="ccw__title">Withdrawal Reason</h2>
         <p className="ccw__subtitle">
-          Why didn't {studentName} take the exam?
+          Why didn't {displayName} take the exam?
         </p>
 
         <label className="ccw__field">

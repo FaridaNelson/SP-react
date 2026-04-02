@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { listExamCycles } from "../../lib/examCycleApi";
-import { CompleteCycleModal, WithdrawCycleModal } from "./ExamCycleActions";
+import CycleCompleteWizard from "../ExamCycle/CycleCompleteWizard";
 import "./ExamCycleList.css";
 
 const STATUS_META = {
@@ -41,6 +41,7 @@ function MetaLine({ cycle, status, pct }) {
 
 export default function ExamCycleList({
   studentId,
+  studentName,
   onSelect,
   refreshKey,
   onCyclesLoaded,
@@ -49,8 +50,8 @@ export default function ExamCycleList({
   const [cycles, setCycles] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [completeTarget, setCompleteTarget] = useState(null);
-  const [withdrawTarget, setWithdrawTarget] = useState(null);
+  const [wizardCycle, setWizardCycle] = useState(null);
+  const [wizardStartWithdraw, setWizardStartWithdraw] = useState(false);
 
   useEffect(() => {
     if (!studentId) {
@@ -169,7 +170,8 @@ export default function ExamCycleList({
                         className="ecl__actionBtn ecl__actionBtn--complete"
                         onClick={(e) => {
                           e.stopPropagation();
-                          setCompleteTarget(c);
+                          setWizardStartWithdraw(false);
+                          setWizardCycle(c);
                         }}
                       >
                         ✓ Complete
@@ -179,7 +181,8 @@ export default function ExamCycleList({
                         className="ecl__actionBtn ecl__actionBtn--withdraw"
                         onClick={(e) => {
                           e.stopPropagation();
-                          setWithdrawTarget(c);
+                          setWizardStartWithdraw(true);
+                          setWizardCycle(c);
                         }}
                       >
                         ✕ Withdraw
@@ -193,23 +196,18 @@ export default function ExamCycleList({
         })}
       </div>
 
-      {completeTarget && (
-        <CompleteCycleModal
-          cycle={completeTarget}
-          onClose={() => setCompleteTarget(null)}
+      {wizardCycle && (
+        <CycleCompleteWizard
+          cycle={wizardCycle}
+          studentName={studentName}
+          startOnWithdraw={wizardStartWithdraw}
+          onClose={() => setWizardCycle(null)}
           onSuccess={() => {
-            setCompleteTarget(null);
+            setWizardCycle(null);
             onCycleAction?.("Exam cycle completed", "success");
           }}
-        />
-      )}
-
-      {withdrawTarget && (
-        <WithdrawCycleModal
-          cycle={withdrawTarget}
-          onClose={() => setWithdrawTarget(null)}
-          onSuccess={() => {
-            setWithdrawTarget(null);
+          onWithdrawSuccess={() => {
+            setWizardCycle(null);
             onCycleAction?.("Exam cycle withdrawn", "warning");
           }}
         />
