@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { completeExamCycle, withdrawExamCycle } from "../../lib/examCycleApi";
 import Modal from "../Modal/Modal";
+import WizardPanel from "../WizardPanel/WizardPanel";
 import "./CycleCompleteWizard.css";
 
 const RESULT_OPTIONS = ["Distinction", "Merit", "Pass", "Fail"];
@@ -12,6 +13,8 @@ const WITHDRAW_REASONS = [
   "Financial reasons",
   "Other",
 ];
+
+const viewToStep = { choose: 0, results: 1, withdraw: 1 };
 
 export default function CycleCompleteWizard({
   cycle,
@@ -123,213 +126,223 @@ export default function CycleCompleteWizard({
     );
   }
 
-  // ── Step 1: Choose ──
-  if (view === "choose") {
+  function renderBody() {
+    if (view === "choose") return renderChoose();
+    if (view === "results") return renderResults();
+    return renderWithdraw();
+  }
+
+  function renderFooter() {
+    if (view === "choose") {
+      return (
+        <button className="wp__btn-back" onClick={onClose} disabled={busy}>
+          Cancel
+        </button>
+      );
+    }
+
+    if (view === "results") {
+      return (
+        <>
+          <button
+            className="wp__btn-back"
+            onClick={() => setView("choose")}
+            disabled={busy}
+          >
+            ← Back
+          </button>
+          <div style={{ flex: 1 }} />
+          <button
+            className="wp__btn-next"
+            onClick={handleComplete}
+            disabled={busy}
+          >
+            {busy ? "Saving…" : "Save Results & Complete Cycle"}
+          </button>
+        </>
+      );
+    }
+
+    // withdraw
     return (
-      <Modal open onClose={onClose}>
-        <div className="ccw" onMouseDown={(e) => e.stopPropagation()}>
-          <header className="ccw__head">
-            <h2 className="ccw__title">Complete Current Cycle</h2>
-            <p className="ccw__subtitle">
-              {studentName} is preparing for Grade {cycle?.examGrade ?? "—"}{" "}
-              {cycle?.examType ?? "Practical"}
-            </p>
-          </header>
-
-          <div className="ccw__body">
-            <button
-              type="button"
-              className="ccw__optionCard"
-              onClick={() => { setCameFromChoose(true); setView("results"); setErr(""); }}
-            >
-              <div className="ccw__optionIcon ccw__optionIcon--sage">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M20 6 9 17l-5-5" />
-                </svg>
-              </div>
-              <div className="ccw__optionText">
-                <div className="ccw__optionTitle">Yes, Exam Taken</div>
-                <div className="ccw__optionDesc">Enter exam results and mark cycle as completed</div>
-              </div>
-            </button>
-
-            <button
-              type="button"
-              className="ccw__optionCard"
-              onClick={() => { setCameFromChoose(true); setView("withdraw"); setErr(""); }}
-            >
-              <div className="ccw__optionIcon ccw__optionIcon--rose">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                  <line x1="18" y1="6" x2="6" y2="18" />
-                  <line x1="6" y1="6" x2="18" y2="18" />
-                </svg>
-              </div>
-              <div className="ccw__optionText">
-                <div className="ccw__optionTitle">No, Exam Not Taken</div>
-                <div className="ccw__optionDesc">Record reason for withdrawal</div>
-              </div>
-            </button>
-          </div>
-
-          <footer className="ccw__foot">
-            <button type="button" className="ccw__btn" onClick={onClose} disabled={busy}>
-              Cancel
-            </button>
-          </footer>
-        </div>
-      </Modal>
+      <>
+        <button
+          className="wp__btn-back"
+          onClick={() => (cameFromChoose ? setView("choose") : onClose?.())}
+          disabled={busy}
+        >
+          ← Back
+        </button>
+        <div style={{ flex: 1 }} />
+        <button
+          className="wp__btn-next"
+          onClick={handleWithdraw}
+          disabled={busy}
+        >
+          {busy ? "Saving…" : "Save & Mark as Withdrawn"}
+        </button>
+      </>
     );
   }
 
-  // ── Step 2: Enter Results ──
-  if (view === "results") {
+  function renderChoose() {
     return (
-      <Modal open onClose={onClose}>
-        <div className="ccw" onMouseDown={(e) => e.stopPropagation()}>
-          <header className="ccw__head">
-            <h2 className="ccw__title">Enter Exam Results</h2>
-            <p className="ccw__subtitle">Record the official ABRSM results</p>
-          </header>
+      <div className="ccw__viewBody">
+        <h2 className="ccw__title">Complete Current Cycle</h2>
+        <p className="ccw__subtitle">
+          {studentName} is preparing for Grade {cycle?.examGrade ?? "—"}{" "}
+          {cycle?.examType ?? "Practical"}
+        </p>
 
-          <div className="ccw__body ccw__scroll">
-            <label className="ccw__field">
-              <span className="ccw__label">Overall Result</span>
-              <select
-                className="ccw__select"
-                value={examResult}
-                onChange={(e) => setExamResult(e.target.value)}
-                disabled={busy}
-              >
-                <option value="">Select result…</option>
-                {RESULT_OPTIONS.map((r) => (
-                  <option key={r} value={r}>{r}</option>
-                ))}
-              </select>
-            </label>
-
-            <ScoreInput label="Total Mark" max={150} value={totalMark} onChange={setTotalMark} />
-
-            <div className="ccw__divider" />
-            <h3 className="ccw__sectionH3">
-              {isPerformance ? "Piece Scores" : "Component Scores"}
-            </h3>
-
-            <div className="ccw__scoreGrid">
-              <ScoreInput label="Piece A" max={30} value={pieceA} onChange={setPieceA} />
-              <ScoreInput label="Piece B" max={30} value={pieceB} onChange={setPieceB} />
-              <ScoreInput label="Piece C" max={30} value={pieceC} onChange={setPieceC} />
-              {isPerformance && (
-                <ScoreInput label="Piece D" max={30} value={pieceD} onChange={setPieceD} />
-              )}
-              {!isPerformance && (
-                <>
-                  <ScoreInput label="Scales" max={21} value={scalesScore} onChange={setScalesScore} />
-                  <ScoreInput label="Sight-reading" max={21} value={sightScore} onChange={setSightScore} />
-                  <ScoreInput label="Aural" max={18} value={auralScore} onChange={setAuralScore} />
-                </>
-              )}
-            </div>
-
-            <label className="ccw__field">
-              <span className="ccw__label">Examiner Comments (optional)</span>
-              <textarea
-                className="ccw__textarea"
-                rows={3}
-                placeholder="Any notes from the examiner…"
-                value={examinerComments}
-                onChange={(e) => setExaminerComments(e.target.value)}
-                disabled={busy}
-              />
-            </label>
-
-            {err && <p className="ccw__error">{err}</p>}
+        <button
+          type="button"
+          className="ccw__optionCard"
+          onClick={() => { setCameFromChoose(true); setView("results"); setErr(""); }}
+        >
+          <div className="ccw__optionIcon ccw__optionIcon--sage">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M20 6 9 17l-5-5" />
+            </svg>
           </div>
-
-          <footer className="ccw__foot">
-            <button type="button" className="ccw__btn" onClick={() => setView("choose")} disabled={busy}>
-              Back
-            </button>
-            <button
-              type="button"
-              className="ccw__btn ccw__btn--sage"
-              onClick={handleComplete}
-              disabled={busy}
-            >
-              {busy ? "Saving…" : "Save Results & Complete Cycle"}
-            </button>
-          </footer>
-        </div>
-      </Modal>
-    );
-  }
-
-  // ── Withdraw ──
-  return (
-    <Modal open onClose={onClose}>
-      <div className="ccw" onMouseDown={(e) => e.stopPropagation()}>
-        <header className="ccw__head">
-          <h2 className="ccw__title">Withdrawal Reason</h2>
-          <p className="ccw__subtitle">
-            Why didn't {studentName} take the exam?
-          </p>
-        </header>
-
-        <div className="ccw__body">
-          <label className="ccw__field">
-            <span className="ccw__label">Reason for Withdrawal</span>
-            <select
-              className="ccw__select"
-              value={reason}
-              onChange={(e) => setReason(e.target.value)}
-              disabled={busy}
-              required
-            >
-              <option value="">Select reason…</option>
-              {WITHDRAW_REASONS.map((r) => (
-                <option key={r} value={r}>{r}</option>
-              ))}
-            </select>
-          </label>
-
-          <label className="ccw__field">
-            <span className="ccw__label">Additional Notes (optional)</span>
-            <textarea
-              className="ccw__textarea"
-              rows={3}
-              placeholder="Any additional context…"
-              value={notes}
-              onChange={(e) => setNotes(e.target.value)}
-              disabled={busy}
-            />
-          </label>
-
-          <div className="ccw__warning">
-            This cycle will be marked as Withdrawn. You can start a new cycle
-            for the next grade level.
+          <div className="ccw__optionText">
+            <div className="ccw__optionTitle">Yes, Exam Taken</div>
+            <div className="ccw__optionDesc">Enter exam results and mark cycle as completed</div>
           </div>
+        </button>
 
-          {err && <p className="ccw__error">{err}</p>}
-        </div>
-
-        <footer className="ccw__foot">
-          <button
-            type="button"
-            className="ccw__btn"
-            onClick={() => (cameFromChoose ? setView("choose") : onClose?.())}
-            disabled={busy}
-          >
-            Back
-          </button>
-          <button
-            type="button"
-            className="ccw__btn ccw__btn--sage"
-            onClick={handleWithdraw}
-            disabled={busy}
-          >
-            {busy ? "Saving…" : "Save & Mark as Withdrawn"}
-          </button>
-        </footer>
+        <button
+          type="button"
+          className="ccw__optionCard"
+          onClick={() => { setCameFromChoose(true); setView("withdraw"); setErr(""); }}
+        >
+          <div className="ccw__optionIcon ccw__optionIcon--rose">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <line x1="18" y1="6" x2="6" y2="18" />
+              <line x1="6" y1="6" x2="18" y2="18" />
+            </svg>
+          </div>
+          <div className="ccw__optionText">
+            <div className="ccw__optionTitle">No, Exam Not Taken</div>
+            <div className="ccw__optionDesc">Record reason for withdrawal</div>
+          </div>
+        </button>
       </div>
+    );
+  }
+
+  function renderResults() {
+    return (
+      <div className="ccw__viewBody">
+        <h2 className="ccw__title">Enter Exam Results</h2>
+        <p className="ccw__subtitle">Record the official ABRSM results</p>
+
+        <label className="ccw__field">
+          <span className="ccw__label">Overall Result</span>
+          <select
+            className="ccw__select"
+            value={examResult}
+            onChange={(e) => setExamResult(e.target.value)}
+            disabled={busy}
+          >
+            <option value="">Select result…</option>
+            {RESULT_OPTIONS.map((r) => (
+              <option key={r} value={r}>{r}</option>
+            ))}
+          </select>
+        </label>
+
+        <ScoreInput label="Total Mark" max={150} value={totalMark} onChange={setTotalMark} />
+
+        <div className="ccw__divider" />
+        <h3 className="ccw__sectionH3">
+          {isPerformance ? "Piece Scores" : "Component Scores"}
+        </h3>
+
+        <div className="ccw__scoreGrid">
+          <ScoreInput label="Piece A" max={30} value={pieceA} onChange={setPieceA} />
+          <ScoreInput label="Piece B" max={30} value={pieceB} onChange={setPieceB} />
+          <ScoreInput label="Piece C" max={30} value={pieceC} onChange={setPieceC} />
+          {isPerformance && (
+            <ScoreInput label="Piece D" max={30} value={pieceD} onChange={setPieceD} />
+          )}
+          {!isPerformance && (
+            <>
+              <ScoreInput label="Scales" max={21} value={scalesScore} onChange={setScalesScore} />
+              <ScoreInput label="Sight-reading" max={21} value={sightScore} onChange={setSightScore} />
+              <ScoreInput label="Aural" max={18} value={auralScore} onChange={setAuralScore} />
+            </>
+          )}
+        </div>
+
+        <label className="ccw__field">
+          <span className="ccw__label">Examiner Comments (optional)</span>
+          <textarea
+            className="ccw__textarea"
+            rows={3}
+            placeholder="Any notes from the examiner…"
+            value={examinerComments}
+            onChange={(e) => setExaminerComments(e.target.value)}
+            disabled={busy}
+          />
+        </label>
+      </div>
+    );
+  }
+
+  function renderWithdraw() {
+    return (
+      <div className="ccw__viewBody">
+        <h2 className="ccw__title">Withdrawal Reason</h2>
+        <p className="ccw__subtitle">
+          Why didn't {studentName} take the exam?
+        </p>
+
+        <label className="ccw__field">
+          <span className="ccw__label">Reason for Withdrawal</span>
+          <select
+            className="ccw__select"
+            value={reason}
+            onChange={(e) => setReason(e.target.value)}
+            disabled={busy}
+            required
+          >
+            <option value="">Select reason…</option>
+            {WITHDRAW_REASONS.map((r) => (
+              <option key={r} value={r}>{r}</option>
+            ))}
+          </select>
+        </label>
+
+        <label className="ccw__field">
+          <span className="ccw__label">Additional Notes (optional)</span>
+          <textarea
+            className="ccw__textarea"
+            rows={3}
+            placeholder="Any additional context…"
+            value={notes}
+            onChange={(e) => setNotes(e.target.value)}
+            disabled={busy}
+          />
+        </label>
+
+        <div className="ccw__warning">
+          This cycle will be marked as Withdrawn. You can start a new cycle
+          for the next grade level.
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <Modal open onClose={onClose} panelClassName="ccw__panel">
+      <WizardPanel
+        stepCount={2}
+        currentStep={viewToStep[view]}
+        error={err}
+        footer={renderFooter()}
+      >
+        {renderBody()}
+      </WizardPanel>
     </Modal>
   );
 }

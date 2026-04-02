@@ -23,6 +23,7 @@
   justify-content: flex-end;
   align-items: stretch;
   padding: 0;
+  overflow: hidden;
 }
 .modal__panel {
   display: flex;
@@ -138,8 +139,24 @@
   overflow: auto;
 }
 
+.modal--slideRight .modal__body {
+  padding: 0;
+  overflow: hidden;
+}
+
+.modal--slideRight .modal__panel {
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+  padding: 0;
+  width: auto;
+  height: 100%;
+  max-height: none;
+}
+
 @media (min-height: 700px) {
-  .modal {
+  .modal:not(.modal--slideRight) {
     align-items: center;
   }
 }

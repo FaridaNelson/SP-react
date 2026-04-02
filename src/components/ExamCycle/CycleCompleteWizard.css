@@ -1,19 +1,10 @@
-/* ── Cycle Complete / Withdraw Wizard ── */
+/* ── CycleCompleteWizard — panel width override ── */
 
-.ccw {
-  background: #fff;
-  border-radius: 16px;
-  max-width: 520px;
-  width: 100%;
-  margin: auto;
-  display: flex;
-  flex-direction: column;
-  max-height: 90vh;
+.ccw__panel {
+  --wp-width: min(520px, 92vw);
 }
 
-.ccw__head {
-  padding: 32px 32px 16px;
-}
+/* ── Title / Subtitle ── */
 
 .ccw__title {
   margin: 0;
@@ -23,21 +14,17 @@
 }
 
 .ccw__subtitle {
-  margin: 6px 0 0;
+  margin: 6px 0 16px;
   font: 400 14px/1.4 var(--font-sans, "DM Sans", sans-serif);
   color: var(--ink-muted, #7a766d);
 }
 
-.ccw__body {
-  padding: 0 32px 16px;
+/* ── View body ── */
+
+.ccw__viewBody {
   display: flex;
   flex-direction: column;
   gap: 16px;
-}
-
-.ccw__scroll {
-  overflow-y: auto;
-  max-height: 55vh;
 }
 
 /* ── Option cards (Step 1) ── */
@@ -201,72 +188,9 @@
   color: #8b3a22;
 }
 
-/* ── Error ── */
-
-.ccw__error {
-  margin: 0;
-  font: 500 13px/1.4 var(--font-sans, "DM Sans", sans-serif);
-  color: var(--rose, #D4806A);
-}
-
-/* ── Footer ── */
-
-.ccw__foot {
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  gap: 10px;
-  padding: 16px 32px 28px;
-  border-top: 1px solid var(--border, rgba(28, 26, 23, 0.08));
-}
-
-.ccw__btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 9px 20px;
-  border-radius: 20px;
-  font: 500 13px/1 var(--font-sans, "DM Sans", sans-serif);
-  cursor: pointer;
-  border: 1px solid var(--border, rgba(28, 26, 23, 0.15));
-  background: #fff;
-  color: var(--ink, #1c1a17);
-  transition: background 0.12s, border-color 0.12s;
-}
-
-.ccw__btn:hover {
-  background: #f5f5f5;
-}
-
-.ccw__btn--sage {
-  background: #7A9E87;
-  border-color: #7A9E87;
-  color: #fff;
-}
-
-.ccw__btn--sage:hover {
-  filter: brightness(0.92);
-  background: #7A9E87;
-}
-
-.ccw__btn:disabled {
-  opacity: 0.5;
-  cursor: default;
-}
+/* ── Responsive ── */
 
 @media (max-width: 560px) {
-  .ccw {
-    max-width: 100%;
-    border-radius: 12px;
-  }
-
-  .ccw__head,
-  .ccw__body,
-  .ccw__foot {
-    padding-left: 20px;
-    padding-right: 20px;
-  }
-
   .ccw__scoreGrid {
     grid-template-columns: 1fr;
   }

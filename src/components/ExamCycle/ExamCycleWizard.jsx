@@ -1,6 +1,8 @@
 import { useState, useCallback } from "react";
 import Modal from "../Modal/Modal";
+import WizardPanel from "../WizardPanel/WizardPanel";
 import { createExamCycle } from "../../lib/examCycleApi";
+import { ABRSM_PIECES } from "../../data/abrsmSyllabus";
 import "./ExamCycleWizard.css";
 
 const STEPS = [
@@ -8,6 +10,13 @@ const STEPS = [
   "Exam Pieces",
   "Grading Overview",
   "Confirmation",
+];
+
+const STEP_SUBTITLES = (studentName, pieceCount) => [
+  `Set up a new exam preparation cycle for ${studentName}`,
+  `Enter the ${pieceCount} pieces for this exam`,
+  "ABRSM assessment standards for tracking progress",
+  null,
 ];
 
 const EXAM_TYPES = [
@@ -27,6 +36,8 @@ const PIECES_4 = [
   ...PIECES_3,
   { key: "pieceD", label: "Piece D", title: "", composer: "" },
 ];
+
+const LIST_MAP = { pieceA: "A", pieceB: "B", pieceC: "C", pieceD: "D" };
 
 export default function ExamCycleWizard({
   studentId,
@@ -116,70 +127,65 @@ export default function ExamCycleWizard({
     }
   }, [studentId, instrument, examType, examGrade, examDate, pieces, onSuccess]);
 
-  /* ── shared checklist renderer ── */
+  /* ── shared component list renderer ── */
 
-  function renderIncludedChecklist() {
-    const examTypeLabel = isPerformance ? "Performance" : "Practical";
+  function renderComponentList() {
     return (
-      <div className="spModal__section" style={{ marginBottom: 0 }}>
-        <div
-          className="spModal__sectionHead"
-          style={{ marginBottom: 0, background: "#7a9e87" }}
-        >
-          <h4
-            className="spModal__sectionTitle"
-            style={{
-              marginBottom: 0,
-              fontSize: "1.25rem",
-              color: "black",
-              fontWeight: "600",
-            }}
-          >
-            What&apos;s Included
-          </h4>
-        </div>
-        <p
-          className="ecw__hint"
-          style={{ marginLeft: "1.25rem", marginTop: "0.5rem" }}
-        >
-          This {examTypeLabel} exam includes:
-        </p>
-        <ul className="ecw__checkList" style={{ marginLeft: "1.25rem" }}>
-          {isPerformance ? (
-            <>
-              <li className="ecw__checkItem">
-                <span className="ecw__checkIcon">✓</span>
-                <span>4 Pieces (30 marks each)</span>
-              </li>
-            </>
-          ) : (
-            <>
-              <li className="ecw__checkItem">
-                <span className="ecw__checkIcon">✓</span>
-                <span>3 Pieces (30 marks each, 90 total)</span>
-              </li>
-              <li className="ecw__checkItem">
-                <span className="ecw__checkIcon">✓</span>
-                <span>Scales &amp; Arpeggios (21 marks)</span>
-              </li>
-              <li className="ecw__checkItem">
-                <span className="ecw__checkIcon">✓</span>
-                <span>Sight-Reading (21 marks)</span>
-              </li>
-              <li className="ecw__checkItem">
-                <span className="ecw__checkIcon">✓</span>
-                <span>Aural Tests (18 marks)</span>
-              </li>
-            </>
-          )}
-        </ul>
-        <p className="ecw__checkTotal">
-          {isPerformance
-            ? "Total: 120 marks"
-            : "Total: 150 marks · Pass threshold: 100 marks (67%)"}
-        </p>
+      <div className="ecw__componentList">
+        {isPerformance ? (
+          <>
+            <div className="ecw__componentItem">
+              <span className="ecw__componentIcon">✓</span>
+              <span className="ecw__componentLabel">4 Pieces</span>
+              <span className="ecw__componentMeta">30 marks each · 120 total</span>
+            </div>
+          </>
+        ) : (
+          <>
+            <div className="ecw__componentItem">
+              <span className="ecw__componentIcon">✓</span>
+              <span className="ecw__componentLabel">3 Pieces</span>
+              <span className="ecw__componentMeta">30 marks each · 90 total</span>
+            </div>
+            <div className="ecw__componentItem">
+              <span className="ecw__componentIcon">✓</span>
+              <span className="ecw__componentLabel">Scales &amp; Arpeggios</span>
+              <span className="ecw__componentMeta">21 marks</span>
+            </div>
+            <div className="ecw__componentItem">
+              <span className="ecw__componentIcon">✓</span>
+              <span className="ecw__componentLabel">Sight-Reading</span>
+              <span className="ecw__componentMeta">21 marks</span>
+            </div>
+            <div className="ecw__componentItem">
+              <span className="ecw__componentIcon">✓</span>
+              <span className="ecw__componentLabel">Aural Tests</span>
+              <span className="ecw__componentMeta">18 marks</span>
+            </div>
+          </>
+        )}
       </div>
     );
+  }
+
+  /* ── syllabus dropdown helper ── */
+
+  function getOptionsForPiece(pieceIndex) {
+    const piece = pieces[pieceIndex];
+    const listKey = LIST_MAP[piece.key];
+    const grade = Number(examGrade);
+    const syllabusData = ABRSM_PIECES[examType]?.[grade];
+    if (!syllabusData || !listKey) return [];
+
+    const fullList = syllabusData[listKey] ?? [];
+
+    // Filter out pieces already selected in other dropdowns
+    const selectedTitles = pieces
+      .filter((_, i) => i !== pieceIndex)
+      .map((p) => p.title)
+      .filter(Boolean);
+
+    return fullList.filter((opt) => !selectedTitles.includes(opt.title));
   }
 
   /* ── render helpers ── */
@@ -200,8 +206,12 @@ export default function ExamCycleWizard({
   }
 
   function renderExamDetails() {
+    const subtitle = STEP_SUBTITLES(studentName, pieces.length)[0];
     return (
       <div className="ecw__stepBody">
+        <h2 className="ecw__title">{STEPS[step]}</h2>
+        <p className="ecw__subtitle">{subtitle}</p>
+
         <div className="spModal__section">
           <div className="spModal__sectionHead">
             <h3 className="spModal__sectionTitle">Exam Details</h3>
@@ -263,42 +273,85 @@ export default function ExamCycleWizard({
   }
 
   function renderPieces() {
+    const subtitle = STEP_SUBTITLES(studentName, pieces.length)[1];
+    const hasTypeAndGrade = examType && examGrade;
+
     return (
       <div className="ecw__stepBody">
+        <h2 className="ecw__title">{STEPS[step]}</h2>
+        <p className="ecw__subtitle">{subtitle}</p>
+
         <div className="spModal__section">
           <div className="spModal__sectionHead">
             <h3 className="spModal__sectionTitle">Exam Pieces</h3>
           </div>
           <div className="spModal__sectionBody">
             <p className="ecw__hint">
-              Enter the pieces this student will prepare for this exam.
+              Select the pieces this student will prepare for this exam.
             </p>
 
-            {pieces.map((p, i) => (
-              <div key={p.key} className="ecw__pieceGroup">
-                <span className="ecw__pieceCaption">
-                  {p.label.toUpperCase()}
-                </span>
-                <label className="spModal__field">
-                  <span className="spModal__label">TITLE</span>
-                  <input
-                    className="spModal__input"
-                    placeholder="e.g., Sonatina in C"
-                    value={p.title}
-                    onChange={(e) => updatePiece(i, "title", e.target.value)}
-                  />
-                </label>
-                <label className="spModal__field">
-                  <span className="spModal__label">COMPOSER</span>
-                  <input
-                    className="spModal__input"
-                    placeholder="e.g., Clementi"
-                    value={p.composer}
-                    onChange={(e) => updatePiece(i, "composer", e.target.value)}
-                  />
-                </label>
-              </div>
-            ))}
+            {pieces.map((p, i) => {
+              const options = hasTypeAndGrade ? getOptionsForPiece(i) : [];
+              const currentValue =
+                p.title && p.composer ? `${p.title}|||${p.composer}` : "";
+
+              return (
+                <div key={p.key} className="ecw__pieceGroup">
+                  <span className="ecw__pieceCaption">
+                    {p.label.toUpperCase()}
+                  </span>
+                  <label className="spModal__field">
+                    <span className="spModal__label">PIECE</span>
+                    {!hasTypeAndGrade ? (
+                      <select className="spModal__input" disabled>
+                        <option value="">
+                          — Select exam type and grade first —
+                        </option>
+                      </select>
+                    ) : options.length === 0 && !currentValue ? (
+                      <select className="spModal__input" disabled>
+                        <option value="">
+                          All pieces in this list have been selected.
+                        </option>
+                      </select>
+                    ) : (
+                      <select
+                        className="spModal__input"
+                        value={currentValue}
+                        onChange={(e) => {
+                          const val = e.target.value;
+                          if (!val) {
+                            updatePiece(i, "title", "");
+                            updatePiece(i, "composer", "");
+                          } else {
+                            const [title, composer] = val.split("|||");
+                            updatePiece(i, "title", title);
+                            updatePiece(i, "composer", composer);
+                          }
+                        }}
+                      >
+                        <option value="">Select a piece…</option>
+                        {currentValue && !options.find(
+                          (o) => `${o.title}|||${o.composer}` === currentValue,
+                        ) && (
+                          <option value={currentValue}>
+                            {p.title} — {p.composer}
+                          </option>
+                        )}
+                        {options.map((o) => (
+                          <option
+                            key={`${o.title}|||${o.composer}`}
+                            value={`${o.title}|||${o.composer}`}
+                          >
+                            {o.title} — {o.composer}
+                          </option>
+                        ))}
+                      </select>
+                    )}
+                  </label>
+                </div>
+              );
+            })}
           </div>
         </div>
       </div>
@@ -306,8 +359,12 @@ export default function ExamCycleWizard({
   }
 
   function renderGradingOverview() {
+    const subtitle = STEP_SUBTITLES(studentName, pieces.length)[2];
     return (
       <div className="ecw__stepBody">
+        <h2 className="ecw__title">{STEPS[step]}</h2>
+        <p className="ecw__subtitle">{subtitle}</p>
+
         <div className="spModal__section">
           <div className="spModal__sectionBody">
             {/* Section 1 — Grading Scale */}
@@ -319,7 +376,7 @@ export default function ExamCycleWizard({
                 ABRSM Grading Scale
               </div>
               <div className="ecw__gradingSubtitle">
-                Each piece is graded 0–6 on four criteria:
+                Each piece is graded 0–6 on five criteria:
               </div>
               <ol className="ecw__gradingList">
                 <li>Pitch (Note accuracy)</li>
@@ -340,7 +397,7 @@ export default function ExamCycleWizard({
             </div>
 
             {/* Section 3 — What's Included */}
-            {renderIncludedChecklist()}
+            {renderComponentList()}
           </div>
         </div>
       </div>
@@ -378,7 +435,7 @@ export default function ExamCycleWizard({
             alignItems: "start",
           }}
         >
-          {renderIncludedChecklist()}
+          {renderComponentList()}
 
           <div className="spModal__section">
             <div
@@ -421,79 +478,44 @@ export default function ExamCycleWizard({
     <Modal
       open
       onClose={onClose}
-      panelClassName="spModal__panel ecw__panel"
+      panelClassName="ecw__panel"
       title={null}
       variant="slideRight"
     >
-      <div className="spModal__content">
-        <header className="spModal__head">
-          <div>
-            <div className="spModal__kicker">New exam cycle</div>
-            <h2 className="spModal__title">{STEPS[step]}</h2>
-          </div>
-          <button
-            type="button"
-            className="spModal__close"
-            onClick={onClose}
-            disabled={busy}
-            aria-label="Close"
-          >
-            ✕
-          </button>
-        </header>
-
-        {/* Step indicator */}
-        <div className="ecw__steps">
-          {STEPS.map((s, i) => (
-            <div
-              key={s}
-              className={`ecw__stepDot ${i === step ? "ecw__stepDot--active" : ""} ${i < step ? "ecw__stepDot--done" : ""}`}
-            >
-              <span className="ecw__stepNum">{i < step ? "✓" : i + 1}</span>
-              <span className="ecw__stepLabel">{s}</span>
-            </div>
-          ))}
-        </div>
-
-        <div className="spModal__scroll">{renderStepContent()}</div>
-
-        {err && <p className="spModal__error">{err}</p>}
-
-        <footer className="spModal__foot">
-          {step > 0 && (
-            <button
-              type="button"
-              className="spModal__btn"
-              onClick={back}
-              disabled={busy}
-            >
-              Back
-            </button>
-          )}
-
-          <div className="ecw__footSpacer" />
-
-          {step < STEPS.length - 1 ? (
-            <button
-              type="button"
-              className="spModal__btn spModal__btn--primary"
-              onClick={next}
-              disabled={!canAdvance()}
-            >
-              Continue
-            </button>
-          ) : (
-            <button
-              type="button"
-              className="spModal__btn spModal__btn--primary"
-              onClick={handleSubmit}
-              disabled={busy}
-            >
-              {busy ? "Creating…" : "Create Exam Cycle"}
-            </button>
-          )}
-        </footer>
-      </div>
+      <WizardPanel
+        stepCount={STEPS.length}
+        currentStep={step}
+        error={err}
+        footer={
+          <>
+            {step > 0 && (
+              <button className="wp__btn-back" onClick={back} disabled={busy}>
+                ← Back
+              </button>
+            )}
+            <div style={{ flex: 1 }} />
+            {step < STEPS.length - 1 ? (
+              <button
+                className="wp__btn-next"
+                onClick={next}
+                disabled={!canAdvance()}
+              >
+                Continue →
+              </button>
+            ) : (
+              <button
+                className="wp__btn-next"
+                onClick={handleSubmit}
+                disabled={busy}
+              >
+                {busy ? "Creating…" : "Create Exam Cycle"}
+              </button>
+            )}
+          </>
+        }
+      >
+        {renderStepContent()}
+      </WizardPanel>
     </Modal>
   );
 }
