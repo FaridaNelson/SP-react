@@ -231,12 +231,30 @@
 
 .td__studentList {
   list-style: none;
-  padding: 0 0 80px; /* for extra scroll space at bottom */
+  padding: 0 4px 80px 0; /* for extra scroll space at bottom */
   margin: 0 -16px;
   display: grid;
   gap: 0px;
-  overflow: visible;
-  max-height: none;
+  overflow-y: auto;
+  max-height: calc(100vh - 280px);
+}
+
+.td__studentList::-webkit-scrollbar {
+  width: 2px;
+}
+
+.td__studentList::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.td__studentList::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: 2px;
+  cursor: pointer;
+}
+
+.td__studentList::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.22);
 }
 
 .td__studentBtn {

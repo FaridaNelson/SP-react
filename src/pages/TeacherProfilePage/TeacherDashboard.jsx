@@ -8,6 +8,7 @@ import TeacherStudentInfo from "./views/TeacherStudentInfo";
 import ProgressPanel from "./panels/ProgressPanel/ProgressPanel";
 import AddStudentModal from "./modals/AddStudentModal";
 import ExamCycleWizard from "../../components/ExamCycle/ExamCycleWizard";
+import CycleCompleteWizard from "../../components/ExamCycle/CycleCompleteWizard";
 import ExamCycleList from "../../components/ExamCycle/ExamCycleList";
 import { listExamCycles } from "../../lib/examCycleApi";
 import Toast from "../../components/ui/Toast";
@@ -341,6 +342,8 @@ export default function TeacherDashboard({
   const [selectedCycle, setSelectedCycle] = useState(null);
   // Wizard opened from history view
   const [historyWizardOpen, setHistoryWizardOpen] = useState(false);
+  const [historyBlockedOpen, setHistoryBlockedOpen] = useState(false);
+  const [historyActiveCycle, setHistoryActiveCycle] = useState(null);
   const [historyRefreshKey, setHistoryRefreshKey] = useState(0);
 
   useEffect(() => setRoster(students), [students]);
@@ -568,10 +571,8 @@ export default function TeacherDashboard({
                         (c) => cycleIsActive(c) && c.instrument === instrument,
                       );
                       if (active) {
-                        showToast(
-                          `${studentDisplayName(selectedStudent)} already has an active Grade ${active.examGrade} ${active.instrument || instrument} cycle. Complete or withdraw it before starting a new one.`,
-                          "warning",
-                        );
+                        setHistoryActiveCycle(active);
+                        setHistoryBlockedOpen(true);
                         return;
                       }
                     } catch {
@@ -586,6 +587,7 @@ export default function TeacherDashboard({
               <ExamCycleList
                 key={historyRefreshKey}
                 studentId={selectedStudent._id || selectedStudent.id}
+                studentName={studentDisplayName(selectedStudent)}
                 refreshKey={historyRefreshKey}
                 onSelect={(cycle) => {
                   setSelectedCycle(cycle);
@@ -594,15 +596,36 @@ export default function TeacherDashboard({
                 onCyclesLoaded={() => {}}
                 onCycleAction={(message, variant) => {
                   setHistoryRefreshKey((k) => k + 1);
-                  // Clear selected cycle so snapshot re-fetches active
                   setSelectedCycle(null);
                   showToast(message, variant);
                 }}
               />
 
+              {historyBlockedOpen && historyActiveCycle && (
+                <CycleCompleteWizard
+                  cycle={historyActiveCycle}
+                  studentName={studentDisplayName(selectedStudent)}
+                  showBlockedNotice
+                  onClose={() => setHistoryBlockedOpen(false)}
+                  onSuccess={() => {
+                    setHistoryBlockedOpen(false);
+                    setHistoryRefreshKey((k) => k + 1);
+                    setSelectedCycle(null);
+                    showToast("Cycle completed", "success");
+                  }}
+                  onWithdrawSuccess={() => {
+                    setHistoryBlockedOpen(false);
+                    setHistoryRefreshKey((k) => k + 1);
+                    setSelectedCycle(null);
+                    showToast("Cycle withdrawn", "warning");
+                  }}
+                />
+              )}
+
               {historyWizardOpen && (
                 <ExamCycleWizard
                   studentId={selectedStudent._id || selectedStudent.id}
+                  studentName={studentDisplayName(selectedStudent)}
                   instrument={selectedStudent?.instrument}
                   onSuccess={() => {
                     setHistoryWizardOpen(false);

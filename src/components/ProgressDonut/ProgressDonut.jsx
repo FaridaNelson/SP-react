@@ -65,7 +65,11 @@ export default function ProgressDonut({
   const ly = cy + labelR * sin;
 
   return (
-    <div ref={wrapRef} className="donut" style={{ width: "100%", height: size }}>
+    <div
+      ref={wrapRef}
+      className="donut"
+      style={{ width: "100%", height: size }}
+    >
       <svg
         className="donut__svg"
         width={size}
@@ -138,6 +142,10 @@ export default function ProgressDonut({
       <div className="donut__center">
         <div className="donut__value">{clamped}%</div>
         <div className="donut__label">{label}</div>
+        <div className="tsi__passMark">
+          <span className="tsi__passKicker">Pass</span>
+          <span className="tsi__passVal">67%</span>
+        </div>
       </div>
     </div>
   );

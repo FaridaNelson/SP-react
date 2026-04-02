@@ -200,7 +200,11 @@ export default function TeacherStudentInfo({
         onOpenProgress={onOpenProgress}
         obHoveredStep={obHoveredStep}
         showActions={!isActiveCycleReadOnly && hasActiveCycle}
-        onNewCycle={hasActiveCycle && !isActiveCycleReadOnly ? () => setBlockedOpen(true) : onNewExamCycle}
+        onNewCycle={
+          hasActiveCycle && !isActiveCycleReadOnly
+            ? () => setBlockedOpen(true)
+            : onNewExamCycle
+        }
       />
       {/* Main 2-column layout */}
       <div className="tsi__layout">
@@ -233,29 +237,6 @@ export default function TeacherStudentInfo({
             <>
               {/* Exam progress donut — enriched */}
               <section className="tsi__cardPaper tsi__examCard tsi__examCard--dark">
-                {/* Grade + instrument label */}
-                <div className="tsi__examGradeLabel">
-                  GRADE {activeCycle?.examGrade ?? "—"}{" "}
-                  {(activeCycle?.instrument || "Piano").toUpperCase()}
-                </div>
-
-                {/* Exam name */}
-                {examLabel && <div className="tsi__examName">{examLabel}</div>}
-
-                {/* Exam date */}
-                {activeCycle?.examDate && (
-                  <div className="tsi__examDate">
-                    {new Date(activeCycle.examDate).toLocaleDateString(
-                      "en-GB",
-                      {
-                        day: "numeric",
-                        month: "long",
-                        year: "numeric",
-                      },
-                    )}
-                  </div>
-                )}
-
                 {isActiveCycleReadOnly && (
                   <span className="tsi__readOnlyBadge">
                     {activeCycleStatus}
@@ -270,13 +251,34 @@ export default function TeacherStudentInfo({
                       stroke={14}
                       maxSize={176}
                     />
-                    <div className="tsi__passMark">
-                      <span className="tsi__passKicker">Pass mark</span>
-                      <span className="tsi__passVal">67%</span>
-                    </div>
+                    {/* Exam date */}
+                    {activeCycle?.examDate && (
+                      <div className="tsi__examDate">
+                        {new Date(activeCycle.examDate).toLocaleDateString(
+                          "en-GB",
+                          {
+                            day: "numeric",
+                            month: "long",
+                            year: "numeric",
+                          },
+                        )}
+                      </div>
+                    )}
                   </div>
 
                   <div className="tsi__examInfo">
+                    <div className="tsi__examCardHead">
+                      {/* Grade + instrument label */}
+                      <div className="tsi__examGradeLabel">
+                        GRADE {activeCycle?.examGrade ?? "—"}{" "}
+                        {(activeCycle?.instrument || "Piano").toUpperCase()}
+                      </div>
+
+                      {/* Exam name */}
+                      {examLabel && (
+                        <div className="tsi__examName">{examLabel}</div>
+                      )}
+                    </div>
                     <div className="tsi__examMid">
                       <div className="tsi__pillGrid">
                         {pillElements.map((p) => {
@@ -298,18 +300,17 @@ export default function TeacherStudentInfo({
                         })}
                       </div>
                     </div>
-
-                    {/* Days to go */}
-                    {days != null && (
-                      <div className="tsi__daysToGo">
-                        {days > 0
-                          ? `${days} DAYS TO GO`
-                          : days === 0
-                            ? "EXAM TODAY"
-                            : "EXAM DATE PASSED"}
-                      </div>
-                    )}
                   </div>
+                  {/* Days to go */}
+                  {days != null && (
+                    <div className="tsi__daysToGo">
+                      {days > 0
+                        ? `${days} DAYS TO GO`
+                        : days === 0
+                          ? "EXAM TODAY"
+                          : "EXAM DATE PASSED"}
+                    </div>
+                  )}
                 </div>
               </section>
 
