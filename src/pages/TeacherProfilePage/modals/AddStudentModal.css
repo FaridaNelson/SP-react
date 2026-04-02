@@ -140,6 +140,7 @@
   display: grid;
   gap: 10px 10px;
   min-width: 0;
+  padding-top: 10px;
 }
 
 .spModal__label {
