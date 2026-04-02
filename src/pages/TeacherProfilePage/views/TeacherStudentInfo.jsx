@@ -55,6 +55,7 @@ export default function TeacherStudentInfo({
   const [attendanceOpen, setAttendanceOpen] = useState(false);
   const [completeOpen, setCompleteOpen] = useState(false);
   const [withdrawOpen, setWithdrawOpen] = useState(false);
+  const [blockedOpen, setBlockedOpen] = useState(false);
   const [historyOpen, setHistoryOpen] = useState(false);
   const [historyLoading, setHistoryLoading] = useState(false);
   const [history, setHistory] = useState([]);
@@ -199,7 +200,7 @@ export default function TeacherStudentInfo({
         onOpenProgress={onOpenProgress}
         obHoveredStep={obHoveredStep}
         showActions={!isActiveCycleReadOnly && hasActiveCycle}
-        onNewCycle={onGoToHistory}
+        onNewCycle={hasActiveCycle && !isActiveCycleReadOnly ? () => setBlockedOpen(true) : onNewExamCycle}
       />
       {/* Main 2-column layout */}
       <div className="tsi__layout">
@@ -471,6 +472,23 @@ export default function TeacherStudentInfo({
           }}
           onWithdrawSuccess={() => {
             setCompleteOpen(false);
+            onToast?.("Cycle withdrawn", "warning");
+          }}
+        />
+      )}
+
+      {blockedOpen && activeCycle && (
+        <CycleCompleteWizard
+          cycle={activeCycle}
+          studentName={displayName}
+          showBlockedNotice
+          onClose={() => setBlockedOpen(false)}
+          onSuccess={() => {
+            setBlockedOpen(false);
+            onToast?.("Cycle completed", "success");
+          }}
+          onWithdrawSuccess={() => {
+            setBlockedOpen(false);
             onToast?.("Cycle withdrawn", "warning");
           }}
         />

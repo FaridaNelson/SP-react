@@ -23,6 +23,7 @@ export default function CycleCompleteWizard({
   onWithdrawSuccess,
   onClose,
   startOnWithdraw = false,
+  showBlockedNotice = false,
 }) {
   const cycleId = cycle?._id || cycle?.id;
   const isPerformance = cycle?.examType === "Performance";
@@ -194,6 +195,17 @@ export default function CycleCompleteWizard({
           {cycle?.examType ?? "Practical"}
         </p>
 
+        {showBlockedNotice && (
+          <div className="ccw__blockedNotice">
+            <div className="ccw__blockedNoticeTitle">
+              Current Journey Status: Current (Preparing)
+            </div>
+            <div className="ccw__blockedNoticeBody">
+              You must complete this journey before starting a new one.
+            </div>
+          </div>
+        )}
+
         <button
           type="button"
           className="ccw__optionCard"
@@ -334,7 +346,7 @@ export default function CycleCompleteWizard({
   }
 
   return (
-    <Modal open onClose={onClose} panelClassName="ccw__panel">
+    <Modal open onClose={onClose} variant="slideRight" panelClassName="ccw__panel">
       <WizardPanel
         stepCount={2}
         currentStep={viewToStep[view]}

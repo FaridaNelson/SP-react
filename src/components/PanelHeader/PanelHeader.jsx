@@ -22,6 +22,7 @@ export default function PanelHeader({
           <button
             type="button"
             className={`td__pillBtn ${obHoveredStep === 2 ? "ob-btn-flash-topbar" : ""} ${obHoveredStep === 3 ? "ob-topbar-dim" : ""}`}
+            onClick={onNewCycle || undefined}
           >
             ＋ New Exam Cycle
           </button>
