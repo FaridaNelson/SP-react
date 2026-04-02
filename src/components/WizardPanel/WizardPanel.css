@@ -1,0 +1,104 @@
+/* Panel — full-height side drawer, slides in via the existing Modal component */
+.wp__panel {
+  width: var(--wp-width, 600px);
+  height: 100vh;
+  background: var(--warm-white, #fdf9f4);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* ── Dash indicator bar ── */
+.wp__steps {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  padding: 20px;
+  background: var(--cream, #faf7f2);
+  border-bottom: 1px solid var(--border, rgba(28, 26, 23, 0.1));
+  flex-shrink: 0;
+}
+
+.wp__step {
+  width: 40px;
+  height: 4px;
+  border-radius: 2px;
+  background: rgba(201, 168, 76, 0.2);
+  transition: background 0.3s ease;
+}
+
+.wp__step--active {
+  background: var(--gold, #c9a84c);
+}
+
+.wp__step--done {
+  background: var(--sage, #7a9e87);
+}
+
+/* ── Scrollable content ── */
+.wp__content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 32px;
+}
+.wp__content::-webkit-scrollbar { width: 5px; }
+.wp__content::-webkit-scrollbar-thumb {
+  background: rgba(28, 26, 23, 0.1);
+  border-radius: 3px;
+}
+
+/* ── Error bar ── */
+.wp__error {
+  margin: 0;
+  padding: 10px 32px;
+  font: 600 13px/1.3 var(--font-sans, 'DM Sans', sans-serif);
+  color: #b00020;
+  background: rgba(176, 0, 32, 0.05);
+  border-top: 1px solid rgba(176, 0, 32, 0.12);
+  flex-shrink: 0;
+}
+
+/* ── Footer ── */
+.wp__footer {
+  padding: 20px 32px;
+  border-top: 1px solid var(--border, rgba(28, 26, 23, 0.1));
+  background: white;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+/* ── Footer buttons (shared) ── */
+.wp__btn-back {
+  font: 600 13px/1 var(--font-sans, 'DM Sans', sans-serif);
+  padding: 9px 22px;
+  border-radius: 10px;
+  cursor: pointer;
+  background: transparent;
+  color: var(--ink-muted, #7a766d);
+  border: 1px solid var(--border, rgba(28, 26, 23, 0.1));
+  transition: background 0.15s, color 0.15s;
+}
+.wp__btn-back:hover { background: var(--cream, #faf7f2); color: var(--ink, #1c1a17); }
+.wp__btn-back:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.wp__btn-next {
+  font: 600 13px/1 var(--font-sans, 'DM Sans', sans-serif);
+  padding: 9px 22px;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+  background: var(--gold, #c9a84c);
+  color: var(--ink, #1c1a17);
+  transition: background 0.15s;
+}
+.wp__btn-next:hover { background: #b8932a; }
+.wp__btn-next:disabled { opacity: 0.5; cursor: not-allowed; }
+
+/* ── Responsive ── */
+@media (max-width: 640px) {
+  .wp__panel { width: 100vw; }
+  .wp__content { padding: 24px 20px; }
+  .wp__footer { padding: 16px 20px; }
+}

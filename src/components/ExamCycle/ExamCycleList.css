@@ -150,13 +150,13 @@
 }
 
 .ecl__actionBtn--complete {
-  background: #7a9e87;
-  color: #ffffff;
-  border: none;
+  background: transparent;
+  border: 1.5px solid #7a9e87;
+  color: #7a9e87;
 }
 
 .ecl__actionBtn--complete:hover {
-  filter: brightness(0.92);
+  background: rgba(51, 104, 72, 0.1);
 }
 
 .ecl__actionBtn--withdraw {
