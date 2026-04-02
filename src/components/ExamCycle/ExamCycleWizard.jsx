@@ -437,37 +437,13 @@ export default function ExamCycleWizard({
         >
           {renderComponentList()}
 
-          <div className="spModal__section">
-            <div
-              className="spModal__sectionHead"
-              style={{ marginBottom: 0, background: "#7a9e87" }}
-            >
-              <h4
-                className="spModal__sectionTitle"
-                style={{
-                  marginBottom: 0,
-                  fontSize: "1.25rem",
-                  color: "black",
-                  fontWeight: "600",
-                }}
-              >
-                Next steps after creation:
-              </h4>
-            </div>
-            <ul
-              className="ecw__nextSteps"
-              style={{ marginLeft: "1.25rem", marginTop: "0.5rem" }}
-            >
-              <li className="ecw__nextStep" style={{ color: "black" }}>
-                1. Grade the first lesson in &ldquo;Today&apos;s Progress&rdquo;
-              </li>
-              <li className="ecw__nextStep" style={{ color: "black" }}>
-                2. Assign homework for this week
-              </li>
-              <li className="ecw__nextStep" style={{ color: "black" }}>
-                3. Track progress on the main dashboard
-              </li>
-            </ul>
+          <div className="ecw__nextStepsCard">
+            <div className="ecw__nextStepsTitle">Next steps after creation:</div>
+            <ol className="ecw__nextStepsList">
+              <li>Grade the first lesson in "Today's Progress"</li>
+              <li>Assign homework for this week</li>
+              <li>Track progress on the main dashboard</li>
+            </ol>
           </div>
         </div>
       </div>
