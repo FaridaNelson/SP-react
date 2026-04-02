@@ -137,7 +137,9 @@ export default function ExamCycleWizard({
             <div className="ecw__componentItem">
               <span className="ecw__componentIcon">✓</span>
               <span className="ecw__componentLabel">4 Pieces</span>
-              <span className="ecw__componentMeta">30 marks each · 120 total</span>
+              <span className="ecw__componentMeta">
+                30 marks each · 120 total
+              </span>
             </div>
           </>
         ) : (
@@ -145,11 +147,15 @@ export default function ExamCycleWizard({
             <div className="ecw__componentItem">
               <span className="ecw__componentIcon">✓</span>
               <span className="ecw__componentLabel">3 Pieces</span>
-              <span className="ecw__componentMeta">30 marks each · 90 total</span>
+              <span className="ecw__componentMeta">
+                30 marks each · 90 total
+              </span>
             </div>
             <div className="ecw__componentItem">
               <span className="ecw__componentIcon">✓</span>
-              <span className="ecw__componentLabel">Scales &amp; Arpeggios</span>
+              <span className="ecw__componentLabel">
+                Scales &amp; Arpeggios
+              </span>
               <span className="ecw__componentMeta">21 marks</span>
             </div>
             <div className="ecw__componentItem">
@@ -279,16 +285,14 @@ export default function ExamCycleWizard({
     return (
       <div className="ecw__stepBody">
         <h2 className="ecw__title">{STEPS[step]}</h2>
-        <p className="ecw__subtitle">{subtitle}</p>
+        <p className="ecw__subtitle">
+          {" "}
+          Select the pieces this student will prepare for this exam.
+        </p>
 
         <div className="spModal__section">
-          <div className="spModal__sectionHead">
-            <h3 className="spModal__sectionTitle">Exam Pieces</h3>
-          </div>
           <div className="spModal__sectionBody">
-            <p className="ecw__hint">
-              Select the pieces this student will prepare for this exam.
-            </p>
+            <p className="ecw__hint"></p>
 
             {pieces.map((p, i) => {
               const options = hasTypeAndGrade ? getOptionsForPiece(i) : [];
@@ -301,7 +305,6 @@ export default function ExamCycleWizard({
                     {p.label.toUpperCase()}
                   </span>
                   <label className="spModal__field">
-                    <span className="spModal__label">PIECE</span>
                     {!hasTypeAndGrade ? (
                       <select className="spModal__input" disabled>
                         <option value="">
@@ -331,13 +334,15 @@ export default function ExamCycleWizard({
                         }}
                       >
                         <option value="">Select a piece…</option>
-                        {currentValue && !options.find(
-                          (o) => `${o.title}|||${o.composer}` === currentValue,
-                        ) && (
-                          <option value={currentValue}>
-                            {p.title} — {p.composer}
-                          </option>
-                        )}
+                        {currentValue &&
+                          !options.find(
+                            (o) =>
+                              `${o.title}|||${o.composer}` === currentValue,
+                          ) && (
+                            <option value={currentValue}>
+                              {p.title} — {p.composer}
+                            </option>
+                          )}
                         {options.map((o) => (
                           <option
                             key={`${o.title}|||${o.composer}`}
@@ -365,41 +370,42 @@ export default function ExamCycleWizard({
         <h2 className="ecw__title">{STEPS[step]}</h2>
         <p className="ecw__subtitle">{subtitle}</p>
 
-        <div className="spModal__section">
-          <div className="spModal__sectionBody">
-            {/* Section 1 — Grading Scale */}
-            <div className="ecw__gradingBox">
-              <div
-                className="ecw__gradingTitle"
-                style={{ fontSize: "1.25rem" }}
-              >
-                ABRSM Grading Scale
-              </div>
-              <div className="ecw__gradingSubtitle">
-                Each piece is graded 0–6 on five criteria:
-              </div>
-              <ol className="ecw__gradingList">
-                <li>Pitch (Note accuracy)</li>
-                <li>Time (Rhythm &amp; Tempo)</li>
-                <li>Tone (Dynamics &amp; Musicality)</li>
-                <li>Shape (Phrasing &amp; Articulation)</li>
-                <li>Performance (Artistry &amp; Expressiveness)</li>
-              </ol>
-            </div>
-
-            {/* Section 2 — Readiness Threshold */}
-            <div style={{ marginBottom: "1.5rem" }}>
-              <span className="ecw__threshold">Readiness Threshold: 67%</span>
-              <p className="ecw__hint" style={{ marginTop: "0.75rem" }}>
-                Students scoring 67% or above are considered exam-ready. This
-                helps track progress towards exam preparedness.
-              </p>
-            </div>
-
-            {/* Section 3 — What's Included */}
-            {renderComponentList()}
+        {/* Section 1 — Grading Scale */}
+        <div className="ecw__gradingBox">
+          <div className="ecw__gradingTitle" style={{ fontSize: "1.25rem" }}>
+            ABRSM Grading Scale
           </div>
+          <div className="ecw__gradingSubtitle">
+            Each piece is graded 0–6 on five criteria:
+          </div>
+          <ol className="ecw__gradingList">
+            <li>Pitch (Note accuracy)</li>
+            <li>Time (Rhythm &amp; Tempo)</li>
+            <li>Tone (Dynamics &amp; Musicality)</li>
+            <li>Shape (Phrasing &amp; Articulation)</li>
+            <li>Performance (Artistry &amp; Expressiveness)</li>
+          </ol>
         </div>
+
+        {/* Section 2 — Readiness Threshold */}
+        <div
+          className="spModal__readinessWhiteBox"
+          style={{ marginBottom: "1.5rem" }}
+        >
+          <span className="ecw__threshold">Readiness Threshold: 67%</span>
+          <p className="ecw__hint" style={{ marginTop: "0.75rem" }}>
+            Students scoring 67% or above are considered exam-ready. This helps
+            track progress towards exam preparedness.
+          </p>
+        </div>
+
+        {/* Section 3 — What's Included */}
+        <p className="ecw__hint" style={{ marginTop: "0.75rem" }}>
+          This{" "}
+          {examType === "ABRSM - Performance" ? "Performance" : "Practical"}{" "}
+          exam cycle will include:
+        </p>
+        {renderComponentList()}
       </div>
     );
   }
@@ -426,25 +432,17 @@ export default function ExamCycleWizard({
             </p>
           )}
         </div>
-
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(2, auto)",
-            gap: "1.5rem",
-            alignItems: "start",
-          }}
-        >
+        <div className="ecw__nextStepsCard">
+          <p className="ecw__lastPageCardTitle">What's included:</p>
           {renderComponentList()}
-
-          <div className="ecw__nextStepsCard">
-            <div className="ecw__nextStepsTitle">Next steps after creation:</div>
-            <ol className="ecw__nextStepsList">
-              <li>Grade the first lesson in "Today's Progress"</li>
-              <li>Assign homework for this week</li>
-              <li>Track progress on the main dashboard</li>
-            </ol>
-          </div>
+        </div>
+        <div className="ecw__nextStepsCard">
+          <div className="ecw__nextStepsTitle">Next steps after creation:</div>
+          <ol className="ecw__nextStepsList">
+            <li>Grade the first lesson in "Today's Progress"</li>
+            <li>Assign homework for this week</li>
+            <li>Track progress on the main dashboard</li>
+          </ol>
         </div>
       </div>
     );

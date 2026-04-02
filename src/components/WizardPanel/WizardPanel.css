@@ -74,7 +74,7 @@
 /* ── Footer buttons (shared) ── */
 .wp__btn-back {
   font: 600 13px/1 var(--font-sans, "DM Sans", sans-serif);
-  padding: 9px 22px;
+  padding: 12px 22px;
   border-radius: 10px;
   cursor: pointer;
   background: transparent;
@@ -97,7 +97,7 @@
 
 .wp__btn-next {
   font: 600 13px/1 var(--font-sans, "DM Sans", sans-serif);
-  padding: 9px 22px;
+  padding: 12px 22px;
   border-radius: 10px;
   border: none;
   cursor: pointer;
