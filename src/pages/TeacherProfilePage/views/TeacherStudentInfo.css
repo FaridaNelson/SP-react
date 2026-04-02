@@ -68,14 +68,16 @@
 
 /* exam progress card */
 .tsi__examBody {
-  display: grid;
-  grid-template-columns: 220px 1fr;
-  gap: 14px;
+  display: flex;
   align-items: center;
+  gap: 24px;
+  min-width: 0;
   padding: 15px;
 }
 
 .tsi__donutWrap {
+  flex: 0 0 clamp(80px, 30%, 200px);
+  min-width: 0;
   display: grid;
   place-items: center;
   gap: 10px;
@@ -111,6 +113,8 @@
 }
 
 .tsi__examInfo {
+  flex: 1 1 0;
+  min-width: 0;
   display: grid;
   gap: 10px;
 }
@@ -136,13 +140,15 @@
 .tsi__pillGrid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 20px 20px;
+  gap: 8px;
   align-items: center;
   margin-top: 6px;
+  min-width: 0;
 }
 
 .tsi__pill {
-  width: 90%;
+  width: 100%;
+  min-width: 0;
   font: 700 11px/1 var(--td-sans);
   padding: 7px 10px;
   border-radius: 999px;
@@ -150,6 +156,10 @@
   background: rgba(255, 255, 255, 0.7);
   color: rgba(31, 28, 24, 0.7);
   text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  box-sizing: border-box;
 }
 
 .tsi__pill--pass {
@@ -342,9 +352,6 @@
   .tsi__layout {
     grid-template-columns: 1fr;
   }
-  .tsi__examBody {
-    grid-template-columns: 1fr;
-  }
   .tsi__pageActions {
     flex-wrap: wrap;
     justify-content: flex-end;
@@ -527,13 +534,16 @@
 
   /* Exam card body stacks */
   .tsi__examBody {
-    grid-template-columns: 1fr;
+    flex-direction: column;
+    align-items: stretch;
     gap: 12px;
     padding: 10px;
   }
 
   .tsi__donutWrap {
-    justify-self: center;
+    flex: 0 0 auto;
+    width: clamp(100px, 50%, 160px);
+    margin: 0 auto;
   }
 
   /* CHANGE 4: pill grid 2-column, no overlap */

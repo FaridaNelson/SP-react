@@ -2,6 +2,7 @@
   position: relative;
   display: grid;
   place-items: center;
+  width: 100%;
 }
 
 .donut__svg {
@@ -47,7 +48,7 @@
 
 .donut__value {
   font-family: var(--font-serif);
-  font-size: 40px;
+  font-size: clamp(20px, 5vw, 40px);
   font-weight: 500;
   color: #fff;
   line-height: 1;

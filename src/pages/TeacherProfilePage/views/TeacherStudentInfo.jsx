@@ -267,8 +267,8 @@ export default function TeacherStudentInfo({
                     <ProgressDonut
                       value={computedReadiness}
                       label={isActiveCycleReadOnly ? "Final" : "Ready"}
-                      size={176}
                       stroke={14}
+                      maxSize={176}
                     />
                     <div className="tsi__passMark">
                       <span className="tsi__passKicker">Pass mark</span>

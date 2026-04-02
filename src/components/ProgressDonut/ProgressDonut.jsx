@@ -1,14 +1,27 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import "./ProgressDonut.css";
 
 export default function ProgressDonut({
   value = 0,
-  size = 100,
   stroke = 9,
   label = "READY",
   passMark = 67,
   showPassMark = true,
+  minSize = 80,
+  maxSize = 220,
 }) {
+  const wrapRef = useRef(null);
+  const [size, setSize] = useState(160);
+
+  useEffect(() => {
+    if (!wrapRef.current) return;
+    const ro = new ResizeObserver(([entry]) => {
+      const w = entry.contentRect.width;
+      setSize(Math.min(maxSize, Math.max(minSize, Math.round(w))));
+    });
+    ro.observe(wrapRef.current);
+    return () => ro.disconnect();
+  }, [minSize, maxSize]);
   const radius = (size - stroke) / 2;
   const circumference = 2 * Math.PI * radius;
 
@@ -52,7 +65,7 @@ export default function ProgressDonut({
   const ly = cy + labelR * sin;
 
   return (
-    <div className="donut" style={{ width: size, height: size }}>
+    <div ref={wrapRef} className="donut" style={{ width: "100%", height: size }}>
       <svg
         className="donut__svg"
         width={size}

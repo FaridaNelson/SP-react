@@ -35,12 +35,14 @@
   gap: 16px;
   width: 100%;
   padding: 16px;
-  border: 1px solid var(--border, rgba(28, 26, 23, 0.1));
+  border: 1px solid var(--border, rgba(28, 26, 23, 0.5));
   border-radius: 12px;
   background: #fff;
   cursor: pointer;
   text-align: left;
-  transition: border-color 0.15s, box-shadow 0.15s;
+  transition:
+    border-color 0.15s,
+    box-shadow 0.15s;
 }
 
 .ccw__optionCard:hover {
@@ -59,11 +61,11 @@
 }
 
 .ccw__optionIcon--sage {
-  background: #7A9E87;
+  background: #7a9e87;
 }
 
 .ccw__optionIcon--rose {
-  background: #D4806A;
+  background: #d4806a;
 }
 
 .ccw__optionText {
@@ -102,7 +104,7 @@
   font: 400 14px/1.4 var(--font-sans, "DM Sans", sans-serif);
   color: var(--ink, #1c1a17);
   padding: 10px 12px;
-  border: 1px solid var(--border, rgba(28, 26, 23, 0.15));
+  border: 1px solid var(--border, rgba(28, 26, 23, 0.5));
   border-radius: 10px;
   background: #fff;
   outline: none;
@@ -199,13 +201,13 @@
 }
 
 .ccw__blockedNoticeTitle {
-  font: 600 13px/1.3 var(--font-sans, 'DM Sans', sans-serif);
+  font: 600 13px/1.3 var(--font-sans, "DM Sans", sans-serif);
   color: #7a5c1e;
   margin-bottom: 4px;
 }
 
 .ccw__blockedNoticeBody {
-  font: 400 13px/1.5 var(--font-sans, 'DM Sans', sans-serif);
+  font: 400 13px/1.5 var(--font-sans, "DM Sans", sans-serif);
   color: #8a6d2f;
 }
 
