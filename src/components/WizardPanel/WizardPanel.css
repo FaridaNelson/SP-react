@@ -77,10 +77,10 @@
   cursor: pointer;
   background: transparent;
   color: var(--ink-muted, #7a766d);
-  border: 1px solid var(--border, rgba(28, 26, 23, 0.1));
-  transition: background 0.15s, color 0.15s;
+  border: 1px solid rgba(28, 26, 23, 0.15);
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
 }
-.wp__btn-back:hover { background: var(--cream, #faf7f2); color: var(--ink, #1c1a17); }
+.wp__btn-back:hover { background: var(--cream, #faf7f2); color: var(--ink, #1c1a17); border-color: rgba(28, 26, 23, 0.25); }
 .wp__btn-back:disabled { opacity: 0.5; cursor: not-allowed; }
 
 .wp__btn-next {
