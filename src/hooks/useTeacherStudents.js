@@ -20,6 +20,7 @@ function normalizeStudent(item) {
     accessId: item.accessId,
     role: item.role,
     accessStatus: item.status, // avoid clash with student.status
+    summary: item.summary ?? null,
   };
 }
 
