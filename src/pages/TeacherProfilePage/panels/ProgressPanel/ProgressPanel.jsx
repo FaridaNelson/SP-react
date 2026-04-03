@@ -419,7 +419,6 @@ export default function ProgressPanel({
       });
 
       const savedLesson = await upsertLesson(lessonPayload);
-      console.log("SAVED LESSON:", savedLesson);
 
       setLatestLesson(savedLesson);
       onLessonSaved?.(savedLesson);

@@ -9,7 +9,6 @@ export default function PanelHeader({
   onNewCycle,
   onOpenProgress,
 }) {
-  console.log("PanelHeader obHoveredStep:", obHoveredStep);
   return (
     <header className="panelHeader">
       <div className="panelHeader__titleWrap">

@@ -343,8 +343,10 @@
   opacity: 0.62;
   margin-top: 4px;
 }
-/* 
+
 .td__pctBadge {
+  margin-left: auto;
+  flex-shrink: 0;
   font: 700 11px/1 var(--td-sans);
   padding: 6px 8px;
   border-radius: 999px;
@@ -371,7 +373,7 @@
 .td__pctBadge--good {
   background: rgba(78, 174, 107, 0.18);
   color: rgba(186, 255, 210, 0.95);
-} */
+}
 
 .td__sidebarFade {
   position: absolute;
@@ -421,12 +423,17 @@
   align-items: center;
   gap: 8px;
   padding: 8px 12px;
-  border-radius: 999px;
+  border-radius: 15px;
   border: 1px solid rgba(31, 28, 24, 0.16);
   background: rgba(255, 255, 255, 0.75);
   color: rgba(31, 28, 24, 0.9);
   cursor: pointer;
   font: 600 12px/1 var(--td-sans);
+}
+
+.td__pillBtn:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--td-shadow-soft);
 }
 
 .td__pillBtn:disabled {

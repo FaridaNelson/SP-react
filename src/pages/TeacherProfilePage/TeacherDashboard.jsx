@@ -13,7 +13,6 @@ import ExamCycleList from "../../components/ExamCycle/ExamCycleList";
 import { listExamCycles } from "../../lib/examCycleApi";
 import Toast from "../../components/ui/Toast";
 import "./TeacherDashboard.css";
-import BrandTag from "../../components/BrandTag/BrandTag";
 import StudentInformationView from "./views/StudentInformationView";
 import StudentDropdownMenu from "./components/StudentDropdownMenu";
 import OnboardingGuide from "../../components/OnboardingGuide/OnboardingGuide";
@@ -133,12 +132,6 @@ function SelectedStudentPane({
       const data = await listExamCycles(studentId);
       const cycles = Array.isArray(data) ? data : (data?.cycles ?? []);
       const active = cycles.find(cycleIsActive);
-
-      console.log("refreshActiveCycle active:", active);
-      console.log(
-        "refreshActiveCycle latestScores:",
-        active?.progressSummary?.latestScores,
-      );
 
       setFetchedCycle(active || null);
     } catch (err) {
@@ -292,23 +285,17 @@ function SelectedStudentPane({
     </>
   );
 }
-// function StudentPctBadge({ studentId }) {
-//   const { items, isLoading } = useProgress(studentId);
 
-//   if (isLoading) {
-//     return <span className="td__pctBadge td__pctBadge--empty">—</span>;
-//   }
-
-//   const pct = computeReadiness(items || []);
-//   const tone =
-//     pct >= 80 ? "good" : pct >= 67 ? "mid" : pct > 0 ? "bad" : "empty";
-
-//   return (
-//     <span className={`td__pctBadge td__pctBadge--${tone}`}>
-//       {pct > 0 ? `${pct}%` : "—"}
-//     </span>
-//   );
-// }
+function pctBadge(s) {
+  const pct = Math.round(Number(s.summary?.activeCycleProgressPercent) || 0);
+  const tone =
+    pct >= 80 ? "good" : pct >= 67 ? "mid" : pct > 0 ? "bad" : "empty";
+  return (
+    <span className={`td__pctBadge td__pctBadge--${tone}`}>
+      {pct > 0 ? `${pct}%` : "—"}
+    </span>
+  );
+}
 
 export default function TeacherDashboard({
   selectedStudentId,
@@ -416,8 +403,6 @@ export default function TeacherDashboard({
     );
   }
 
-  console.log("obHoveredStep:", obHoveredStep);
-
   return (
     <main className="td__shell">
       <div className="td__grid">
@@ -510,6 +495,8 @@ export default function TeacherDashboard({
                             {s.instrument || "Piano"}
                           </div>
                         </div>
+
+                        {pctBadge(s)}
                       </button>
 
                       {active && (
