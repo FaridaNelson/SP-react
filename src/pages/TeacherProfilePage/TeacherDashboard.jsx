@@ -118,6 +118,7 @@ function SelectedStudentPane({
   initialCycle,
   onGoToHistory,
   obHoveredStep,
+  onRosterRefresh,
 }) {
   const studentId = student?._id || student?.id;
 
@@ -270,6 +271,7 @@ function SelectedStudentPane({
         onLessonSaved={async (saved) => {
           setLatestLesson(saved);
           await refreshActiveCycle();
+          onRosterRefresh?.();
         }}
         activeCycle={resolvedCycle}
       />
@@ -303,7 +305,7 @@ export default function TeacherDashboard({
   user,
 }) {
   const teacherId = user?._id || user?.id;
-  const { students, isLoading, error } = useTeacherStudents(teacherId);
+  const { students, isLoading, error, refresh } = useTeacherStudents(teacherId);
 
   const [roster, setRoster] = useState([]);
   const [greeting, setGreeting] = useState(() => getPacificGreeting());
@@ -536,6 +538,7 @@ export default function TeacherDashboard({
               initialCycle={selectedCycle}
               onGoToHistory={() => setView("history")}
               obHoveredStep={obHoveredStep}
+              onRosterRefresh={refresh}
             />
           ) : view === "history" ? (
             <div className="td__historyView">

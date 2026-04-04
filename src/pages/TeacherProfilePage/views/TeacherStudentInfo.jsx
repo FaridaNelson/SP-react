@@ -172,19 +172,15 @@ export default function TeacherStudentInfo({
 
   const computedReadiness = useMemo(() => {
     if (!filteredItems.length) return 0;
-
     const weighted = filteredItems.reduce(
       (sum, it) => sum + (Number(it.score) || 0) * (Number(it.weight) || 0),
       0,
     );
-
     const totalWeight = filteredItems.reduce(
       (sum, it) => sum + (Number(it.weight) || 0),
       0,
     );
-
     if (!totalWeight) return 0;
-
     return Math.round(weighted / totalWeight);
   }, [filteredItems]);
 
