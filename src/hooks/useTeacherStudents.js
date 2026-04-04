@@ -28,6 +28,7 @@ export function useTeacherStudents(teacherId) {
   const [students, setStudents] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [refreshKey, setRefreshKey] = useState(0);
 
   useEffect(() => {
     if (!teacherId) {
@@ -63,7 +64,7 @@ export function useTeacherStudents(teacherId) {
     return () => {
       alive = false;
     };
-  }, [teacherId]);
+  }, [teacherId, refreshKey]);
 
-  return { students, isLoading, error };
+  return { students, isLoading, error, refresh: () => setRefreshKey((k) => k + 1) };
 }
