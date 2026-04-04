@@ -2,6 +2,38 @@ import { useEffect, useState, useCallback } from "react";
 import { api } from "../../../lib/api";
 import "./StudentInformationView.css";
 
+function InviteCodeField({ code }) {
+  const [copied, setCopied] = useState(false);
+
+  function handleCopy() {
+    navigator.clipboard.writeText(code);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  }
+
+  if (!code) return null;
+
+  return (
+    <div className="siv__field siv__field--full">
+      <div className="siv__label">Student Invite Code</div>
+      <div className="siv__inviteRow">
+        <span className="siv__inviteCode">{code}</span>
+        <button
+          type="button"
+          className="siv__copyBtn"
+          onClick={handleCopy}
+        >
+          {copied ? "✓ Copied" : "Copy"}
+        </button>
+      </div>
+      <div className="siv__helper">
+        Share this code with the parent. They'll enter it when creating
+        their account to link to this student.
+      </div>
+    </div>
+  );
+}
+
 function displayGrade(derivedGrade, instrument) {
   const inst = instrument || "Piano";
   if (derivedGrade == null) return `Grade — ${inst}`;
@@ -237,6 +269,8 @@ export default function StudentInformationView({ student, user }) {
 
           <div className="siv__card siv__card--large">
             <div className="siv__grid siv__grid--2">
+              <InviteCodeField code={s.inviteCode} />
+
               <EditableField
                 label="First Name"
                 value={firstName !== "—" ? firstName : ""}
