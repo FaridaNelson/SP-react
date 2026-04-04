@@ -14,11 +14,11 @@
   color: var(--rose, #d4806a);
 }
 
-/* ── Grid layout ── */
+/* ── Grid layout — single column, full width ── */
 
 .ecl__grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  display: flex;
+  flex-direction: column;
   gap: 12px;
 }
 
@@ -169,11 +169,66 @@
   background: rgba(212, 128, 106, 0.08);
 }
 
-@media (max-width: 768px) {
-  .ecl__grid {
-    grid-template-columns: 1fr;
-  }
+/* ── Sparkline bar chart ── */
 
+.ecl__sparkWrap {
+  margin-top: 8px;
+  width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+
+.ecl__sparkChart {
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  gap: 4px;
+  height: 80px;
+  min-width: min-content;
+  padding-bottom: 16px; /* room for L1, L2… labels */
+}
+
+.ecl__sparkPassLine {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: calc(16px + (80px - 16px) * 0.67);
+  border-top: 1.5px dashed var(--ink, #1c1a17);
+  opacity: 0.25;
+  pointer-events: none;
+}
+
+.ecl__sparkCol {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  height: calc(100% - 16px); /* minus label space */
+  flex-shrink: 0;
+}
+
+.ecl__sparkBar {
+  width: 20px;
+  min-height: 2px;
+  border-radius: 3px 3px 0 0;
+  transition: height 0.2s ease;
+}
+
+.ecl__sparkLabel {
+  margin-top: 3px;
+  font: 500 9px/1 var(--font-sans, "DM Sans", sans-serif);
+  color: var(--ink-muted, #7a766d);
+  white-space: nowrap;
+}
+
+.ecl__sparkEmpty {
+  margin-top: 8px;
+  font: 400 12px/1.4 var(--font-sans, "DM Sans", sans-serif);
+  color: var(--ink-muted, #7a766d);
+  font-style: italic;
+}
+
+@media (max-width: 768px) {
   .ecl__gradeType {
     font-size: 17px;
   }
@@ -186,5 +241,9 @@
   .ecl__actionBtn {
     font-size: 11px;
     padding: 6px 12px;
+  }
+
+  .ecl__sparkBar {
+    width: 16px;
   }
 }
