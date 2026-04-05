@@ -1,0 +1,255 @@
+/* ── LESSON CARD ── */
+.lesson-card {
+  background: white;
+  border: 1px solid var(--border, rgba(28, 26, 23, 0.1));
+  border-radius: 16px;
+  margin-bottom: 16px;
+  overflow: hidden;
+}
+.lesson-card-header {
+  background: var(--ink);
+  padding: 16px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+  user-select: none;
+  transition: background 0.15s;
+}
+.lesson-card-header:hover {
+  background: #26231f;
+}
+.lesson-card-left {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.lesson-date-badge {
+  background: rgba(201, 168, 76, 0.2);
+  border: 1px solid rgba(201, 168, 76, 0.3);
+  padding: 8px 14px;
+  border-radius: 10px;
+  text-align: center;
+}
+.lesson-date-day {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--gold-light);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+.lesson-date-full {
+  font-family: "Cormorant Garamond", serif;
+  font-size: 16px;
+  font-weight: 500;
+  color: white;
+  margin-top: 2px;
+}
+.lesson-meta {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.6);
+}
+.lesson-card-body {
+  padding: 20px;
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.lesson-card-body.open {
+  max-height: 2000px;
+}
+.lesson-section {
+  margin-bottom: 24px;
+}
+.lesson-section:last-child {
+  margin-bottom: 0;
+}
+.lesson-section-title {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--ink-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 12px;
+  padding-bottom: 8px;
+  border-bottom: 1.3px solid rgba(28, 26, 23, 0.1);
+}
+.lesson-note-display {
+  background: var(--cream);
+  border-radius: 10px;
+  padding: 12px 14px;
+  font-size: 14px;
+  line-height: 1.7;
+  color: var(--ink-soft);
+  font-style: italic;
+}
+
+.lesson-edit-btn {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--gold);
+  background: transparent;
+  border: 1px solid var(--gold);
+  padding: 6px 14px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.lesson-edit-btn:hover {
+  background: var(--gold);
+  color: var(--ink);
+}
+
+/* ── Piece sub-heading inside lesson body ── */
+.lesson-piece-heading {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink-soft);
+  margin: 12px 0 6px;
+}
+.lesson-piece-heading:first-child {
+  margin-top: 30px;
+}
+
+/* ── Piece table ── */
+.lesson-piece-table {
+  width: 100%;
+}
+
+.lesson-piece-header-row {
+  display: grid;
+  gap: 12px;
+  align-items: center;
+  padding: 8px 0;
+  border-bottom: 2px solid rgba(28, 26, 23, 0.1);
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--ink-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.lesson-piece-data-row {
+  display: grid;
+  gap: 12px;
+  align-items: center;
+  padding: 10px 0;
+  border-bottom: 1px solid rgba(28, 26, 23, 0.06);
+}
+.lesson-piece-data-row:last-child {
+  border-bottom: none;
+}
+
+.lesson-piece-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink-soft);
+}
+
+.lesson-piece-cell {
+  text-align: center;
+}
+
+.lesson-piece-note {
+  font-size: 12px;
+  color: var(--ink-muted);
+  font-style: italic;
+}
+
+/* ── Criterion row ── */
+.lesson-criterion-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 5px 0;
+  border-bottom: 1px solid rgba(28, 26, 23, 0.05);
+}
+.lesson-criterion-row:last-child {
+  border-bottom: none;
+}
+
+.lesson-criterion-name {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--ink-muted);
+  width: 100px;
+  flex-shrink: 0;
+}
+
+.lesson-criterion-note {
+  font-size: 11px;
+  color: var(--ink-muted);
+  font-style: italic;
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ── Score badge ── */
+.lesson-score-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 7px;
+  font-size: 13px;
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
+/* ── Scale grades ── */
+.scale-grade-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.scale-grade-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border-radius: 8px;
+}
+.scale-grade-item.ready {
+  background: rgba(122, 158, 135, 0.1);
+}
+.scale-grade-item.not-ready {
+  background: rgba(212, 128, 106, 0.08);
+}
+
+.scale-check {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 5px;
+  font-size: 12px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+.scale-check.ready {
+  background: rgba(122, 158, 135, 0.2);
+  color: #5a8a6a;
+}
+.scale-check.not-ready {
+  background: rgba(212, 128, 106, 0.15);
+  color: #c05040;
+}
+
+.scale-name-display {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--ink-soft);
+  flex: 1;
+}
+
+.scale-note-display {
+  font-size: 11px;
+  color: var(--ink-muted);
+  font-style: italic;
+}

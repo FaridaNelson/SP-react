@@ -263,6 +263,8 @@
   overflow: hidden;
   display: flex;
   align-items: center;
+  flex-wrap: nowrap;
+  min-width: 0;
   gap: 12px;
   padding: 12px 16px;
   border-radius: 0;
@@ -302,20 +304,20 @@
   background: rgba(255, 255, 255, 0.09);
 }
 
-.td__studentBtn.is-active {
-  background: rgba(201, 168, 76, 0.22);
+/* gold highlight + stripe for the entire active student block (button + dropdown) */
+.td__studentItem.is-active {
+  position: relative;
+  background: rgba(201, 168, 76, 0.10);
 }
-/* thick left bar only for active row */
-.td__studentBtn.is-active::before {
+
+.td__studentItem.is-active::before {
   content: "";
   position: absolute;
   left: 0;
-  top: 0px;
-  bottom: 0px;
-  width: 6px;
-  border-radius: 999px;
-  background: #c9a84c; /* your gold */
-  box-shadow: 0 0 0 3px rgba(201, 168, 76, 0.12);
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  background: var(--td-gold);
   border-radius: 0 2px 2px 0;
 }
 
@@ -334,26 +336,37 @@
   color: white;
 }
 
+.td__studentMain {
+  min-width: 0;
+  flex: 1 1 0%;
+}
+
 .td__studentName {
   font: 600 14px/1.2 var(--td-sans);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .td__studentMeta {
   font: 500 11px/1.2 var(--td-sans);
   opacity: 0.62;
   margin-top: 4px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .td__pctBadge {
   margin-left: auto;
   flex-shrink: 0;
-  font: 700 11px/1 var(--td-sans);
-  padding: 6px 8px;
-  border-radius: 999px;
+  font: 700 10px/1 var(--td-sans);
+  padding: 1px 7px;
+  border-radius: 10px;
   background: rgba(255, 255, 255, 0.08);
   border: 1px solid rgba(255, 255, 255, 0.1);
-  min-width: 44px;
   text-align: center;
+  white-space: nowrap;
 }
 
 .td__pctBadge--empty {

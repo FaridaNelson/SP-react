@@ -19,6 +19,7 @@
 .ecl__grid {
   display: flex;
   flex-direction: column;
+  padding-right: 14px;
   gap: 12px;
 }
 
@@ -26,19 +27,22 @@
 
 .ecl__item {
   list-style: none;
+  margin-right: 24px;
+  padding-right: 14px;
 }
 
 .ecl__card {
   display: flex;
   flex-direction: column;
   width: 100%;
-  border: 0.5px solid var(--border, rgba(28, 26, 23, 0.1));
-  border-radius: 12px;
-  background: #ffffff;
+  border: 1px solid var(--border, rgba(28, 26, 23, 0.1));
+  border-radius: 16px;
+  background: var(--warm-white, #fdf9f4);
   overflow: hidden;
   cursor: pointer;
   text-align: left;
-  padding: 0;
+  padding: 24px;
+  box-shadow: 0 1px 4px rgba(28, 26, 23, 0.06);
   transition:
     border-color 0.15s ease,
     box-shadow 0.15s ease;
@@ -49,16 +53,13 @@
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
 }
 
-/* ── Card header — tinted ── */
+/* ── Card header row — single line, space-between ── */
 
 .ecl__header {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 8px;
-  padding: 10px 16px;
-  background: var(--gold-pale, #f5edd0);
-  border-bottom: 0.5px solid var(--border, rgba(28, 26, 23, 0.1));
 }
 
 .ecl__headerLabel {
@@ -83,19 +84,19 @@
 .ecl__badge--current {
   background: rgba(201, 168, 76, 0.15);
   border: 1px solid rgba(201, 168, 76, 0.35);
-  color: #8a7230;
+  color: var(--gold, #c9a84c);
 }
 
 .ecl__badge--completed {
   background: rgba(122, 158, 135, 0.12);
   border: 1px solid rgba(122, 158, 135, 0.35);
-  color: #4a6e54;
+  color: var(--sage, #7a9e87);
 }
 
 .ecl__badge--withdrawn {
   background: rgba(212, 128, 106, 0.12);
   border: 1px solid rgba(212, 128, 106, 0.35);
-  color: #8b3a22;
+  color: var(--rose, #d4806a);
 }
 
 .ecl__badge--registered {
@@ -104,27 +105,25 @@
   color: var(--ink-muted, #7a766d);
 }
 
-/* ── Card body ── */
-
-.ecl__body {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  padding: 14px 16px 16px;
-}
+/* ── Grade title ── */
 
 .ecl__gradeType {
   font-family: var(--font-serif, "Cormorant Garamond", serif);
-  font-size: 20px;
+  font-size: 22px;
   font-weight: 600;
   font-style: italic;
   line-height: 1.2;
   color: var(--ink, #1c1a17);
+  margin-top: 12px;
 }
+
+/* ── Date meta line ── */
 
 .ecl__meta {
   font: 400 12px/1.4 var(--font-sans, "DM Sans", sans-serif);
   color: var(--ink-muted, #7a766d);
+  margin-top: 4px;
+  margin-bottom: 16px;
 }
 
 /* ── Action buttons ── */
@@ -132,50 +131,53 @@
 .ecl__actions {
   display: flex;
   align-items: center;
-  gap: 8px;
-  margin-top: 10px;
+  gap: 10px;
+  margin-top: 4px;
 }
 
 .ecl__actionBtn {
   display: inline-flex;
   align-items: center;
-  gap: 4px;
-  padding: 7px 16px;
-  border-radius: 20px;
-  font: 500 12px/1 var(--font-sans, "DM Sans", sans-serif);
+  justify-content: center;
+  gap: 6px;
+  flex: 1;
+  padding: 12px 20px;
+  border-radius: 28px;
+  font: 600 13px/1 var(--font-sans, "DM Sans", sans-serif);
   cursor: pointer;
   transition:
     filter 0.12s ease,
     background 0.12s ease;
+  margin-bottom: 16px;
 }
 
 .ecl__actionBtn--complete {
-  background: transparent;
-  border: 1.5px solid #7a9e87;
-  color: #7a9e87;
+  background: rgba(122, 158, 135, 0.15);
+  border: 1.5px solid var(--sage, #7a9e87);
+  color: var(--sage, #7a9e87);
 }
 
 .ecl__actionBtn--complete:hover {
-  background: rgba(51, 104, 72, 0.1);
+  background: rgba(122, 158, 135, 0.28);
 }
 
 .ecl__actionBtn--withdraw {
-  background: transparent;
-  border: 1.5px solid #d4806a;
-  color: #8b3a22;
+  background: rgba(212, 128, 106, 0.15);
+  border: 1.5px solid var(--rose, #d4806a);
+  color: var(--rose, #d4806a);
 }
 
 .ecl__actionBtn--withdraw:hover {
-  background: rgba(212, 128, 106, 0.08);
+  background: rgba(212, 128, 106, 0.28);
 }
 
 /* ── Sparkline bar chart ── */
 
 .ecl__sparkWrap {
-  margin-top: 8px;
   width: 100%;
   overflow-x: auto;
   overflow-y: hidden;
+  margin-bottom: 16px;
 }
 
 .ecl__sparkChart {
@@ -222,25 +224,68 @@
 }
 
 .ecl__sparkEmpty {
-  margin-top: 8px;
   font: 400 12px/1.4 var(--font-sans, "DM Sans", sans-serif);
   color: var(--ink-muted, #7a766d);
   font-style: italic;
+  margin-bottom: 16px;
+}
+
+/* ── VIEW LESSONS TOGGLE ── */
+.exam-cycle-view-lessons {
+  width: 100%;
+  padding: 12px 20px;
+  background: transparent;
+  border: none;
+  border-top: 1px solid var(--border);
+  font-family: "DM Sans", sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink-soft);
+  cursor: pointer;
+  transition: background 0.15s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+.exam-cycle-view-lessons:hover {
+  background: rgba(0, 0, 0, 0.02);
+}
+.exam-cycle-view-lessons span {
+  transition: transform 0.2s;
+}
+.exam-cycle-view-lessons span.open {
+  transform: rotate(180deg);
+}
+
+/* ── LESSONS COLLAPSIBLE CONTAINER ── */
+.exam-cycle-lessons {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease;
+  background: rgba(250, 247, 242, 0.3);
+}
+.exam-cycle-lessons.open {
+  max-height: 5000px;
+  padding: 20px;
 }
 
 @media (max-width: 768px) {
+  .ecl__card {
+    padding: 18px;
+  }
+
   .ecl__gradeType {
-    font-size: 17px;
+    font-size: 18px;
   }
 
   .ecl__actions {
-    flex-wrap: wrap;
-    gap: 6px;
+    gap: 8px;
   }
 
   .ecl__actionBtn {
-    font-size: 11px;
-    padding: 6px 12px;
+    font-size: 12px;
+    padding: 10px 14px;
   }
 
   .ecl__sparkBar {
