@@ -1,8 +1,8 @@
 import { useEffect, useState, useMemo } from "react";
 import { listExamCycles } from "../../lib/examCycleApi";
-import { api } from "../../lib/api";
-import { sortCycles, buildLessonReadiness, DEFAULT_WEIGHTS } from "./examCycleUtils";
+import { sortCycles, buildLessonReadiness, filterLessonsForCycle, useStudentLessons } from "./examCycleUtils";
 import CycleCompleteWizard from "../ExamCycle/CycleCompleteWizard";
+import LessonCard from "../LessonCard/LessonCard";
 import "./ExamCycleList.css";
 
 const STATUS_META = {
@@ -55,41 +55,6 @@ function ReadinessSparkline({ data }) {
   );
 }
 
-/* ── Hook: fetch lessons for a cycle ── */
-function useCycleLessons(studentId, cycleId) {
-  const [data, setData] = useState(null);
-  const [loading, setLoading] = useState(false);
-
-  useEffect(() => {
-    if (!studentId || !cycleId) {
-      setData(null);
-      return;
-    }
-    let alive = true;
-    setLoading(true);
-    api(`/api/lessons/student/${studentId}`)
-      .then((res) => {
-        if (!alive) return;
-        const lessons = Array.isArray(res) ? res : (res?.items ?? []);
-        const filtered = lessons.filter(
-          (l) => String(l.examPreparationCycleId) === String(cycleId),
-        );
-        setData(buildLessonReadiness(filtered));
-      })
-      .catch(() => {
-        if (alive) setData([]);
-      })
-      .finally(() => {
-        if (alive) setLoading(false);
-      });
-    return () => {
-      alive = false;
-    };
-  }, [studentId, cycleId]);
-
-  return { data, loading };
-}
-
 function MetaLine({ cycle, status }) {
   const parts = [];
   if (cycle.createdAt) parts.push(`Started ${formatDate(cycle.createdAt)}`);
@@ -105,13 +70,23 @@ function MetaLine({ cycle, status }) {
 }
 
 /* ── Individual card (needs hooks, so must be a component) ── */
-function ExamCycleCard({ cycle, studentId, onSelect, onComplete, onWithdraw }) {
+function ExamCycleCard({ cycle, studentId, allLessons, onSelect, onComplete, onWithdraw }) {
   const id = cycle._id || cycle.id;
   const st = cycle.cycleStatus || cycle.status;
   const meta = STATUS_META[st] || STATUS_META.current;
   const isActive = st === "current" || st === "registered";
 
-  const { data: sparkData } = useCycleLessons(studentId, id);
+  const rawLessons = useMemo(
+    () => filterLessonsForCycle(allLessons || [], id),
+    [allLessons, id]
+  );
+
+  const sparkData = useMemo(
+    () => buildLessonReadiness(rawLessons),
+    [rawLessons]
+  );
+
+  const [lessonsOpen, setLessonsOpen] = useState(false);
 
   const handleSelect = () => onSelect?.(cycle);
   const handleCardKeyDown = (e) => {
@@ -139,39 +114,58 @@ function ExamCycleCard({ cycle, studentId, onSelect, onComplete, onWithdraw }) {
           </span>
         </div>
 
-        <div className="ecl__body">
-          <div className="ecl__gradeType">
-            Grade {cycle.examGrade ?? "—"} {cycle.examType || "Practical"}
-          </div>
-          <MetaLine cycle={cycle} status={st} />
-
-          <ReadinessSparkline data={sparkData} />
-
-          {isActive && (
-            <div className="ecl__actions">
-              <button
-                type="button"
-                className="ecl__actionBtn ecl__actionBtn--complete"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onComplete?.(cycle);
-                }}
-              >
-                ✓ Complete
-              </button>
-              <button
-                type="button"
-                className="ecl__actionBtn ecl__actionBtn--withdraw"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onWithdraw?.(cycle);
-                }}
-              >
-                ✕ Withdraw
-              </button>
-            </div>
-          )}
+        <div className="ecl__gradeType">
+          Grade {cycle.examGrade ?? "—"} {cycle.examType || "Practical"}
         </div>
+        <MetaLine cycle={cycle} status={st} />
+
+        <ReadinessSparkline data={sparkData} />
+
+        {isActive && (
+          <div className="ecl__actions">
+            <button
+              type="button"
+              className="ecl__actionBtn ecl__actionBtn--complete"
+              onClick={(e) => {
+                e.stopPropagation();
+                onComplete?.(cycle);
+              }}
+            >
+              ✓ Complete
+            </button>
+            <button
+              type="button"
+              className="ecl__actionBtn ecl__actionBtn--withdraw"
+              onClick={(e) => {
+                e.stopPropagation();
+                onWithdraw?.(cycle);
+              }}
+            >
+              ✕ Withdraw
+            </button>
+          </div>
+        )}
+
+        {rawLessons && rawLessons.length > 0 && (
+          <>
+            <button
+              className="exam-cycle-view-lessons"
+              onClick={(e) => { e.stopPropagation(); setLessonsOpen(v => !v); }}
+            >
+              <span className={lessonsOpen ? 'open' : ''}>▾</span>
+              {lessonsOpen ? 'Hide Lessons' : `View ${rawLessons.length} Lessons`}
+            </button>
+
+            <div className={`exam-cycle-lessons${lessonsOpen ? ' open' : ''}`}>
+              {rawLessons.map((lesson) => (
+                <LessonCard
+                  key={lesson._id || lesson.id}
+                  lesson={lesson}
+                />
+              ))}
+            </div>
+          </>
+        )}
       </div>
     </div>
   );
@@ -185,6 +179,7 @@ export default function ExamCycleList({
   onCyclesLoaded,
   onCycleAction,
 }) {
+  const { lessons: allLessons } = useStudentLessons(studentId);
   const [cycles, setCycles] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -264,6 +259,7 @@ export default function ExamCycleList({
             key={c._id || c.id}
             cycle={c}
             studentId={studentId}
+            allLessons={allLessons}
             onSelect={onSelect}
             onComplete={(cycle) => {
               setWizardStartWithdraw(false);

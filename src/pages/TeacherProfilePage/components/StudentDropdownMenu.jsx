@@ -4,12 +4,13 @@ export default function StudentDropdownMenu({
   studentId,
   onSelectStudent,
   setView,
+  view,
   onClearCycle,
 }) {
   return (
     <div className="td__studentDropdown">
       <button
-        className="td__studentDropdownItem"
+        className={`td__studentDropdownItem${view === "snapshot" ? " is-active" : ""}`}
         onClick={() => {
           onClearCycle?.();
           onSelectStudent?.(studentId);
@@ -20,7 +21,7 @@ export default function StudentDropdownMenu({
       </button>
 
       <button
-        className="td__studentDropdownItem"
+        className={`td__studentDropdownItem${view === "history" ? " is-active" : ""}`}
         onClick={() => {
           onSelectStudent?.(studentId);
           setView("history");
@@ -30,7 +31,7 @@ export default function StudentDropdownMenu({
       </button>
 
       <button
-        className="td__studentDropdownItem"
+        className={`td__studentDropdownItem${view === "info" ? " is-active" : ""}`}
         onClick={() => {
           onSelectStudent?.(studentId);
           setView("info");

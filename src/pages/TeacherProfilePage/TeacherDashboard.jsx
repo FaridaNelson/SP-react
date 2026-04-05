@@ -506,6 +506,7 @@ export default function TeacherDashboard({
                           studentId={id}
                           onSelectStudent={onSelectStudent}
                           setView={setView}
+                          view={view}
                           onClearCycle={() => setSelectedCycle(null)}
                         />
                       )}

@@ -1,3 +1,5 @@
+import { useEffect, useState } from "react";
+import { api } from "../../lib/api";
 import { computeReadiness } from "../../lib/progress";
 
 /* ── Default weights for readiness calc ── */
@@ -64,4 +66,40 @@ export function buildLessonReadiness(lessons) {
     acc.push({ date, readiness: computeReadiness(items) });
     return acc;
   }, []);
+}
+
+/* Fetch ALL lessons for a student once — used at list level */
+export function useStudentLessons(studentId) {
+  const [lessons, setLessons] = useState([]);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (!studentId) { setLessons([]); return; }
+    let alive = true;
+    setLoading(true);
+    api(`/api/lessons/student/${studentId}`)
+      .then((res) => {
+        if (!alive) return;
+        const all = Array.isArray(res)
+          ? res
+          : (res?.lessons ?? res?.items ?? []);
+        setLessons(all);
+      })
+      .catch(() => { if (alive) setLessons([]); })
+      .finally(() => { if (alive) setLoading(false); });
+    return () => { alive = false; };
+  }, [studentId]);
+
+  return { lessons, loading };
+}
+
+export function filterLessonsForCycle(allLessons, cycleId) {
+  const filtered = allLessons.filter(
+    (l) => String(l.examPreparationCycleId?._id
+                  || l.examPreparationCycleId)
+           === String(cycleId)
+  );
+  return [...filtered].sort(
+    (a, b) => new Date(b.lessonDate) - new Date(a.lessonDate)
+  );
 }

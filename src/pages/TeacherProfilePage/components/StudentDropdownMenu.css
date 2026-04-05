@@ -1,9 +1,9 @@
 .td__studentDropdown {
   display: flex;
   flex-direction: column;
-  gap: 2px;
-  padding: 6px 8px 8px 56px;
-  background: rgba(0, 0, 0, 0.15);
+  gap: 0;
+  padding: 10px 0 6px 65px;
+  background: transparent;
 }
 
 .td__studentDropdownItem {
@@ -11,21 +11,32 @@
   align-items: center;
   gap: 8px;
 
-  font: 500 13px/1.2 var(--td-sans);
-  color: rgba(255, 255, 255, 0.9);
+  font: 500 12px/1.2 var(--td-sans);
+  color: rgba(255, 255, 255, 0.7);
 
-  padding: 8px 10px;
-  border-radius: 6px;
+  padding: 8px 12px 8px 52px;
 
   background: transparent;
   border: none;
+  border-left: 2px solid transparent;
   cursor: pointer;
 
   text-align: left;
 
-  transition: background 0.15s ease;
+  transition:
+    background 0.15s ease,
+    color 0.15s ease,
+    border-left-color 0.15s ease;
 }
 
 .td__studentDropdownItem:hover {
   background: rgba(255, 255, 255, 0.08);
+  color: #e8d49a;
+  border-left-color: var(--td-gold);
+}
+
+.td__studentDropdownItem.is-active {
+  background: rgba(255, 255, 255, 0.05);
+  color: #e8d49a;
+  border-left-color: var(--td-gold);
 }

@@ -13,7 +13,7 @@
 }
 
 .header--app {
-  padding: 16px 0;
+  padding: 16px 6px 16px 0;
   background: var(--bg);
   border-bottom: 1px solid color-mix(in oklab, var(--text) 10%, transparent);
 }
@@ -228,7 +228,7 @@
 @media (max-width: 640px) {
   .header--home,
   .header--app {
-    padding: 14px 0;
+    padding: 14px 6px 14px 0;
   }
 
   .header__actions {
