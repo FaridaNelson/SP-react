@@ -183,7 +183,7 @@ function LessonBody({ lesson }) {
             }
           }
 
-          const gridCols = `100px ${allCriterionIds.map(() => "1fr").join(" ")} 1fr`;
+          const gridCols = `100px ${allCriterionIds.map(() => "1fr").join(" ")} ${allCriterionIds.length}fr`;
 
           return (
             <div className="lesson-section">
@@ -243,17 +243,6 @@ function LessonBody({ lesson }) {
                   );
                 })}
               </div>
-
-              {/* Per-piece readiness bars below the table */}
-              {piecesWithCriteria
-                .filter((p) => Math.round(p.percent || 0) > 0)
-                .map((piece) => (
-                  <PercentBar
-                    key={piece.pieceId}
-                    pct={Math.round(piece.percent || 0)}
-                    label={PIECE_LABELS[piece.pieceId] || piece.pieceId}
-                  />
-                ))}
             </div>
           );
         })()}
