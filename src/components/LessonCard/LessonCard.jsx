@@ -183,7 +183,7 @@ function LessonBody({ lesson }) {
             }
           }
 
-          const gridCols = `100px ${allCriterionIds.map(() => "1fr").join(" ")} ${allCriterionIds.length}fr`;
+          const gridCols = `100px ${allCriterionIds.map(() => "1fr").join(" ")} 1fr ${allCriterionIds.length}fr`;
 
           return (
             <div className="lesson-section">
@@ -200,6 +200,7 @@ function LessonBody({ lesson }) {
                       {criterionLabel(id)}
                     </span>
                   ))}
+                  <span className="lesson-piece-cell">Readiness</span>
                   <span>Notes</span>
                 </div>
 
@@ -238,6 +239,31 @@ function LessonBody({ lesson }) {
                           </span>
                         );
                       })}
+                      <span className="lesson-piece-cell">
+                        {(() => {
+                          const pct = Math.round(piece.percent || 0);
+                          if (!pct) return null;
+                          const color =
+                            pct >= 67
+                              ? "#5A8A6A"
+                              : pct >= 50
+                                ? "#A07820"
+                                : "#C05040";
+                          return (
+                            <span
+                              style={{
+                                fontFamily: "'Cormorant Garamond', serif",
+                                fontSize: 16,
+                                fontWeight: 600,
+                                color,
+                              }}
+                            >
+                              {pct}%
+                            </span>
+                          );
+                        })()}
+                      </span>
+
                       <span className="lesson-piece-note">{notes}</span>
                     </div>
                   );
