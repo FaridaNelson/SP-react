@@ -22,7 +22,7 @@ export const SCORE_TO_PCT = {
   3: 57,
   4: 67,
   5: 80,
-  6: 100,
+  6: 90,
 };
 
 export function scoreToPct(score) {
