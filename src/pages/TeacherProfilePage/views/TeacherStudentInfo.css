@@ -76,10 +76,11 @@
 /* exam progress card */
 .tsi__examBody {
   display: grid;
-  grid-template-columns: auto 1fr;
-  align-items: center;
-  gap: 24px;
-  min-width: 0;
+  grid-template-columns: 1fr 2fr;
+  grid-template-rows: auto auto auto;
+  align-items: start;
+  gap: 16px 24px;
+  /* min-width: 0; */
   padding: 15px;
 }
 
@@ -104,19 +105,26 @@
 }
 
 .tsi__passKicker {
-  font: 600 11px/1 var(--font-sans);
+  font: 600 9px/1 var(--font-sans);
   letter-spacing: 0.08em;
   text-transform: lowercase;
   color: rgba(255, 255, 255, 0.58);
+  padding: 0;
+  margin: 0;
 }
 
 .tsi__passVal {
-  font: 700 11px/1 var(--font-sans);
+  font: 700 9px/1 var(--font-sans);
   color: var(--gold-light);
+  padding: 0;
+  margin: 0;
 }
 
 .tsi__examDivider {
+  grid-column: 1 / -1;
+  grid-row: 2;
   height: 1px;
+  flex: 1 1 auto;
   width: 100%;
   margin-top: 8px;
   background: rgba(255, 255, 255, 0.1);
@@ -131,6 +139,56 @@
   gap: 10px;
 }
 
+/* ── Enriched exam card labels ── */
+
+.tsi__examGradeLabel {
+  font: 600 11px/1 var(--font-sans, "DM Sans", sans-serif);
+  letter-spacing: 0.1em;
+  color: #c9a84c;
+  padding: 14px 14px 0;
+}
+
+.tsi__examName {
+  font: 600 22px/1.2 var(--font-serif, "Cormorant Garamond", serif);
+  font-style: italic;
+  color: #fff;
+  padding: 4px 14px 0;
+}
+
+.tsi__examCard--dark .tsi__examDate {
+  font: 400 12px/1 var(--font-sans, "DM Sans", sans-serif);
+  color: rgba(255, 255, 255, 0.5);
+  padding: 4px 14px 0;
+}
+
+.tsi__daysToGo {
+  flex: 0 0 auto;
+  white-space: nowrap;
+  grid-column: 2;
+  grid-row: 3;
+  align-self: end;
+  justify-self: end;
+  font: 700 12px/1 var(--font-sans, "DM Sans", sans-serif);
+  letter-spacing: 0.08em;
+  color: #c9a84c;
+  text-align: right;
+  margin-top: auto;
+  margin-left: auto;
+  padding-top: 8px;
+}
+
+.tsi__readOnlyBadge {
+  display: inline-block;
+  margin: 8px 0 0 14px;
+  padding: 3px 10px;
+  border-radius: 20px;
+  font: 600 10px/1.2 var(--td-sans);
+  letter-spacing: 0.06em;
+  text-transform: capitalize;
+  background: rgba(255, 255, 255, 0.12);
+  color: rgba(255, 255, 255, 0.6);
+}
+
 .tsi__examGrade {
   font: 700 13px/1 var(--td-sans);
   letter-spacing: 0.13em;
@@ -142,11 +200,6 @@
   margin-top: 6px;
   font: 600 18px/1.15 var(--td-serif);
   color: rgba(31, 28, 24, 0.9);
-}
-
-.tsi__gradeNum {
-  display: inline-block;
-  font-size: 1.5em; /* slightly larger */
 }
 
 .tsi__pillGrid {
@@ -507,56 +560,6 @@
   color: white;
   transition-duration: 0.12s;
   transform: translateY(-1px);
-}
-
-/* ── Enriched exam card labels ── */
-
-.tsi__examGradeLabel {
-  font: 600 11px/1 var(--font-sans, "DM Sans", sans-serif);
-  letter-spacing: 0.1em;
-  color: #c9a84c;
-  padding: 14px 14px 0;
-}
-
-.tsi__examName {
-  font: 600 22px/1.2 var(--font-serif, "Cormorant Garamond", serif);
-  font-style: italic;
-  color: #fff;
-  padding: 4px 14px 0;
-}
-
-.tsi__examCard--dark .tsi__examDate {
-  font: 400 12px/1 var(--font-sans, "DM Sans", sans-serif);
-  color: rgba(255, 255, 255, 0.5);
-  padding: 4px 14px 0;
-}
-
-.tsi__daysToGo {
-  flex: 0 0 auto;
-  white-space: nowrap;
-  grid-column: 2;
-  grid-row: 2;
-  align-self: end;
-  justify-self: flex-end;
-  font: 700 12px/1 var(--font-sans, "DM Sans", sans-serif);
-  letter-spacing: 0.08em;
-  color: #c9a84c;
-  text-align: right;
-  margin-top: auto;
-  margin-left: auto;
-  padding-top: 8px;
-}
-
-.tsi__readOnlyBadge {
-  display: inline-block;
-  margin: 8px 0 0 14px;
-  padding: 3px 10px;
-  border-radius: 20px;
-  font: 600 10px/1.2 var(--td-sans);
-  letter-spacing: 0.06em;
-  text-transform: capitalize;
-  background: rgba(255, 255, 255, 0.12);
-  color: rgba(255, 255, 255, 0.6);
 }
 
 /* Empty state when no active exam cycle */

@@ -4,7 +4,7 @@
 
 .psot__card {
   background: var(--warm-white, #fdf9f4);
-  border: 1px solid var(--border, rgba(28, 26, 23, 0.1));
+  border: 1px solid rgba(28, 26, 23, 0.1);
   border-radius: 16px;
   overflow: hidden;
   padding: 20px 20px 16px;
@@ -17,7 +17,7 @@
 
 .psot__svg {
   width: 100%;
-  min-width: 860px;
+  min-width: 560px;
   height: auto;
   display: block;
 }
@@ -28,7 +28,7 @@
 }
 
 .psot__gridLine--pass {
-  stroke: #c9a84c;
+  stroke: var(--gold, #c9a84c);
   stroke-dasharray: 4 4;
   opacity: 0.9;
 }
@@ -41,10 +41,25 @@
 
 .psot__line {
   fill: none;
-  stroke: #7a9e87;
   stroke-width: 3;
   stroke-linecap: round;
   stroke-linejoin: round;
+}
+
+.psot__line--below {
+  stroke: var(--rose, #d4806a);
+}
+
+.psot__line--pass {
+  stroke: var(--gold, #c9a84c);
+}
+
+.psot__line--strong {
+  stroke: var(--sage, #7a9e87);
+}
+
+.psot__line--excellent {
+  stroke: #0f4421;
 }
 
 .psot__point {
@@ -53,15 +68,19 @@
 }
 
 .psot__point--below {
-  stroke: #d4a62a;
+  stroke: var(--rose, #d4806a);
 }
 
 .psot__point--pass {
-  stroke: #a8d4b8;
+  stroke: var(--gold, #c9a84c);
 }
 
 .psot__point--strong {
-  stroke: #5a8a6a;
+  stroke: var(--sage, #7a9e87);
+}
+
+.psot__point--excellent {
+  stroke: #0f4421;
 }
 
 .psot__pointLabel {
@@ -71,15 +90,19 @@
 }
 
 .psot__pointLabel--below {
-  fill: #c79b22;
+  fill: var(--rose, #d4806a);
 }
 
 .psot__pointLabel--pass {
-  fill: #7da88a;
+  fill: var(--gold, #c9a84c);
 }
 
 .psot__pointLabel--strong {
-  fill: #4b7359;
+  fill: var(--sage, #7a9e87);
+}
+
+.psot__pointLabel--excellent {
+  fill: #0f4421;
 }
 
 .psot__xLabelMain {
@@ -101,12 +124,16 @@
   font-weight: 700;
 }
 
-.psot__thresholdLabel--strong {
-  fill: #5a8a6a;
+.psot__thresholdLabel--pass {
+  fill: var(--gold, #c9a84c);
 }
 
-.psot__thresholdLabel--pass {
-  fill: #c9a84c;
+.psot__thresholdLabel--strong {
+  fill: var(--sage, #7a9e87);
+}
+
+.psot__thresholdLabel--excellent {
+  fill: #0f4421;
 }
 
 .psot__footer {
@@ -143,15 +170,19 @@
 }
 
 .psot__legendSwatch--below {
-  background: #f4c430;
+  background: var(--rose, #d4806a);
 }
 
 .psot__legendSwatch--pass {
-  background: #a8d4b8;
+  background: var(--gold, #c9a84c);
 }
 
 .psot__legendSwatch--strong {
-  background: #5a8a6a;
+  background: var(--sage, #7a9e87);
+}
+
+.psot__legendSwatch--excellent {
+  background: #0f4421;
 }
 
 .psot__summary {
@@ -160,8 +191,20 @@
   color: var(--ink-muted, #7a766d);
 }
 
-.psot__summaryValue {
-  color: #5a8a6a;
+.psot__summaryValue--below {
+  color: var(--rose, #d4806a);
+}
+
+.psot__summaryValue--pass {
+  color: var(--gold, #c9a84c);
+}
+
+.psot__summaryValue--strong {
+  color: var(--sage, #7a9e87);
+}
+
+.psot__summaryValue--excellent {
+  color: #0f4421;
 }
 
 .psot__empty {
@@ -170,4 +213,16 @@
   place-items: center;
   color: var(--ink-muted, #7a766d);
   font-style: italic;
+}
+
+@media (max-width: 1400px) {
+  .psot__svg {
+    min-width: 460px;
+  }
+}
+
+@media (max-width: 980px) {
+  .psot__svg {
+    min-width: 260px;
+  }
 }
