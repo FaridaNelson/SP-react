@@ -22,7 +22,7 @@ export default function ProgressDonut({
     ro.observe(wrapRef.current);
     return () => ro.disconnect();
   }, [minSize, maxSize]);
-  const ringScale = 0.75;
+  const ringScale = 0.7;
   const radius = ((size - stroke) / 2) * ringScale;
   const circumference = 2 * Math.PI * radius;
 

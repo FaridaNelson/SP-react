@@ -75,7 +75,8 @@
 
 /* exam progress card */
 .tsi__examBody {
-  display: flex;
+  display: grid;
+  grid-template-columns: auto 1fr;
   align-items: center;
   gap: 24px;
   min-width: 0;
@@ -110,7 +111,7 @@
 }
 
 .tsi__passVal {
-  font: 700 13px/1 var(--font-sans);
+  font: 700 11px/1 var(--font-sans);
   color: var(--gold-light);
 }
 
@@ -218,34 +219,45 @@
 }
 
 .tsi__statusCard {
-  background-color: rgba(255, 255, 255, 0.12);
-  border: 1px solid rgba(31, 28, 24, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  min-height: 22px;
+  margin-bottom: 10px;
+  background: transparent;
+  /* background-color: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(31, 28, 24, 0.1); */
   border-radius: 18px;
   padding: 14px;
   box-shadow: 0 10px 28px rgba(0, 0, 0, 0.06);
-  margin-bottom: 20px;
 }
 
 .tsi__statusBadge {
-  position: absolute;
-  top: 14px;
-  left: 14px;
-  z-index: 99;
   display: inline-flex;
   align-items: center;
   padding: 4px 10px;
-  border-radius: 20px;
+  border-radius: 999px;
   font: 600 10px/1.2 var(--td-sans);
   letter-spacing: 0.06em;
   text-transform: capitalize;
   border: 1px solid transparent;
-  background-color: --var(--td-gold, #c9a84c, rgba(201, 168, 76, 0.5));
-  color: var(--td-gold, #c9a84c);
+  margin-bottom: 10px;
+}
+
+.tsi__statusBadge::before {
+  content: "";
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  display: inline-block;
+  background: currentColor;
+  opacity: 0.9;
+  margin-right: 6px;
 }
 
 .tsi__statusBadge--current {
   background: rgba(122, 158, 135, 0.16);
-  color: var(--td-gold, #c9a84c);
+  color: var(--td-sage, #7a9e87);
   border-color: rgba(122, 158, 135, 0.28);
 }
 

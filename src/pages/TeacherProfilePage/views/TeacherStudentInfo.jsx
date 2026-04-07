@@ -263,15 +263,13 @@ export default function TeacherStudentInfo({
             <div className="tsi__snapshotCell">
               <div className="tsi__sectionTitle">Exam Progress</div>
 
-              <section className="tsi__cardPaper tsi__statusCard">
-                {activeCycleStatus && (
-                  <span
-                    className={`tsi__statusBadge tsi__statusBadge--${activeCycleStatus}`}
-                  >
-                    {activeCycleStatus}
-                  </span>
-                )}
-              </section>
+              {activeCycleStatus && (
+                <span
+                  className={`tsi__statusBadge tsi__statusBadge--${activeCycleStatus}`}
+                >
+                  {activeCycleStatus}
+                </span>
+              )}
 
               <section className="tsi__cardPaper tsi__examCard tsi__examCard--dark">
                 <div className="tsi__examBody">
@@ -333,6 +331,7 @@ export default function TeacherStudentInfo({
                     </div>
                   </div>
 
+                  <div className="tsi__examDivider"></div>
                   {days != null && (
                     <div className="tsi__daysToGo">
                       {days > 0
@@ -344,6 +343,7 @@ export default function TeacherStudentInfo({
                   )}
                 </div>
               </section>
+
               {!isActiveCycleReadOnly && (
                 <div className="tsi__cycleActions">
                   <button

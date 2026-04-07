@@ -26,15 +26,19 @@
 }
 
 .td__shell {
+  height: calc(100vh - 84px);
   min-height: calc(100vh - 84px);
+  overflow: hidden;
   background: #0b0b0b;
   display: grid;
 }
 
 .td__grid {
-  min-height: calc(100vh - 84px);
+  height: 100%;
+  min-height: 0;
   display: grid;
   grid-template-columns: clamp(250px, 22vw, 320px) minmax(0, 1fr);
+  overflow: hidden;
 }
 
 /* -------- Sidebar -------- */
@@ -403,8 +407,11 @@
       0 0 / 26px 26px,
     linear-gradient(180deg, var(--td-paper), var(--td-paper-2));
   color: var(--td-ink);
-  overflow: auto;
+  overflow-y: auto;
+  overflow-x: hidden;
+  position: relative;
   min-width: 0;
+  min-height: 0;
 }
 
 .td__topbar {
