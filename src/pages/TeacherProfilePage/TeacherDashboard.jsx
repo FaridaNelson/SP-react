@@ -16,6 +16,7 @@ import "./TeacherDashboard.css";
 import StudentInformationView from "./views/StudentInformationView";
 import StudentDropdownMenu from "./components/StudentDropdownMenu";
 import OnboardingGuide from "../../components/OnboardingGuide/OnboardingGuide";
+import { useStudentLessons } from "../../components/ExamCycle/examCycleUtils";
 
 /** Compose a display name from whichever fields are available. */
 function studentDisplayName(s) {
@@ -146,6 +147,8 @@ function SelectedStudentPane({
     isLoading: latestLoading,
   } = useLatestLesson(studentId, { enabled: !!studentId });
 
+  const { lessons: allLessons } = useStudentLessons(studentId);
+
   const [wizardOpen, setWizardOpen] = useState(false);
   const [examCycleRefreshKey, setExamCycleRefreshKey] = useState(0);
 
@@ -260,6 +263,7 @@ function SelectedStudentPane({
         initialCycle={resolvedCycle}
         onGoToHistory={onGoToHistory}
         obHoveredStep={obHoveredStep}
+        allLessons={allLessons}
       />
 
       <ProgressPanel

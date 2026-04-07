@@ -6,6 +6,11 @@ import AttendanceCalendar from "../attendance/AttendanceCalendar";
 import { api } from "../../../lib/api";
 import "./TeacherStudentInfo.css";
 import PanelHeader from "../../../components/PanelHeader/PanelHeader";
+import {
+  filterLessonsForCycle,
+  buildLessonReadiness,
+} from "../../../components/ExamCycle/examCycleUtils";
+import ProgressScoreOverTime from "../components/ProgressScoreOverTime/ProgressScoreOverTime";
 
 function cycleStatus(c) {
   return c?.cycleStatus || c?.status || "";
@@ -44,6 +49,7 @@ export default function TeacherStudentInfo({
   initialCycle,
   onGoToHistory,
   obHoveredStep,
+  allLessons = [],
 }) {
   const { id: studentId, _id } = student || {};
   const sid = _id || studentId || "";
@@ -63,6 +69,31 @@ export default function TeacherStudentInfo({
   const activeCycle = initialCycle || null;
   const hasActiveCycle = !!activeCycle;
   const activeCycleId = activeCycle?._id || activeCycle?.id || "";
+
+  const progressScoreHistory = useMemo(() => {
+    if (!activeCycleId) return [];
+
+    const cycleLessons = filterLessonsForCycle(allLessons || [], activeCycleId);
+    const readinessSeries = buildLessonReadiness(cycleLessons);
+
+    return readinessSeries.map((point, index) => {
+      const lesson = cycleLessons[index];
+      const rawDate =
+        lesson?.lessonDate || lesson?.lessonStartAt || lesson?.createdAt;
+
+      return {
+        lessonLabel: `L${index + 1}`,
+        dateLabel: rawDate
+          ? new Date(rawDate).toLocaleDateString("en-GB", {
+              day: "numeric",
+              month: "short",
+            })
+          : "",
+        score: Math.round(Number(point?.readiness) || 0),
+      };
+    });
+  }, [allLessons, activeCycleId]);
+
   const activeCycleStatus = cycleStatus(activeCycle);
   const isActiveCycleReadOnly =
     activeCycle &&
@@ -202,43 +233,45 @@ export default function TeacherStudentInfo({
             : onNewExamCycle
         }
       />
-      {/* Main 2-column layout */}
-      <div className="tsi__layout">
-        {/* LEFT COLUMN */}
-        <div className="tsi__col">
-          {!hasActiveCycle && (
-            <section className="tsi__cardPaper">
-              <p className="tsi__emptyState">
-                No active exam cycle.{" "}
-                {onGoToHistory ? (
-                  <>
-                    Go to{" "}
-                    <button
-                      type="button"
-                      className="tsi__linkBtn"
-                      onClick={onGoToHistory}
-                    >
-                      Progress History
-                    </button>{" "}
-                    to create one.
-                  </>
-                ) : (
-                  "Go to Progress History to create one."
-                )}
-              </p>
-            </section>
-          )}
 
-          {hasActiveCycle && (
-            <>
-              {/* Exam progress donut — enriched */}
+      {!hasActiveCycle && (
+        <section className="tsi__cardPaper">
+          <p className="tsi__emptyState">
+            No active exam cycle.{" "}
+            {onGoToHistory ? (
+              <>
+                Go to{" "}
+                <button
+                  type="button"
+                  className="tsi__linkBtn"
+                  onClick={onGoToHistory}
+                >
+                  Progress History
+                </button>{" "}
+                to create one.
+              </>
+            ) : (
+              "Go to Progress History to create one."
+            )}
+          </p>
+        </section>
+      )}
+
+      {hasActiveCycle && (
+        <>
+          <div className="tsi__snapshotGrid">
+            <div className="tsi__snapshotCell">
+              <div className="tsi__sectionTitle">Exam Progress</div>
+
+              {activeCycleStatus && (
+                <span
+                  className={`tsi__statusBadge tsi__statusBadge--${activeCycleStatus}`}
+                >
+                  {activeCycleStatus}
+                </span>
+              )}
+
               <section className="tsi__cardPaper tsi__examCard tsi__examCard--dark">
-                {isActiveCycleReadOnly && (
-                  <span className="tsi__readOnlyBadge">
-                    {activeCycleStatus}
-                  </span>
-                )}
-
                 <div className="tsi__examBody">
                   <div className="tsi__donutWrap">
                     <ProgressDonut
@@ -247,7 +280,7 @@ export default function TeacherStudentInfo({
                       stroke={14}
                       maxSize={176}
                     />
-                    {/* Exam date */}
+
                     {activeCycle?.examDate && (
                       <div className="tsi__examDate">
                         {new Date(activeCycle.examDate).toLocaleDateString(
@@ -264,17 +297,16 @@ export default function TeacherStudentInfo({
 
                   <div className="tsi__examInfo">
                     <div className="tsi__examCardHead">
-                      {/* Grade + instrument label */}
                       <div className="tsi__examGradeLabel">
                         GRADE {activeCycle?.examGrade ?? "—"}{" "}
                         {(activeCycle?.instrument || "Piano").toUpperCase()}
                       </div>
 
-                      {/* Exam name */}
                       {examLabel && (
                         <div className="tsi__examName">{examLabel}</div>
                       )}
                     </div>
+
                     <div className="tsi__examMid">
                       <div className="tsi__pillGrid">
                         {pillElements.map((p) => {
@@ -283,6 +315,7 @@ export default function TeacherStudentInfo({
                             ? Math.round(Number(it.score) || 0)
                             : 0;
                           const pass = pct >= 67;
+
                           return (
                             <span
                               key={p.id}
@@ -297,7 +330,8 @@ export default function TeacherStudentInfo({
                       </div>
                     </div>
                   </div>
-                  {/* Days to go */}
+
+                  <div className="tsi__examDivider"></div>
                   {days != null && (
                     <div className="tsi__daysToGo">
                       {days > 0
@@ -310,7 +344,6 @@ export default function TeacherStudentInfo({
                 </div>
               </section>
 
-              {/* Action buttons — below the exam card */}
               {!isActiveCycleReadOnly && (
                 <div className="tsi__cycleActions">
                   <button
@@ -329,8 +362,29 @@ export default function TeacherStudentInfo({
                   </button>
                 </div>
               )}
+            </div>
 
-              {/* Homework section - only for active cycles */}
+            <div className="tsi__snapshotCell">
+              <div className="tsi__sectionTitle">Skill Breakdown</div>
+
+              <AssignmentBreakdown
+                items={filteredItems}
+                subtitle="This component compiles progress entered in Today's progress."
+                animateKey={sid}
+              />
+            </div>
+
+            <div className="tsi__snapshotCell tsi__snapshotCell--full">
+              <ProgressScoreOverTime
+                title="Progress Score Over Time"
+                history={progressScoreHistory}
+                currentScore={computedReadiness}
+              />
+            </div>
+          </div>
+
+          <div className="tsi__snapshotGrid">
+            <div className="tsi__snapshotCell">
               {!isActiveCycleReadOnly && (
                 <section className="tsi__cardPaper">
                   <div className="tsi__kicker">This week's homework</div>
@@ -339,118 +393,110 @@ export default function TeacherStudentInfo({
                   </div>
                 </section>
               )}
-            </>
-          )}
-        </div>
-
-        {/* RIGHT COLUMN */}
-        {hasActiveCycle && (
-          <div className="tsi__col">
-            <AssignmentBreakdown
-              items={filteredItems}
-              subtitle="This component compiles progress entered in Today's progress."
-              animateKey={sid}
-            />
-
-            <section className="tsi__cardPaper tsi__noteCard">
-              <div className="tsi__kicker">Teacher's note</div>
-              {latestLessonLoading ? (
-                <div className="tsi__noteBody">Loading latest note…</div>
-              ) : latestLesson?.teacherNarrative ? (
-                <div className="tsi__noteBody">
-                  {latestLesson.teacherNarrative}
-                </div>
-              ) : (
-                <div className="tsi__noteBody tsi__muted">
-                  No teacher note yet. Add one in Today's progress.
-                </div>
-              )}
-            </section>
-
-            <section className="tsi__cardPaper tsi__nextLesson">
-              <div className="tsi__kicker">Next lesson</div>
-              <div className="tsi__nextLessonBody">
-                Upcoming lesson card (coming next).
-              </div>
-            </section>
-
-            <div className="tsi__historyBar">
-              <button
-                className="td__pillBtn"
-                onClick={async () => {
-                  const next = !historyOpen;
-                  setHistoryOpen(next);
-                  if (next) await loadHistory();
-                }}
-              >
-                {historyOpen ? "Hide History" : "Score History"}
-              </button>
             </div>
-
-            {historyOpen && (
-              <div className="tsi__history">
-                {historyLoading ? (
-                  <p>Loading history…</p>
-                ) : history.length === 0 ? (
-                  <p>No score history yet.</p>
+            <div className="tsi__snapshotCell">
+              <section className="tsi__cardPaper tsi__noteCard">
+                <div className="tsi__kicker">Teacher's note</div>
+                {latestLessonLoading ? (
+                  <div className="tsi__noteBody">Loading latest note…</div>
+                ) : latestLesson?.teacherNarrative ? (
+                  <div className="tsi__noteBody">
+                    {latestLesson.teacherNarrative}
+                  </div>
                 ) : (
-                  <div className="tsi__historyCards">
-                    {grouped.map((g) => (
-                      <section key={g.date} className="tsi__lessonCard">
-                        <div className="tsi__lessonCardHead">
-                          <h3 className="tsi__lessonTitle">
-                            Lesson •{" "}
-                            {(() => {
-                              const [y, m, d] = g.date.split("-").map(Number);
-                              return new Date(y, m - 1, d).toLocaleDateString();
-                            })()}
-                          </h3>
-                          <span className="tsi__lessonMeta">
-                            {g.entries.length} entries
-                          </span>
-                        </div>
-
-                        <ul className="tsi__lessonEntries">
-                          {g.entries.map((h) => (
-                            <li key={h._id} className="tsi__lessonEntry">
-                              <div className="tsi__entryMain">
-                                <strong>{h.elementLabel || h.elementId}</strong>
-                                {h.score != null ? `: Score: ${h.score}%` : ""}
-                                {h.tempoCurrent != null
-                                  ? ` • Tempo: ${h.tempoCurrent}${h.tempoGoal != null ? `/${h.tempoGoal}` : ""}`
-                                  : ""}
-                              </div>
-                              {h.dynamics ? (
-                                <div className="tsi__historyNote">
-                                  <strong>Dynamics:</strong> {h.dynamics}
-                                </div>
-                              ) : null}
-                              {h.articulation ? (
-                                <div className="tsi__historyNote">
-                                  <strong>Articulation:</strong>{" "}
-                                  {h.articulation}
-                                </div>
-                              ) : null}
-                              <div className="tsi__entryTime">
-                                {new Date(
-                                  h.createdAt || h.lessonDate,
-                                ).toLocaleTimeString([], {
-                                  hour: "2-digit",
-                                  minute: "2-digit",
-                                })}
-                              </div>
-                            </li>
-                          ))}
-                        </ul>
-                      </section>
-                    ))}
+                  <div className="tsi__noteBody tsi__muted">
+                    No teacher note yet. Add one in Today's progress.
                   </div>
                 )}
-              </div>
-            )}
+              </section>
+            </div>
+            <div className="tsi__snapshotCell">
+              <section className="tsi__cardPaper tsi__nextLesson">
+                <div className="tsi__kicker">Next lesson</div>
+                <div className="tsi__nextLessonBody">
+                  Upcoming lesson card (coming next).
+                </div>
+              </section>
+            </div>
           </div>
-        )}
-      </div>
+          <div className="tsi__historyBar">
+            <button
+              className="td__pillBtn"
+              onClick={async () => {
+                const next = !historyOpen;
+                setHistoryOpen(next);
+                if (next) await loadHistory();
+              }}
+            >
+              {historyOpen ? "Hide History" : "Score History"}
+            </button>
+          </div>
+
+          {historyOpen && (
+            <div className="tsi__history">
+              {historyLoading ? (
+                <p>Loading history…</p>
+              ) : history.length === 0 ? (
+                <p>No score history yet.</p>
+              ) : (
+                <div className="tsi__historyCards">
+                  {grouped.map((g) => (
+                    <section key={g.date} className="tsi__lessonCard">
+                      <div className="tsi__lessonCardHead">
+                        <h3 className="tsi__lessonTitle">
+                          Lesson •{" "}
+                          {(() => {
+                            const [y, m, d] = g.date.split("-").map(Number);
+                            return new Date(y, m - 1, d).toLocaleDateString();
+                          })()}
+                        </h3>
+                        <span className="tsi__lessonMeta">
+                          {g.entries.length} entries
+                        </span>
+                      </div>
+
+                      <ul className="tsi__lessonEntries">
+                        {g.entries.map((h) => (
+                          <li key={h._id} className="tsi__lessonEntry">
+                            <div className="tsi__entryMain">
+                              <strong>{h.elementLabel || h.elementId}</strong>
+                              {h.score != null ? `: Score: ${h.score}%` : ""}
+                              {h.tempoCurrent != null
+                                ? ` • Tempo: ${h.tempoCurrent}${h.tempoGoal != null ? `/${h.tempoGoal}` : ""}`
+                                : ""}
+                            </div>
+
+                            {h.dynamics ? (
+                              <div className="tsi__historyNote">
+                                <strong>Dynamics:</strong> {h.dynamics}
+                              </div>
+                            ) : null}
+
+                            {h.articulation ? (
+                              <div className="tsi__historyNote">
+                                <strong>Articulation:</strong> {h.articulation}
+                              </div>
+                            ) : null}
+
+                            <div className="tsi__entryTime">
+                              {new Date(
+                                h.createdAt || h.lessonDate,
+                              ).toLocaleTimeString([], {
+                                hour: "2-digit",
+                                minute: "2-digit",
+                              })}
+                            </div>
+                          </li>
+                        ))}
+                      </ul>
+                    </section>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+        </>
+      )}
 
       <AttendanceCalendar
         open={attendanceOpen}

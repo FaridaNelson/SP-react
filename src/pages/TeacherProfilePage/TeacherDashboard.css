@@ -26,21 +26,19 @@
 }
 
 .td__shell {
+  height: calc(100vh - 84px);
   min-height: calc(100vh - 84px);
+  overflow: hidden;
   background: #0b0b0b;
   display: grid;
 }
 
 .td__grid {
-  min-height: calc(100vh - 84px);
+  height: 100%;
+  min-height: 0;
   display: grid;
-  grid-template-columns: 320px 1fr;
-}
-
-@media (max-width: 980px) {
-  .td__grid {
-    grid-template-columns: 280px 1fr;
-  }
+  grid-template-columns: clamp(250px, 22vw, 320px) minmax(0, 1fr);
+  overflow: hidden;
 }
 
 /* -------- Sidebar -------- */
@@ -49,7 +47,7 @@
   background: linear-gradient(180deg, var(--td-rail), var(--td-rail-2));
   color: rgba(255, 255, 255, 0.92);
   border-right: 1px solid var(--td-rail-border);
-  padding: 6px 8px 18px;
+  padding: 6px 0 18px;
   overflow: hidden;
 
   display: flex;
@@ -204,7 +202,7 @@
   min-height: 0px; /* for proper scrolling */
   overflow-y: auto;
   overflow-x: hidden;
-  padding: 0 16px 8px;
+  padding: 0 0 8px 16px;
   scrollbar-gutter: stable;
   scrollbar-width: thin; /* Firefox */
   scrollbar-color: rgba(70, 58, 26, 0.6) rgba(0, 0, 0, 0.08); /* thumb track */
@@ -231,7 +229,7 @@
 
 .td__studentList {
   list-style: none;
-  padding: 0 4px 80px 0; /* for extra scroll space at bottom */
+  padding: 0 0 80px 0; /* for extra scroll space at bottom */
   margin: 0 -16px;
   display: grid;
   gap: 0px;
@@ -307,7 +305,7 @@
 /* gold highlight + stripe for the entire active student block (button + dropdown) */
 .td__studentItem.is-active {
   position: relative;
-  background: rgba(201, 168, 76, 0.10);
+  background: rgba(201, 168, 76, 0.1);
 }
 
 .td__studentItem.is-active::before {
@@ -409,7 +407,11 @@
       0 0 / 26px 26px,
     linear-gradient(180deg, var(--td-paper), var(--td-paper-2));
   color: var(--td-ink);
-  overflow: auto;
+  overflow-y: auto;
+  overflow-x: hidden;
+  position: relative;
+  min-width: 0;
+  min-height: 0;
 }
 
 .td__topbar {
@@ -574,8 +576,133 @@
 .td__addStudent--mobile {
   display: none;
 }
+/* -------------------- Responsive -------------------- */
+@media (max-width: 1400px) {
+  .td__greetHi {
+    font-size: 18px;
+  }
+
+  .td__greetName {
+    font-size: 20px;
+  }
+
+  .td__greetMeta {
+    font-size: 11px;
+  }
+
+  .td__search {
+    font-size: 14px;
+  }
+
+  .td__addStudent {
+    font-size: 14px;
+    padding: 9px 11px;
+  }
+
+  .td__studentBtn {
+    gap: 10px;
+    padding: 10px 14px;
+  }
+
+  .td__avatar {
+    width: 34px;
+    height: 34px;
+    font-size: 14px;
+  }
+
+  .td__studentName {
+    font-size: 13px;
+  }
+
+  .td__studentMeta {
+    font-size: 10px;
+  }
+
+  .td__pctBadge {
+    font-size: 9px;
+    padding: 1px 6px;
+  }
+}
+
+@media (max-width: 1180px) {
+  .td__grid {
+    grid-template-columns: clamp(220px, 20vw, 270px) minmax(0, 1fr);
+  }
+
+  .td__greeting {
+    padding: 8px 6px 10px;
+  }
+
+  .td__greetHi {
+    font-size: 16px;
+  }
+
+  .td__greetName {
+    font-size: 18px;
+  }
+
+  .td__greetMeta {
+    font-size: 10px;
+  }
+
+  .td__searchWrap {
+    padding: 10px 12px;
+    margin: 8px 0 4px 0;
+  }
+
+  .td__search {
+    width: 100%;
+    font-size: 13px;
+    padding: 9px 0 9px 34px;
+  }
+
+  .td__sectionHead {
+    gap: 8px;
+    padding: 6px 6px 10px;
+  }
+
+  .td__sectionTitle {
+    font-size: 10px;
+  }
+
+  .td__addStudent {
+    font-size: 13px;
+    letter-spacing: 0.06em;
+  }
+
+  .td__studentBtn {
+    padding: 9px 12px;
+    gap: 9px;
+  }
+
+  .td__avatar {
+    width: 32px;
+    height: 32px;
+    font-size: 13px;
+  }
+
+  .td__studentName {
+    font-size: 12px;
+  }
+
+  .td__studentMeta {
+    font-size: 9px;
+    margin-top: 3px;
+  }
+
+  .td__pctBadge {
+    font-size: 8px;
+    padding: 1px 5px;
+  }
+}
 
 /* ── Mobile responsive ── */
+@media (max-width: 980px) {
+  .td__pillBtn {
+    justify-content: center;
+    font-size: 11px;
+  }
+}
 
 @media (max-width: 768px) {
   /* Grid becomes single column, sidebar renders inline */

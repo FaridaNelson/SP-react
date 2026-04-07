@@ -2,9 +2,13 @@
   position: relative;
   display: grid;
   place-items: center;
+  width: 160px;
+  aspect-ratio: 1 / 1;
 }
 
 .donut__svg {
+  width: 100%;
+  height: 100%;
   transform: rotate(-90deg);
   overflow: visible;
 }
@@ -43,19 +47,19 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 3px;
+  gap: 0;
 }
 
 .donut__value {
   font-family: var(--font-serif);
-  font-size: 43px;
+  font-size: 36px;
   font-weight: 500;
   color: #fff;
   line-height: 1;
 }
 
 .donut__label {
-  font-size: 12px;
+  font-size: 8px;
   letter-spacing: 0.1em;
   color: rgba(255, 255, 255, 0.4);
   text-transform: uppercase;
@@ -73,4 +77,42 @@
 .donut__passText {
   fill: rgba(255, 255, 255, 0.35);
   font: 600 7px/1 var(--font-sans);
+}
+
+@media (max-width: 1480px) {
+  .donut {
+    width: 150px;
+  }
+
+  .donut__value {
+    font-size: 36px;
+  }
+}
+
+@media (max-width: 1280px) {
+  .donut {
+    width: 130px;
+  }
+
+  .donut__value {
+    font-size: 30px;
+  }
+
+  .donut__label {
+    font-size: 10px;
+  }
+}
+
+@media (max-width: 980px) {
+  .donut {
+    width: 110px;
+  }
+
+  .donut__value {
+    font-size: 29px;
+  }
+
+  .donut__label {
+    font-size: 10px;
+  }
 }
