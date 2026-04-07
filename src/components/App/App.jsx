@@ -61,8 +61,8 @@ export default function App() {
   const isParentView = pathname.startsWith("/parent");
   const hideFooter = isTeacherView || isParentView;
 
-  const BARE_ROUTES = ["/privacy-policy", "/terms-of-service", "/reset-password"];
-  const hideHeader = BARE_ROUTES.includes(pathname);
+  const BARE_ROUTES = ["/privacy-policy", "/terms-of-service", "/reset-password", "/parent"];
+  const hideHeader = BARE_ROUTES.some((r) => pathname.startsWith(r));
 
   const openSignIn = () => setAuthMode("signin");
   const openSignUp = () => setAuthMode("signup");
