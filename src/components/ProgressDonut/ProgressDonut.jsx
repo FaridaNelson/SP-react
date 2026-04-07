@@ -22,7 +22,8 @@ export default function ProgressDonut({
     ro.observe(wrapRef.current);
     return () => ro.disconnect();
   }, [minSize, maxSize]);
-  const radius = (size - stroke) / 2;
+  const ringScale = 0.75;
+  const radius = ((size - stroke) / 2) * ringScale;
   const circumference = 2 * Math.PI * radius;
 
   const clamped = Math.max(0, Math.min(100, Number(value) || 0));

@@ -1,0 +1,173 @@
+.psot {
+  width: 100%;
+}
+
+.psot__card {
+  background: var(--warm-white, #fdf9f4);
+  border: 1px solid var(--border, rgba(28, 26, 23, 0.1));
+  border-radius: 16px;
+  overflow: hidden;
+  padding: 20px 20px 16px;
+}
+
+.psot__chartWrap {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.psot__svg {
+  width: 100%;
+  min-width: 860px;
+  height: auto;
+  display: block;
+}
+
+.psot__gridLine {
+  stroke: rgba(28, 26, 23, 0.08);
+  stroke-width: 1;
+}
+
+.psot__gridLine--pass {
+  stroke: #c9a84c;
+  stroke-dasharray: 4 4;
+  opacity: 0.9;
+}
+
+.psot__yLabel {
+  font-family: "DM Sans", sans-serif;
+  font-size: 11px;
+  fill: #7a766d;
+}
+
+.psot__line {
+  fill: none;
+  stroke: #7a9e87;
+  stroke-width: 3;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.psot__point {
+  fill: #fff;
+  stroke-width: 3;
+}
+
+.psot__point--below {
+  stroke: #d4a62a;
+}
+
+.psot__point--pass {
+  stroke: #a8d4b8;
+}
+
+.psot__point--strong {
+  stroke: #5a8a6a;
+}
+
+.psot__pointLabel {
+  font-family: "DM Sans", sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.psot__pointLabel--below {
+  fill: #c79b22;
+}
+
+.psot__pointLabel--pass {
+  fill: #7da88a;
+}
+
+.psot__pointLabel--strong {
+  fill: #4b7359;
+}
+
+.psot__xLabelMain {
+  font-family: "DM Sans", sans-serif;
+  font-size: 10px;
+  font-weight: 600;
+  fill: #666;
+}
+
+.psot__xLabelSub {
+  font-family: "DM Sans", sans-serif;
+  font-size: 9px;
+  fill: #999;
+}
+
+.psot__thresholdLabel {
+  font-family: "DM Sans", sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.psot__thresholdLabel--strong {
+  fill: #5a8a6a;
+}
+
+.psot__thresholdLabel--pass {
+  fill: #c9a84c;
+}
+
+.psot__footer {
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid var(--border, rgba(28, 26, 23, 0.1));
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.psot__legend {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.psot__legendItem {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  font-size: 12px;
+  color: var(--ink-muted, #7a766d);
+}
+
+.psot__legendSwatch {
+  width: 12px;
+  height: 12px;
+  border-radius: 2px;
+  display: inline-block;
+}
+
+.psot__legendSwatch--below {
+  background: #f4c430;
+}
+
+.psot__legendSwatch--pass {
+  background: #a8d4b8;
+}
+
+.psot__legendSwatch--strong {
+  background: #5a8a6a;
+}
+
+.psot__summary {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--ink-muted, #7a766d);
+}
+
+.psot__summaryValue {
+  color: #5a8a6a;
+}
+
+.psot__empty {
+  min-height: 240px;
+  display: grid;
+  place-items: center;
+  color: var(--ink-muted, #7a766d);
+  font-style: italic;
+}

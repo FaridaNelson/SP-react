@@ -63,7 +63,7 @@ export default function AssignmentBreakdown({
     <section className="brk">
       <header className="brk__head">
         <div>
-          <h3 className="brk__title">{title}</h3>
+          <h3 className="brk__title"></h3>
           {subtitle ? <p className="brk__sub">{subtitle}</p> : null}
         </div>
 

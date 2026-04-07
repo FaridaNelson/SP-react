@@ -1,13 +1,22 @@
 .panelHeader {
+  position: sticky;
+  top: 0;
+  z-index: 20;
   display: flex;
   justify-content: space-between;
-  margin-bottom: 14px;
-  padding-bottom: 12px;
+  align-items: flex-start;
+  gap: 16px;
+
+  margin: 0 -18px 14px;
+  padding: 18px 18px 12px;
   border-bottom: 1px solid rgba(31, 28, 24, 0.1);
+
+  background: rgba(251, 248, 241, 0.88);
+  backdrop-filter: blur(10px);
 }
 
 .panelHeader__titleWrap {
-  flex: 1;
+  flex: 1 1 auto;
   min-width: 0;
 }
 
@@ -30,19 +39,74 @@
 .panelHeader__actions {
   display: flex;
   gap: 10px;
-  align-content: flex-end;
+  align-items: center;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  flex: 0 1 auto;
+  min-width: 0;
+  max-height: 40px;
+}
+
+.panelHeader__actions .td__pillBtn {
+  flex: 0 0 auto;
+}
+
+@media (max-width: 1200px) {
+  .panelHeader {
+    gap: 12px;
+    padding: 16px 16px 10px;
+    margin: 0 -16px 12px;
+  }
+
+  .panelHeader__title {
+    font-size: 20px;
+  }
+
+  .panelHeader__meta {
+    font-size: 11px;
+  }
+
+  .panelHeader__actions {
+    gap: 8px;
+  }
+
+  .panelHeader__actions .td__pillBtn {
+    font-size: 11px;
+    padding: 8px 10px;
+  }
+}
+
+@media (max-width: 980px) {
+  .panelHeader {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .panelHeader__actions {
+    justify-content: flex-start;
+    flex-wrap: wrap;
+  }
+  .panelHeader__title {
+    font-size: 16px;
+  }
+
+  .panelHeader__meta {
+    font-size: 10px;
+  }
 }
 
 @media (max-width: 768px) {
   .panelHeader {
-    flex-direction: column;
-    gap: 12px;
+    padding: 14px 12px 10px;
+    margin: 0 -12px 12px;
   }
   .panelHeader__actions {
     width: 100%;
     flex-direction: column;
+    gap: 8px;
   }
-  .panelHeader__actions button {
+  .panelHeader__actions .td__pillBtn {
     width: 100%;
+    justify-content: center;
   }
 }
