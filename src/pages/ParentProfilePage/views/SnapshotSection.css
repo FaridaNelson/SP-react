@@ -1,0 +1,194 @@
+/* ─── Exam card ───────────────────────────────────────────────── */
+.pd-exam-card {
+  background: var(--ink, #1c1a17);
+  border-radius: 16px;
+  padding: 22px 22px 20px;
+  position: relative;
+  overflow: hidden;
+  margin-bottom: 20px;
+}
+
+.pd-exam-card::after {
+  content: "";
+  position: absolute;
+  top: -40px;
+  right: -40px;
+  width: 160px;
+  height: 160px;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    rgba(201, 168, 76, 0.15) 0%,
+    transparent 70%
+  );
+  pointer-events: none;
+}
+
+.pd-exam-inner {
+  display: flex;
+  align-items: flex-start;
+  gap: 20px;
+}
+
+.pd-exam-left {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.pd-exam-date {
+  font-size: 10px;
+  color: rgba(255, 255, 255, 0.4);
+  text-align: center;
+}
+
+/* ─── Exam info ───────────────────────────────────────────────── */
+.pd-exam-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.pd-exam-label {
+  font-size: 9px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--gold, #c9a84c);
+  margin-bottom: 4px;
+  font-weight: 500;
+}
+
+.pd-exam-title {
+  font-family: "Cormorant Garamond", serif;
+  font-size: 18px;
+  font-weight: 500;
+  color: #fff;
+  line-height: 1.2;
+  margin-bottom: 10px;
+}
+
+/* ─── Status pills ────────────────────────────────────────────── */
+.pd-exam-pills {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.pd-pills-row {
+  display: flex;
+  gap: 4px;
+}
+
+.pd-pill {
+  font-size: 10px;
+  padding: 3px 7px;
+  border-radius: 20px;
+  white-space: nowrap;
+  letter-spacing: 0.01em;
+  flex: 1;
+  min-width: 0;
+  text-align: center;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.pd-pill--done {
+  background: rgba(122, 158, 135, 0.2);
+  border: 0.5px solid rgba(122, 158, 135, 0.4);
+  color: #a8d4b8;
+}
+
+.pd-pill--danger {
+  background: rgba(212, 128, 106, 0.18);
+  border: 0.5px solid rgba(212, 128, 106, 0.35);
+  color: #f4a090;
+}
+
+/* ─── Countdown ───────────────────────────────────────────────── */
+.pd-exam-countdown {
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.pd-countdown-right {
+  text-align: right;
+}
+
+.pd-countdown-row {
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+  justify-content: flex-end;
+}
+
+.pd-countdown-num {
+  font-family: "Cormorant Garamond", serif;
+  font-size: 26px;
+  font-weight: 500;
+  color: var(--gold-light, #e8d49a);
+  line-height: 1;
+}
+
+.pd-countdown-unit {
+  font-size: 10px;
+  color: rgba(255, 255, 255, 0.4);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+/* ─── Skill progress bars ─────────────────────────────────────── */
+.pd-skill-row {
+  margin-bottom: 14px;
+}
+.pd-skill-row:last-child {
+  margin-bottom: 0;
+}
+
+.pd-skill-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.pd-skill-name {
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--ink-soft, #3d3a34);
+}
+
+.pd-skill-pct {
+  font-family: "Cormorant Garamond", serif;
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--ink-muted, #7a766d);
+}
+
+.pd-skill-track {
+  position: relative;
+  height: 8px;
+  background: rgba(28, 26, 23, 0.07);
+  border-radius: 4px;
+}
+
+.pd-skill-fill {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  border-radius: 4px;
+  transition: width 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+  width: 0;
+}
+
+.pd-skill-fill--pass {
+  background: var(--sage, #7a9e87);
+}
+.pd-skill-fill--fail {
+  background: var(--rose, #d4806a);
+}

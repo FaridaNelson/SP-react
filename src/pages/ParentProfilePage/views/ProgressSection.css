@@ -1,0 +1,65 @@
+/* ─── Chart wrapper ───────────────────────────────────────────── */
+.ps-chart-wrap {
+  width: 100%;
+  overflow-x: auto;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+  padding: 4px 0 8px;
+}
+
+.ps-chart-wrap::-webkit-scrollbar {
+  display: none;
+}
+
+/* ─── Empty state ─────────────────────────────────────────────── */
+.ps-empty {
+  min-height: 200px;
+  display: grid;
+  place-items: center;
+  font-size: 13px;
+  font-style: italic;
+  color: var(--ink-muted, #7a766d);
+}
+
+/* ─── Footer ──────────────────────────────────────────────────── */
+.ps-footer {
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid var(--border, rgba(28, 26, 23, 0.1));
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* ─── Legend ──────────────────────────────────────────────────── */
+.ps-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.ps-legend-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 10px;
+  color: var(--ink-muted, #7a766d);
+}
+
+.ps-legend-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+
+/* ─── Summary line ────────────────────────────────────────────── */
+.ps-summary {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--ink-muted, #7a766d);
+}
+
+.ps-summary-score {
+  font-weight: 700;
+}

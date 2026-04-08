@@ -1,0 +1,57 @@
+/* ─── Bottom navigation ───────────────────────────────────────── */
+.pd-bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 70px;
+  background: white;
+  border-top: 1px solid var(--border, rgba(28, 26, 23, 0.1));
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  padding: 0 8px;
+  padding-bottom: env(safe-area-inset-bottom);
+  z-index: 100;
+}
+
+.pd-nav-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 8px;
+  cursor: pointer;
+  border-radius: 8px;
+  transition: all 0.2s;
+  min-height: 44px;
+}
+
+.pd-nav-item:hover       { background: var(--cream, #faf7f2); }
+.pd-nav-item--active     { background: var(--gold-pale, #f5edd0); }
+
+.pd-nav-icon {
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.pd-nav-icon svg {
+  stroke: var(--ink-muted, #7a766d);
+  transition: stroke 0.2s;
+}
+
+.pd-nav-item--active .pd-nav-icon svg { stroke: var(--gold, #c9a84c); }
+
+.pd-nav-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--ink-muted, #7a766d);
+  transition: color 0.2s;
+}
+
+.pd-nav-item--active .pd-nav-label { color: var(--gold, #c9a84c); }

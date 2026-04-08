@@ -1,0 +1,162 @@
+/* ─── Top bar ─────────────────────────────────────────────────── */
+.pd-topbar {
+  height: 73px;
+  background: #0f1419;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 20px;
+  padding-top: env(safe-area-inset-top);
+  position: sticky;
+  top: 0;
+  z-index: 200;
+}
+
+/* ─── Logo button ─────────────────────────────────────────────── */
+.pd-topbar-logo {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 16px;
+  height: 38px;
+  background: rgba(201, 168, 76, 0.15);
+  border: 1px solid rgba(201, 168, 76, 0.3);
+  border-radius: 20px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+button.pd-topbar-logo { font-family: inherit; }
+
+.pd-topbar-logo:hover {
+  background: rgba(201, 168, 76, 0.22);
+}
+
+.pd-topbar-wordmark {
+  font-family: "DM Sans", sans-serif;
+  font-size: 12px;
+  font-weight: 500;
+  color: #e8d49a;
+  letter-spacing: 0.03em;
+}
+
+.pd-topbar-wordmark strong { font-weight: 700; }
+
+.pd-topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* ─── Child selector ──────────────────────────────────────────── */
+.pd-child-selector { position: relative; }
+
+.pd-child-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 38px;
+  padding: 0 14px;
+  background: rgba(255, 255, 255, 0.07);
+  border: 0.5px solid rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
+  color: rgba(255, 255, 255, 0.75);
+  font-family: "DM Sans", sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.pd-child-btn:hover { background: rgba(255, 255, 255, 0.11); }
+
+.pd-child-avatar {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #c9a84c, #d4806a);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  font-weight: 600;
+  color: white;
+  flex-shrink: 0;
+}
+
+.pd-child-avatar--sm { width: 24px; height: 24px; font-size: 10px; }
+
+.pd-child-caret { font-size: 10px; opacity: 0.5; }
+
+/* ─── Child dropdown ──────────────────────────────────────────── */
+.pd-child-dropdown {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  background: #1c1a17;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  min-width: 220px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+  overflow: hidden;
+  z-index: 300;
+}
+
+.pd-dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  cursor: pointer;
+  transition: background 0.2s;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.pd-dropdown-item:last-child { border-bottom: none; }
+.pd-dropdown-item:hover      { background: rgba(255, 255, 255, 0.07); }
+.pd-dropdown-item--active    { background: rgba(201, 168, 76, 0.12); }
+
+.pd-dropdown-name {
+  font-size: 13px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.9);
+  margin-bottom: 2px;
+}
+
+.pd-dropdown-grade {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.35);
+}
+
+/* ─── Parent avatar ───────────────────────────────────────────── */
+.pd-profile-btn {
+  background: transparent;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.pd-profile-btn:hover { opacity: 0.8; }
+
+.pd-parent-avatar {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #c9a84c, #d4806a);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: "DM Sans", sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  color: white;
+}
+
+.pd-parent-avatar--lg {
+  width: 80px;
+  height: 80px;
+  font-size: 30px;
+  margin: 0 auto 16px;
+}

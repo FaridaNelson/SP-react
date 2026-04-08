@@ -1,0 +1,239 @@
+/* ─── Section header ──────────────────────────────────────────── */
+.pd-practice-header { margin-bottom: 16px; }
+
+.pd-practice-title {
+  font-family: "Cormorant Garamond", serif;
+  font-size: 22px;
+  font-weight: 600;
+  color: var(--ink, #1c1a17);
+  margin-bottom: 6px;
+}
+
+.pd-practice-sub {
+  font-size: 13px;
+  color: var(--ink-muted, #7a766d);
+}
+
+/* ─── Day carousel ────────────────────────────────────────────── */
+.pd-carousel {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+  padding: 4px 0 16px;
+  margin: 0 -4px;
+}
+
+.pd-carousel::-webkit-scrollbar { display: none; }
+
+/* ─── Day card ────────────────────────────────────────────────── */
+.pd-day-card {
+  flex-shrink: 0;
+  scroll-snap-align: center;
+  width: 52px;
+  height: 68px;
+  border: 1.5px solid var(--border, rgba(28, 26, 23, 0.1));
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  background: white;
+  position: relative;
+  transition: background 0.2s, border-color 0.2s;
+  user-select: none;
+}
+
+.pd-day-abbr {
+  font-size: 9px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--ink-muted, #7a766d);
+}
+
+.pd-day-num {
+  font-family: "Cormorant Garamond", serif;
+  font-size: 20px;
+  font-weight: 500;
+  color: var(--ink, #1c1a17);
+  line-height: 1;
+}
+
+.pd-day-check {
+  font-size: 10px;
+  font-weight: 700;
+  color: white;
+  line-height: 1;
+}
+
+/* Today — gold at 50% opacity */
+.pd-day-card--today {
+  background: rgba(201, 168, 76, 0.5);
+  border-color: var(--gold, #c9a84c);
+}
+
+.pd-day-card--today .pd-day-abbr { color: var(--ink-soft, #3d3a34); }
+.pd-day-card--today .pd-day-num  { color: var(--ink, #1c1a17); }
+
+/* Practiced — full sage green */
+.pd-day-card--done {
+  background: var(--sage, #7a9e87);
+  border-color: var(--sage, #7a9e87);
+}
+
+.pd-day-card--done .pd-day-abbr,
+.pd-day-card--done .pd-day-num { color: white; }
+
+/* Today + practiced — full green, no opacity reduction */
+.pd-day-card--today.pd-day-card--done {
+  background: var(--sage, #7a9e87);
+  border-color: var(--sage, #7a9e87);
+  opacity: 1;
+}
+
+/* Future — muted */
+.pd-day-card--future { opacity: 0.38; }
+
+/* ─── Practice summary — base ─────────────────────────────────── */
+.pd-practice-summary {
+  text-align: center;
+  padding: 16px;
+  border-radius: 10px;
+  margin-bottom: 20px;
+  transition: background 0.4s;
+}
+
+.pd-practice-summary-label {
+  font-size: 13px;
+  margin-bottom: 4px;
+}
+
+.pd-practice-summary-count {
+  font-size: 28px;
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.pd-practice-summary-sub {
+  font-size: 12px;
+  margin-top: 2px;
+}
+
+/* ─── Summary color themes ────────────────────────────────────── */
+
+/* 0–1 days: rose */
+.pd-practice-summary--rose { background: rgba(212, 128, 106, 0.12); }
+.pd-practice-summary--rose .pd-practice-summary-label,
+.pd-practice-summary--rose .pd-practice-summary-count,
+.pd-practice-summary--rose .pd-practice-summary-sub { color: var(--rose, #d4806a); }
+
+/* 2–3 days: yellow/gold */
+.pd-practice-summary--yellow { background: rgba(201, 168, 76, 0.12); }
+.pd-practice-summary--yellow .pd-practice-summary-label,
+.pd-practice-summary--yellow .pd-practice-summary-count,
+.pd-practice-summary--yellow .pd-practice-summary-sub { color: #a07820; }
+
+/* 4–5 days: sage */
+.pd-practice-summary--sage { background: var(--sage-pale, #ebf3ee); }
+.pd-practice-summary--sage .pd-practice-summary-label,
+.pd-practice-summary--sage .pd-practice-summary-count,
+.pd-practice-summary--sage .pd-practice-summary-sub { color: var(--sage, #7a9e87); }
+
+/* 6–7 days: dark green */
+.pd-practice-summary--green { background: rgba(58, 109, 80, 0.12); }
+.pd-practice-summary--green .pd-practice-summary-label,
+.pd-practice-summary--green .pd-practice-summary-count,
+.pd-practice-summary--green .pd-practice-summary-sub { color: #2d6b48; }
+
+/* ─── Homework task list ───────────────────────────────────────── */
+.pd-tasklist {
+  border-top: 1px solid var(--border, rgba(28, 26, 23, 0.1));
+  padding-top: 16px;
+}
+
+.pd-tasklist-title {
+  font-family: "Cormorant Garamond", serif;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink-muted, #7a766d);
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.pd-tasklist-title::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: var(--border, rgba(28, 26, 23, 0.1));
+}
+
+.pd-task-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--border, rgba(28, 26, 23, 0.06));
+  cursor: pointer;
+  min-height: 44px;
+}
+
+.pd-task-item:last-child { border-bottom: none; }
+
+/* Hide native checkbox — replaced by custom box */
+.pd-task-input {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+/* Custom checkbox box */
+.pd-task-box {
+  flex-shrink: 0;
+  width: 22px;
+  height: 22px;
+  border: 1.5px solid var(--border, rgba(28, 26, 23, 0.2));
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: 600;
+  color: transparent;
+  background: white;
+  transition: background 0.2s, border-color 0.2s, color 0.2s;
+}
+
+.pd-task-box--done {
+  background: var(--sage, #7a9e87);
+  border-color: var(--sage, #7a9e87);
+  color: white;
+}
+
+/* Task label */
+.pd-task-label {
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--ink-soft, #3d3a34);
+  flex: 1;
+  transition: color 0.2s;
+}
+
+.pd-task-label--done {
+  color: var(--ink-muted, #7a766d);
+  text-decoration: line-through;
+  text-decoration-color: var(--sage, #7a9e87);
+}
+
+/* Row hover */
+.pd-task-item:hover .pd-task-box:not(.pd-task-box--done) {
+  border-color: var(--sage, #7a9e87);
+}
