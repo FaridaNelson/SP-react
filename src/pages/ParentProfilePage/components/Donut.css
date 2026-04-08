@@ -1,0 +1,61 @@
+/* ─── Donut chart ─────────────────────────────────────────────── */
+.pd-donut-wrap {
+  position: relative;
+  width: 100px;
+  height: 100px;
+}
+
+.pd-donut-svg {
+  width: 100px;
+  height: 100px;
+  transform: rotate(-90deg);
+  overflow: visible;
+}
+
+.pd-donut-track {
+  fill: none;
+  stroke: rgba(255, 255, 255, 0.07);
+  stroke-width: 9;
+}
+
+.pd-donut-progress {
+  fill: none;
+  stroke: url(#pdGoldGrad);
+  stroke-width: 9;
+  stroke-linecap: round;
+  stroke-dasharray: 257.6;
+  stroke-dashoffset: 257.6;
+  transition: stroke-dashoffset 1.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.pd-donut-center {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.pd-donut-pct {
+  font-family: "Cormorant Garamond", serif;
+  font-size: 26px;
+  font-weight: 500;
+  color: #fff;
+  line-height: 1;
+}
+
+.pd-donut-sub {
+  font-size: 8px;
+  letter-spacing: 0.1em;
+  color: rgba(255, 255, 255, 0.4);
+  text-transform: uppercase;
+  margin-top: 2px;
+}
+
+.pd-donut-pass-lbl {
+  font-size: 7px;
+  color: rgba(255, 255, 255, 0.25);
+  margin-top: 2px;
+}

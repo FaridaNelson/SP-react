@@ -226,3 +226,15 @@
     min-width: 260px;
   }
 }
+
+@media (max-width: 600px) {
+  .psot__svg {
+    min-width: 100px;
+  }
+  .psot__yLabel {
+    font-size: 11px;
+  }
+  .psot__xLabelMain {
+    font-size: 11px;
+  }
+}
