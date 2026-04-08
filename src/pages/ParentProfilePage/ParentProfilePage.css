@@ -139,3 +139,35 @@
   line-height: 1.6;
   max-width: 280px;
 }
+
+/* ─── Swipeable views container ───────────────────────────────── */
+.pd-views-container {
+  flex: 1;
+  display: flex;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scroll-snap-type: x mandatory;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+  /* Constrain to mobile width, centred on desktop */
+  max-width: 480px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+.pd-views-container::-webkit-scrollbar {
+  display: none;
+}
+
+/* ─── Individual view pane ────────────────────────────────────── */
+.pd-view-pane {
+  flex-shrink: 0; /* prevents panes squeezing — MUST be present */
+  width: 100%;
+  scroll-snap-align: start;
+  overflow-y: auto;
+  overflow-x: hidden; /* hidden clips visually but preserves child scroll containers */
+  padding: 20px 20px 0;
+  padding-bottom: calc(90px + env(safe-area-inset-bottom));
+  box-sizing: border-box;
+  -webkit-overflow-scrolling: touch;
+}

@@ -1,5 +1,7 @@
 /* ─── Section header ──────────────────────────────────────────── */
-.pd-practice-header { margin-bottom: 16px; }
+.pd-practice-header {
+  margin-bottom: 16px;
+}
 
 .pd-practice-title {
   font-family: "Cormorant Garamond", serif;
@@ -19,6 +21,8 @@
   display: flex;
   gap: 8px;
   overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-x: contain;
   scroll-snap-type: x mandatory;
   -ms-overflow-style: none;
   scrollbar-width: none;
@@ -26,7 +30,9 @@
   margin: 0 -4px;
 }
 
-.pd-carousel::-webkit-scrollbar { display: none; }
+.pd-carousel::-webkit-scrollbar {
+  display: none;
+}
 
 /* ─── Day card ────────────────────────────────────────────────── */
 .pd-day-card {
@@ -43,7 +49,9 @@
   gap: 2px;
   background: white;
   position: relative;
-  transition: background 0.2s, border-color 0.2s;
+  transition:
+    background 0.2s,
+    border-color 0.2s;
   user-select: none;
 }
 
@@ -76,8 +84,12 @@
   border-color: var(--gold, #c9a84c);
 }
 
-.pd-day-card--today .pd-day-abbr { color: var(--ink-soft, #3d3a34); }
-.pd-day-card--today .pd-day-num  { color: var(--ink, #1c1a17); }
+.pd-day-card--today .pd-day-abbr {
+  color: var(--ink-soft, #3d3a34);
+}
+.pd-day-card--today .pd-day-num {
+  color: var(--ink, #1c1a17);
+}
 
 /* Practiced — full sage green */
 .pd-day-card--done {
@@ -86,7 +98,9 @@
 }
 
 .pd-day-card--done .pd-day-abbr,
-.pd-day-card--done .pd-day-num { color: white; }
+.pd-day-card--done .pd-day-num {
+  color: white;
+}
 
 /* Today + practiced — full green, no opacity reduction */
 .pd-day-card--today.pd-day-card--done {
@@ -96,7 +110,9 @@
 }
 
 /* Future — muted */
-.pd-day-card--future { opacity: 0.38; }
+.pd-day-card--future {
+  opacity: 0.38;
+}
 
 /* ─── Practice summary — base ─────────────────────────────────── */
 .pd-practice-summary {
@@ -126,32 +142,47 @@
 /* ─── Summary color themes ────────────────────────────────────── */
 
 /* 0–1 days: rose */
-.pd-practice-summary--rose { background: rgba(212, 128, 106, 0.12); }
+.pd-practice-summary--rose {
+  background: rgba(212, 128, 106, 0.12);
+}
 .pd-practice-summary--rose .pd-practice-summary-label,
 .pd-practice-summary--rose .pd-practice-summary-count,
-.pd-practice-summary--rose .pd-practice-summary-sub { color: var(--rose, #d4806a); }
+.pd-practice-summary--rose .pd-practice-summary-sub {
+  color: var(--rose, #d4806a);
+}
 
 /* 2–3 days: yellow/gold */
-.pd-practice-summary--yellow { background: rgba(201, 168, 76, 0.12); }
+.pd-practice-summary--yellow {
+  background: rgba(201, 168, 76, 0.12);
+}
 .pd-practice-summary--yellow .pd-practice-summary-label,
 .pd-practice-summary--yellow .pd-practice-summary-count,
-.pd-practice-summary--yellow .pd-practice-summary-sub { color: #a07820; }
+.pd-practice-summary--yellow .pd-practice-summary-sub {
+  color: #a07820;
+}
 
 /* 4–5 days: sage */
-.pd-practice-summary--sage { background: var(--sage-pale, #ebf3ee); }
+.pd-practice-summary--sage {
+  background: var(--sage-pale, #ebf3ee);
+}
 .pd-practice-summary--sage .pd-practice-summary-label,
 .pd-practice-summary--sage .pd-practice-summary-count,
-.pd-practice-summary--sage .pd-practice-summary-sub { color: var(--sage, #7a9e87); }
+.pd-practice-summary--sage .pd-practice-summary-sub {
+  color: var(--sage, #7a9e87);
+}
 
 /* 6–7 days: dark green */
-.pd-practice-summary--green { background: rgba(58, 109, 80, 0.12); }
+.pd-practice-summary--green {
+  background: rgba(58, 109, 80, 0.12);
+}
 .pd-practice-summary--green .pd-practice-summary-label,
 .pd-practice-summary--green .pd-practice-summary-count,
-.pd-practice-summary--green .pd-practice-summary-sub { color: #2d6b48; }
+.pd-practice-summary--green .pd-practice-summary-sub {
+  color: #2d6b48;
+}
 
 /* ─── Homework task list ───────────────────────────────────────── */
 .pd-tasklist {
-  border-top: 1px solid var(--border, rgba(28, 26, 23, 0.1));
   padding-top: 16px;
 }
 
@@ -172,7 +203,7 @@
   content: "";
   flex: 1;
   height: 1px;
-  background: var(--border, rgba(28, 26, 23, 0.1));
+  background: rgba(28, 26, 23, 0.3);
 }
 
 .pd-task-item {
@@ -180,12 +211,14 @@
   align-items: center;
   gap: 12px;
   padding: 12px 0;
-  border-bottom: 1px solid var(--border, rgba(28, 26, 23, 0.06));
+  border-bottom: 1px solid rgba(28, 26, 23, 0.3);
   cursor: pointer;
   min-height: 44px;
 }
 
-.pd-task-item:last-child { border-bottom: none; }
+.pd-task-item:last-child {
+  border-bottom: none;
+}
 
 /* Hide native checkbox — replaced by custom box */
 .pd-task-input {
@@ -209,7 +242,10 @@
   font-weight: 600;
   color: transparent;
   background: white;
-  transition: background 0.2s, border-color 0.2s, color 0.2s;
+  transition:
+    background 0.2s,
+    border-color 0.2s,
+    color 0.2s;
 }
 
 .pd-task-box--done {

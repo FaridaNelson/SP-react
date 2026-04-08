@@ -227,7 +227,11 @@ function LessonBody({ lesson }) {
                         );
                         const score = crit?.score;
                         return (
-                          <span key={id} className="lesson-piece-cell">
+                          <span
+                            key={id}
+                            className="lesson-piece-cell"
+                            data-label={criterionLabel(id)}
+                          >
                             {score !== null && score !== undefined ? (
                               <span
                                 className="lesson-score-badge"
@@ -239,14 +243,17 @@ function LessonBody({ lesson }) {
                           </span>
                         );
                       })}
-                      <span className="lesson-piece-cell">
+                      <span
+                        className="lesson-piece-cell"
+                        data-label="Readiness"
+                      >
                         {(() => {
                           const pct = Math.round(piece.percent || 0);
                           if (!pct) return null;
                           const color =
-                            pct >= 67
+                            pct >= 80
                               ? "#5A8A6A"
-                              : pct >= 50
+                              : pct >= 67
                                 ? "#A07820"
                                 : "#C05040";
                           return (
@@ -264,7 +271,9 @@ function LessonBody({ lesson }) {
                         })()}
                       </span>
 
-                      <span className="lesson-piece-note">{notes}</span>
+                      <span className="lesson-piece-note" data-label="Notes">
+                        {notes}
+                      </span>
                     </div>
                   );
                 })}
@@ -323,7 +332,7 @@ function LessonBody({ lesson }) {
 
 /* ── Main component ── */
 
-export default function LessonCard({ lesson }) {
+export default function LessonCard({ lesson, readOnly = false }) {
   const [bodyOpen, setBodyOpen] = useState(false);
 
   const lessonId = lesson._id || lesson.id;
@@ -355,12 +364,14 @@ export default function LessonCard({ lesson }) {
           {lessonMeta && <div className="lesson-meta">{lessonMeta}</div>}
         </div>
         <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-          <button
-            className="lesson-edit-btn"
-            onClick={(e) => e.stopPropagation()}
-          >
-            Edit Grades
-          </button>
+          {!readOnly && (
+            <button
+              className="lesson-edit-btn"
+              onClick={(e) => e.stopPropagation()}
+            >
+              Edit Grades
+            </button>
+          )}
           <span style={{ color: "rgba(255,255,255,0.5)", fontSize: 12 }}>
             {bodyOpen ? "▴" : "▾"}
           </span>
