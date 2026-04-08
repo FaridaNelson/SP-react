@@ -144,7 +144,7 @@ export default function ProgressDonut({
         <div className="donut__value">{clamped}%</div>
         <div className="donut__label">{label}</div>
         <div className="tsi__passMark">
-          <span className="tsi__passKicker">Pass</span>
+          <span className="tsi__passKicker">Ready:</span>
           <span className="tsi__passVal">67%</span>
         </div>
       </div>

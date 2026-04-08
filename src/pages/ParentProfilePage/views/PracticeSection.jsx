@@ -56,7 +56,12 @@ function summaryThemeFor(count) {
 
 // ─── Component ────────────────────────────────────────────────────
 
-export default function PracticeSection({ studentName, examType, studentId, cycle }) {
+export default function PracticeSection({
+  studentName,
+  examType,
+  studentId,
+  cycle,
+}) {
   const today = useMemo(getToday, []);
   const todayKey = useMemo(() => dateKey(today), [today]);
   const days = useMemo(() => buildWeek(today), [today]);
@@ -67,7 +72,9 @@ export default function PracticeSection({ studentName, examType, studentId, cycl
 
   // Keep a ref to latest tasksByDay for the unmount save
   const tasksByDayRef = useRef(tasksByDay);
-  useEffect(() => { tasksByDayRef.current = tasksByDay; }, [tasksByDay]);
+  useEffect(() => {
+    tasksByDayRef.current = tasksByDay;
+  }, [tasksByDay]);
 
   // ── Save practice data on unmount ─────────────────────────────
   useEffect(() => {
@@ -77,9 +84,9 @@ export default function PracticeSection({ studentName, examType, studentId, cycl
 
       // Build homeworkTaskList from the 7-day window
       const homeworkTaskList = {};
-      tasks.forEach(task => {
+      tasks.forEach((task) => {
         const days = Object.entries(snapshot).filter(
-          ([, dayTasks]) => dayTasks[task.id]
+          ([, dayTasks]) => dayTasks[task.id],
         );
         const dates = days.map(([date]) => date).sort();
         const daysPracticed = dates.length;
@@ -89,7 +96,8 @@ export default function PracticeSection({ studentName, examType, studentId, cycl
         if (dates.length > 0) {
           streak = 1;
           for (let i = dates.length - 1; i > 0; i--) {
-            const diff = (new Date(dates[i]) - new Date(dates[i-1])) / 86400000;
+            const diff =
+              (new Date(dates[i]) - new Date(dates[i - 1])) / 86400000;
             if (diff === 1) streak++;
             else break;
           }
@@ -102,8 +110,8 @@ export default function PracticeSection({ studentName, examType, studentId, cycl
         };
       });
 
-      const totalDaysPracticed = Object.values(snapshot).filter(
-        dayTasks => Object.values(dayTasks).some(Boolean)
+      const totalDaysPracticed = Object.values(snapshot).filter((dayTasks) =>
+        Object.values(dayTasks).some(Boolean),
       ).length;
 
       // Week window: Sunday → Saturday containing today
@@ -172,6 +180,15 @@ export default function PracticeSection({ studentName, examType, studentId, cycl
         </div>
       </div>
 
+      {/* Summary — colour coded by days practiced */}
+      <div
+        className={`pd-practice-summary pd-practice-summary--${summaryTheme}`}
+      >
+        <div className="pd-practice-summary-label">This Week</div>
+        <div className="pd-practice-summary-count">{practicedCount} / 7</div>
+        <div className="pd-practice-summary-sub">days practiced</div>
+      </div>
+
       {/* Week list — one row per day */}
       <div className="pd-week-list">
         {days.map((d) => {
@@ -179,7 +196,7 @@ export default function PracticeSection({ studentName, examType, studentId, cycl
           const isToday = key === todayKey;
           const isFuture = d > today;
           const dayTasks = tasksByDay[key] ?? {};
-          const practicedItems = tasks.filter(t => dayTasks[t.id]);
+          const practicedItems = tasks.filter((t) => dayTasks[t.id]);
 
           return (
             <div
@@ -189,34 +206,30 @@ export default function PracticeSection({ studentName, examType, studentId, cycl
                 isToday && "pd-week-row--today",
                 isFuture && "pd-week-row--future",
                 practicedItems.length > 0 && "pd-week-row--done",
-              ].filter(Boolean).join(" ")}
+              ]
+                .filter(Boolean)
+                .join(" ")}
             >
               <div className="pd-week-day-label">
                 <span className="pd-week-abbr">{DAY_ABBR[d.getDay()]}</span>
                 <span className="pd-week-num">{d.getDate()}</span>
               </div>
               <div className="pd-week-tasks">
-                {practicedItems.length > 0
-                  ? practicedItems.map(t => (
-                      <span key={t.id} className="pd-week-task-pill">{t.label}</span>
-                    ))
-                  : <span className="pd-week-no-practice">
-                      {isFuture ? "—" : "No practice logged"}
+                {practicedItems.length > 0 ? (
+                  practicedItems.map((t) => (
+                    <span key={t.id} className="pd-week-task-pill">
+                      {t.label}
                     </span>
-                }
+                  ))
+                ) : (
+                  <span className="pd-week-no-practice">
+                    {isFuture ? "—" : "No practice logged"}
+                  </span>
+                )}
               </div>
             </div>
           );
         })}
-      </div>
-
-      {/* Summary — colour coded by days practiced */}
-      <div
-        className={`pd-practice-summary pd-practice-summary--${summaryTheme}`}
-      >
-        <div className="pd-practice-summary-label">This Week</div>
-        <div className="pd-practice-summary-count">{practicedCount} / 7</div>
-        <div className="pd-practice-summary-sub">days practiced</div>
       </div>
 
       {/* Homework task list */}
