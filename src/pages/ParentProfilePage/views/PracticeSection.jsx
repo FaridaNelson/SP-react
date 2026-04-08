@@ -69,10 +69,12 @@ export default function PracticeSection({ studentName, examType }) {
 
   // Scroll carousel to centre today on mount
   useEffect(() => {
+    const container = scrollRef.current;
     const card = todayRef.current;
-    if (!card) return;
+    if (!container || !card) return;
     requestAnimationFrame(() => {
-      card.scrollIntoView({ inline: "center", behavior: "instant" });
+      container.scrollLeft =
+        card.offsetLeft - container.offsetWidth / 2 + card.offsetWidth / 2;
     });
   }, []);
 
