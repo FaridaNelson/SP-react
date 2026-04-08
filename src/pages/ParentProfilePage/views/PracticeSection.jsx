@@ -4,11 +4,11 @@ import { useState, useRef, useEffect, useMemo, useCallback } from "react";
 // ─── Task definitions ─────────────────────────────────────────────
 
 const GRADE_TASKS = [
-  { id: "pieceA",        label: "Piece A" },
-  { id: "pieceB",        label: "Piece B" },
-  { id: "pieceC",        label: "Piece C" },
-  { id: "scales",        label: "Scales" },
-  { id: "sightReading",  label: "Sight Reading" },
+  { id: "pieceA", label: "Piece A" },
+  { id: "pieceB", label: "Piece B" },
+  { id: "pieceC", label: "Piece C" },
+  { id: "scales", label: "Scales" },
+  { id: "sightReading", label: "Sight Reading" },
   { id: "auralTraining", label: "Aural Training" },
 ];
 
@@ -56,24 +56,24 @@ function summaryThemeFor(count) {
 // ─── Component ────────────────────────────────────────────────────
 
 export default function PracticeSection({ studentName, examType }) {
-  const today    = useMemo(getToday, []);
+  const today = useMemo(getToday, []);
   const todayKey = useMemo(() => dateKey(today), [today]);
-  const days     = useMemo(() => buildDays(today), [today]);
-  const tasks    = examType === "Performance" ? PERF_TASKS : GRADE_TASKS;
+  const days = useMemo(() => buildDays(today), [today]);
+  const tasks = examType === "Performance" ? PERF_TASKS : GRADE_TASKS;
 
   // { "YYYY-MM-DD": { pieceA: true, scales: false, … } }
   const [tasksByDay, setTasksByDay] = useState({});
 
   const scrollRef = useRef(null);
-  const todayRef  = useRef(null);
+  const todayRef = useRef(null);
 
   // Scroll carousel to centre today on mount
   useEffect(() => {
-    const container = scrollRef.current;
-    const card      = todayRef.current;
-    if (!container || !card) return;
-    container.scrollLeft =
-      card.offsetLeft - container.offsetWidth / 2 + card.offsetWidth / 2;
+    const card = todayRef.current;
+    if (!card) return;
+    requestAnimationFrame(() => {
+      card.scrollIntoView({ inline: "center", behavior: "instant" });
+    });
   }, []);
 
   // ── Single source of truth: which days have any task done ─────
@@ -92,7 +92,7 @@ export default function PracticeSection({ studentName, examType }) {
   );
 
   const summaryTheme = summaryThemeFor(practicedCount);
-  const todayTasks   = tasksByDay[todayKey] ?? {};
+  const todayTasks = tasksByDay[todayKey] ?? {};
 
   // ── Toggle a task for today ────────────────────────────────────
   const toggleTask = useCallback(
@@ -112,7 +112,6 @@ export default function PracticeSection({ studentName, examType }) {
 
   return (
     <div className="pd-card pd-card--pad">
-
       <div className="pd-practice-header">
         <div className="pd-practice-title">Practice Record</div>
         <div className="pd-practice-sub">
@@ -123,16 +122,16 @@ export default function PracticeSection({ studentName, examType }) {
       {/* Day carousel — auto-greens when any task is completed */}
       <div className="pd-carousel" ref={scrollRef}>
         {days.map((d) => {
-          const key      = dateKey(d);
-          const isToday  = key === todayKey;
+          const key = dateKey(d);
+          const isToday = key === todayKey;
           const isFuture = d > today;
           const practiced = practicedDays.has(key);
 
           const cls = [
             "pd-day-card",
-            isToday   && "pd-day-card--today",
+            isToday && "pd-day-card--today",
             practiced && "pd-day-card--done",
-            isFuture  && "pd-day-card--future",
+            isFuture && "pd-day-card--future",
           ]
             .filter(Boolean)
             .join(" ");
@@ -142,7 +141,9 @@ export default function PracticeSection({ studentName, examType }) {
               <div className="pd-day-abbr">{DAY_ABBR[d.getDay()]}</div>
               <div className="pd-day-num">{d.getDate()}</div>
               {practiced && (
-                <div className="pd-day-check" aria-label="practiced">✓</div>
+                <div className="pd-day-check" aria-label="practiced">
+                  ✓
+                </div>
               )}
             </div>
           );
@@ -150,7 +151,9 @@ export default function PracticeSection({ studentName, examType }) {
       </div>
 
       {/* Summary — colour coded by days practiced */}
-      <div className={`pd-practice-summary pd-practice-summary--${summaryTheme}`}>
+      <div
+        className={`pd-practice-summary pd-practice-summary--${summaryTheme}`}
+      >
         <div className="pd-practice-summary-label">This Week</div>
         <div className="pd-practice-summary-count">{practicedCount} / 7</div>
         <div className="pd-practice-summary-sub">days practiced</div>
@@ -176,14 +179,15 @@ export default function PracticeSection({ studentName, examType }) {
                 onChange={() => toggleTask(task.id)}
                 aria-label={task.label}
               />
-              <span className={`pd-task-label${done ? " pd-task-label--done" : ""}`}>
+              <span
+                className={`pd-task-label${done ? " pd-task-label--done" : ""}`}
+              >
                 {task.label}
               </span>
             </label>
           );
         })}
       </div>
-
     </div>
   );
 }

@@ -70,7 +70,7 @@ function MetaLine({ cycle, status }) {
 }
 
 /* ── Individual card (needs hooks, so must be a component) ── */
-function ExamCycleCard({ cycle, studentId, allLessons, onSelect, onComplete, onWithdraw }) {
+export function ExamCycleCard({ cycle, studentId, allLessons, onSelect, onComplete, onWithdraw, readOnly = false }) {
   const id = cycle._id || cycle.id;
   const st = cycle.cycleStatus || cycle.status;
   const meta = STATUS_META[st] || STATUS_META.current;
@@ -121,7 +121,7 @@ function ExamCycleCard({ cycle, studentId, allLessons, onSelect, onComplete, onW
 
         <ReadinessSparkline data={sparkData} />
 
-        {isActive && (
+        {isActive && !readOnly && (
           <div className="ecl__actions">
             <button
               type="button"
@@ -161,6 +161,7 @@ function ExamCycleCard({ cycle, studentId, allLessons, onSelect, onComplete, onW
                 <LessonCard
                   key={lesson._id || lesson.id}
                   lesson={lesson}
+                  readOnly={readOnly}
                 />
               ))}
             </div>
