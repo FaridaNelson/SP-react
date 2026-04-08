@@ -1,5 +1,5 @@
 import "./PracticeSection.css";
-import { useState, useRef, useEffect, useMemo } from "react";
+import { useState, useRef, useEffect, useMemo, useCallback } from "react";
 
 // ─── Task definitions ─────────────────────────────────────────────
 
@@ -24,7 +24,6 @@ const DAY_ABBR = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 // ─── Date helpers ─────────────────────────────────────────────────
 
 function dateKey(date) {
-  // "YYYY-MM-DD" in local time
   const y = date.getFullYear();
   const m = String(date.getMonth() + 1).padStart(2, "0");
   const d = String(date.getDate()).padStart(2, "0");
@@ -37,21 +36,15 @@ function getToday() {
   return d;
 }
 
-// Generate DAYS_BEFORE + 1 + DAYS_AFTER days centered on today
-const DAYS_BEFORE = 7;
-const DAYS_AFTER  = 7;
-
 function buildDays(today) {
   const days = [];
-  for (let i = -DAYS_BEFORE; i <= DAYS_AFTER; i++) {
+  for (let i = -7; i <= 7; i++) {
     const d = new Date(today);
     d.setDate(today.getDate() + i);
     days.push(d);
   }
   return days;
 }
-
-// ─── Summary theme ────────────────────────────────────────────────
 
 function summaryThemeFor(count) {
   if (count >= 6) return "green";
@@ -63,18 +56,18 @@ function summaryThemeFor(count) {
 // ─── Component ────────────────────────────────────────────────────
 
 export default function PracticeSection({ studentName, examType }) {
-  const today      = useMemo(getToday, []);
-  const todayKey   = useMemo(() => dateKey(today), [today]);
-  const days       = useMemo(() => buildDays(today), [today]);
-  const tasks      = examType === "Performance" ? PERF_TASKS : GRADE_TASKS;
+  const today    = useMemo(getToday, []);
+  const todayKey = useMemo(() => dateKey(today), [today]);
+  const days     = useMemo(() => buildDays(today), [today]);
+  const tasks    = examType === "Performance" ? PERF_TASKS : GRADE_TASKS;
 
   // { "YYYY-MM-DD": { pieceA: true, scales: false, … } }
   const [tasksByDay, setTasksByDay] = useState({});
 
-  const scrollRef  = useRef(null);
-  const todayRef   = useRef(null);
+  const scrollRef = useRef(null);
+  const todayRef  = useRef(null);
 
-  // Scroll to center today on mount
+  // Scroll carousel to centre today on mount
   useEffect(() => {
     const container = scrollRef.current;
     const card      = todayRef.current;
@@ -83,38 +76,43 @@ export default function PracticeSection({ studentName, examType }) {
       card.offsetLeft - container.offsetWidth / 2 + card.offsetWidth / 2;
   }, []);
 
-  // ── Derived state ─────────────────────────────────────────────
-
-  const isDayPracticed = (key) =>
-    Object.values(tasksByDay[key] ?? {}).some(Boolean);
+  // ── Single source of truth: which days have any task done ─────
+  // Derived directly from tasksByDay — no closures, no stale reads.
+  const practicedDays = useMemo(() => {
+    const set = new Set();
+    for (const [day, dayTasks] of Object.entries(tasksByDay)) {
+      if (Object.values(dayTasks).some(Boolean)) set.add(day);
+    }
+    return set;
+  }, [tasksByDay]);
 
   const practicedCount = useMemo(
-    () => days.filter((d) => isDayPracticed(dateKey(d))).length,
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [tasksByDay, days],
+    () => days.filter((d) => practicedDays.has(dateKey(d))).length,
+    [days, practicedDays],
   );
 
   const summaryTheme = summaryThemeFor(practicedCount);
   const todayTasks   = tasksByDay[todayKey] ?? {};
 
-  // ── Toggle a homework task for today ──────────────────────────
-
-  const toggleTask = (taskId) => {
-    setTasksByDay((prev) => {
-      const current = prev[todayKey] ?? {};
-      return {
-        ...prev,
-        [todayKey]: { ...current, [taskId]: !current[taskId] },
-      };
-    });
-  };
+  // ── Toggle a task for today ────────────────────────────────────
+  const toggleTask = useCallback(
+    (taskId) => {
+      setTasksByDay((prev) => {
+        const current = prev[todayKey] ?? {};
+        return {
+          ...prev,
+          [todayKey]: { ...current, [taskId]: !current[taskId] },
+        };
+      });
+    },
+    [todayKey],
+  );
 
   // ── Render ────────────────────────────────────────────────────
 
   return (
     <div className="pd-card pd-card--pad">
 
-      {/* Header */}
       <div className="pd-practice-header">
         <div className="pd-practice-title">Practice Record</div>
         <div className="pd-practice-sub">
@@ -122,13 +120,13 @@ export default function PracticeSection({ studentName, examType }) {
         </div>
       </div>
 
-      {/* Day carousel — read-only; auto-checks when tasks completed */}
+      {/* Day carousel — auto-greens when any task is completed */}
       <div className="pd-carousel" ref={scrollRef}>
         {days.map((d) => {
           const key      = dateKey(d);
           const isToday  = key === todayKey;
           const isFuture = d > today;
-          const practiced = isDayPracticed(key);
+          const practiced = practicedDays.has(key);
 
           const cls = [
             "pd-day-card",
@@ -151,7 +149,7 @@ export default function PracticeSection({ studentName, examType }) {
         })}
       </div>
 
-      {/* Practice summary — color-coded by days practiced */}
+      {/* Summary — colour coded by days practiced */}
       <div className={`pd-practice-summary pd-practice-summary--${summaryTheme}`}>
         <div className="pd-practice-summary-label">This Week</div>
         <div className="pd-practice-summary-count">{practicedCount} / 7</div>
@@ -160,12 +158,15 @@ export default function PracticeSection({ studentName, examType }) {
 
       {/* Homework task list */}
       <div className="pd-tasklist">
-        <div className="pd-tasklist-title">Today's homework</div>
+        <div className="pd-tasklist-title">Today&apos;s homework</div>
         {tasks.map((task) => {
           const done = !!todayTasks[task.id];
           return (
             <label key={task.id} className="pd-task-item">
-              <span className={`pd-task-box${done ? " pd-task-box--done" : ""}`} aria-hidden="true">
+              <span
+                className={`pd-task-box${done ? " pd-task-box--done" : ""}`}
+                aria-hidden="true"
+              >
                 {done && "✓"}
               </span>
               <input
