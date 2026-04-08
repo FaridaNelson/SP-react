@@ -16,46 +16,31 @@
   color: var(--ink-muted, #7a766d);
 }
 
-/* ─── Day carousel ────────────────────────────────────────────── */
-.pd-carousel {
+/* ─── Week list ──────────────────────────────────────────────── */
+.pd-week-list {
+  margin-bottom: 20px;
+}
+
+.pd-week-row {
   display: flex;
-  gap: 8px;
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
-  overscroll-behavior-x: contain;
-  scroll-snap-type: x mandatory;
-  -ms-overflow-style: none;
-  scrollbar-width: none;
-  padding: 4px 0 16px;
-  margin: 0 -4px;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border, rgba(28,26,23,0.06));
+  opacity: 1;
 }
+.pd-week-row:last-child { border-bottom: none; }
+.pd-week-row--future { opacity: 0.35; }
 
-.pd-carousel::-webkit-scrollbar {
-  display: none;
-}
-
-/* ─── Day card ────────────────────────────────────────────────── */
-.pd-day-card {
-  flex-shrink: 0;
-  scroll-snap-align: center;
-  width: 52px;
-  height: 68px;
-  border: 1.5px solid var(--border, rgba(28, 26, 23, 0.1));
-  border-radius: 12px;
+.pd-week-day-label {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  gap: 2px;
-  background: white;
-  position: relative;
-  transition:
-    background 0.2s,
-    border-color 0.2s;
-  user-select: none;
+  width: 36px;
+  flex-shrink: 0;
 }
 
-.pd-day-abbr {
+.pd-week-abbr {
   font-size: 9px;
   font-weight: 600;
   text-transform: uppercase;
@@ -63,55 +48,41 @@
   color: var(--ink-muted, #7a766d);
 }
 
-.pd-day-num {
+.pd-week-num {
   font-family: "Cormorant Garamond", serif;
-  font-size: 20px;
+  font-size: 18px;
   font-weight: 500;
   color: var(--ink, #1c1a17);
   line-height: 1;
 }
 
-.pd-day-check {
-  font-size: 10px;
-  font-weight: 700;
-  color: white;
-  line-height: 1;
+.pd-week-row--today .pd-week-abbr,
+.pd-week-row--today .pd-week-num {
+  color: var(--gold, #c9a84c);
 }
 
-/* Today — gold at 50% opacity */
-.pd-day-card--today {
-  background: rgba(201, 168, 76, 0.5);
-  border-color: var(--gold, #c9a84c);
+.pd-week-tasks {
+  flex: 1;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding-top: 2px;
 }
 
-.pd-day-card--today .pd-day-abbr {
-  color: var(--ink-soft, #3d3a34);
-}
-.pd-day-card--today .pd-day-num {
-  color: var(--ink, #1c1a17);
-}
-
-/* Practiced — full sage green */
-.pd-day-card--done {
-  background: var(--sage, #7a9e87);
-  border-color: var(--sage, #7a9e87);
+.pd-week-task-pill {
+  font-size: 11px;
+  font-weight: 500;
+  padding: 3px 8px;
+  border-radius: 20px;
+  background: rgba(122,158,135,0.15);
+  color: #3b6d45;
+  border: 0.5px solid rgba(122,158,135,0.3);
 }
 
-.pd-day-card--done .pd-day-abbr,
-.pd-day-card--done .pd-day-num {
-  color: white;
-}
-
-/* Today + practiced — full green, no opacity reduction */
-.pd-day-card--today.pd-day-card--done {
-  background: var(--sage, #7a9e87);
-  border-color: var(--sage, #7a9e87);
-  opacity: 1;
-}
-
-/* Future — muted */
-.pd-day-card--future {
-  opacity: 0.38;
+.pd-week-no-practice {
+  font-size: 12px;
+  color: var(--ink-muted, #7a766d);
+  font-style: italic;
 }
 
 /* ─── Practice summary — base ─────────────────────────────────── */

@@ -153,6 +153,7 @@
   max-width: 480px;
   width: 100%;
   margin: 0 auto;
+  touch-action: pan-x;
 }
 
 .pd-views-container::-webkit-scrollbar {
@@ -165,9 +166,10 @@
   width: 100%;
   scroll-snap-align: start;
   overflow-y: auto;
-  overflow-x: hidden; /* hidden clips visually but preserves child scroll containers */
+  overflow-x: clip; /* clip prevents child scroll interference without blocking parent swipe */
   padding: 20px 20px 0;
   padding-bottom: calc(90px + env(safe-area-inset-bottom));
   box-sizing: border-box;
   -webkit-overflow-scrolling: touch;
+  touch-action: pan-y;
 }

@@ -58,24 +58,35 @@ export default function ParentProfilePage({ currentUser, onSignOut }) {
     }, 450);
   }, []);
 
-  // ── Sync nav with manual swipes ───────────────────────────────
+  // ── Sync nav with manual swipes (document-level touch handler) ─
   useEffect(() => {
-    const container = scrollRef.current;
-    if (!container) return;
+    let startX = 0;
+    let startY = 0;
 
-    const onScroll = () => {
-      if (isScrollingRef.current) return;
-      const index = Math.round(container.scrollLeft / container.offsetWidth);
-      const section = NAV_ORDER[index];
-      if (section && section !== activeSectionRef.current) {
-        activeSectionRef.current = section;
-        setActiveSection(section);
+    const onTouchStart = (e) => {
+      startX = e.touches[0].clientX;
+      startY = e.touches[0].clientY;
+    };
+
+    const onTouchEnd = (e) => {
+      const dx = e.changedTouches[0].clientX - startX;
+      const dy = e.changedTouches[0].clientY - startY;
+      if (Math.abs(dx) < 40 || Math.abs(dx) < Math.abs(dy)) return;
+      const currentIndex = NAV_ORDER.indexOf(activeSectionRef.current);
+      if (dx < 0 && currentIndex < NAV_ORDER.length - 1) {
+        navigateTo(NAV_ORDER[currentIndex + 1]);
+      } else if (dx > 0 && currentIndex > 0) {
+        navigateTo(NAV_ORDER[currentIndex - 1]);
       }
     };
 
-    container.addEventListener("scroll", onScroll, { passive: true });
-    return () => container.removeEventListener("scroll", onScroll);
-  }, []); // runs once — uses refs to avoid stale closures
+    document.addEventListener("touchstart", onTouchStart, { passive: true });
+    document.addEventListener("touchend", onTouchEnd, { passive: true });
+    return () => {
+      document.removeEventListener("touchstart", onTouchStart);
+      document.removeEventListener("touchend", onTouchEnd);
+    };
+  }, [navigateTo]);
 
   // ── No student linked ─────────────────────────────────────────
   if (!loadingStudents && !students.length) {
@@ -160,6 +171,8 @@ export default function ParentProfilePage({ currentUser, onSignOut }) {
               <PracticeSection
                 studentName={selectedStudent?.firstName ?? "your child"}
                 examType={cycle?.examType}
+                studentId={selectedId}
+                cycle={cycle}
               />
             </div>
 
