@@ -9,7 +9,6 @@ export async function api(path, options = {}) {
     ...rest
   } = options;
 
-  console.log("API_BASE:", API_BASE);
   const isAbsolute = /^https?:\/\//i.test(path);
   const url = isAbsolute ? path : `${API_BASE}${path}`;
 

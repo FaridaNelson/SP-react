@@ -37,14 +37,14 @@ function getToday() {
   return d;
 }
 
-function buildDays(today) {
-  const days = [];
-  for (let i = -7; i <= 7; i++) {
-    const d = new Date(today);
-    d.setDate(today.getDate() + i);
-    days.push(d);
-  }
-  return days;
+function buildWeek(today) {
+  const sunday = new Date(today);
+  sunday.setDate(today.getDate() - today.getDay()); // rewind to Sunday
+  return Array.from({ length: 7 }, (_, i) => {
+    const d = new Date(sunday);
+    d.setDate(sunday.getDate() + i);
+    return d;
+  });
 }
 
 function summaryThemeFor(count) {
@@ -59,7 +59,7 @@ function summaryThemeFor(count) {
 export default function PracticeSection({ studentName, examType, studentId, cycle }) {
   const today = useMemo(getToday, []);
   const todayKey = useMemo(() => dateKey(today), [today]);
-  const days = useMemo(() => buildDays(today), [today]);
+  const days = useMemo(() => buildWeek(today), [today]);
   const tasks = examType === "Performance" ? PERF_TASKS : GRADE_TASKS;
 
   // { "YYYY-MM-DD": { pieceA: true, scales: false, … } }
