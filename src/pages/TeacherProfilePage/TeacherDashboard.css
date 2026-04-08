@@ -31,6 +31,7 @@
   overflow: hidden;
   background: #0b0b0b;
   display: grid;
+  padding: 0 46px 0 0;
 }
 
 .td__grid {
@@ -88,7 +89,7 @@
 }
 
 .td__greeting {
-  padding: 10px 8px 14px;
+  padding: 10px 8px 14px 18px;
 }
 
 .td__greetHi {
@@ -111,8 +112,8 @@
 
 .td__searchWrap {
   position: relative;
-  margin: 10px 5px 6px -10px;
-  padding: 14px 16px;
+  margin: 10px 10px 6px -10px;
+  padding: 14px 18px 14px 28px;
 }
 
 .td__searchWrap::before,
@@ -135,7 +136,7 @@
 
 .td__search {
   width: 90%;
-  padding: 10px 0 10px 38px;
+  padding: 10px 0 10px 40px;
   border-radius: 10px;
   border: 1px solid rgba(255, 255, 255, 0.1);
   background: rgba(255, 255, 255, 0.06);
@@ -165,7 +166,7 @@
 .td__sectionHead {
   display: grid;
   gap: 10px;
-  padding: 6px 6px 12px;
+  padding: 6px 6px 12px 12px;
 }
 
 .td__sectionTitle {
@@ -173,13 +174,14 @@
   letter-spacing: 0.12em;
   text-transform: uppercase;
   opacity: 0.6;
+  padding-left: 12px;
 }
 
 .td__addStudent {
   display: flex;
   align-items: center;
   gap: 8px;
-  margin: 8px 0 0;
+  margin: 8px 8px 0 6px;
   padding: 10px 12px;
   border-radius: 10px;
   border: 1px dashed rgba(201, 168, 76, 0.3);
@@ -356,10 +358,10 @@
 }
 
 .td__pctBadge {
-  margin-left: auto;
+  margin: 0 20px;
   flex-shrink: 0;
   font: 700 10px/1 var(--td-sans);
-  padding: 1px 7px;
+  padding: 3px 7px;
   border-radius: 10px;
   background: rgba(255, 255, 255, 0.08);
   border: 1px solid rgba(255, 255, 255, 0.1);
@@ -745,7 +747,7 @@
   }
 
   .td__searchWrap {
-    margin: 4px 0;
+    margin: 4px 4px;
     padding: 8px 0;
   }
 
