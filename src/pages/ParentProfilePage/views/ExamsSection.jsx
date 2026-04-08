@@ -3,9 +3,7 @@
 import { useState, useEffect } from "react";
 import { ExamCycleCard } from "../../../components/ExamCycle/ExamCycleList";
 import { useStudentLessons } from "../../../components/ExamCycle/examCycleUtils";
-
-const API =
-  import.meta.env.VITE_API_URL || "http://localhost:4000";
+import { API_BASE } from "../../../lib/api";
 
 export default function ExamsSection({ studentId }) {
   const { lessons: allLessons, loading: lessonsLoading } = useStudentLessons(studentId);
@@ -24,7 +22,7 @@ export default function ExamsSection({ studentId }) {
     setLoading(true);
     setError(null);
 
-    fetch(`${API}/api/parent/students/${studentId}/cycles`, {
+    fetch(`${API_BASE}/api/parent/students/${studentId}/cycles`, {
       credentials: "include",
     })
       .then((res) => {
