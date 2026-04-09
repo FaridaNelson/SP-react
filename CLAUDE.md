@@ -177,3 +177,9 @@ Grade level (string)  → examGrade (integer)
 - BARE_ROUTES: suppresses header/footer for standalone pages
 - `location.state` for modal-intent navigation
 - `credentials: 'include'` on every fetch
+
+## Protected sections
+
+- `LessonCard.css` @media block at bottom — do NOT modify or remove.
+  This transposes the piece criteria table for mobile. It took significant
+  manual effort to tune. Any task touching LessonCard must preserve this block.
