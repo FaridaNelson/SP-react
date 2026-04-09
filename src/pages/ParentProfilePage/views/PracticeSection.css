@@ -16,46 +16,35 @@
   color: var(--ink-muted, #7a766d);
 }
 
-/* ─── Day carousel ────────────────────────────────────────────── */
-.pd-carousel {
+/* ─── Week list ──────────────────────────────────────────────── */
+.pd-week-list {
+  margin-bottom: 20px;
+}
+
+.pd-week-row {
   display: flex;
-  gap: 8px;
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
-  overscroll-behavior-x: contain;
-  scroll-snap-type: x mandatory;
-  -ms-overflow-style: none;
-  scrollbar-width: none;
-  padding: 4px 0 16px;
-  margin: 0 -4px;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border, rgba(28, 26, 23, 0.06));
+  opacity: 1;
+}
+.pd-week-row:last-child {
+  border-bottom: none;
+}
+.pd-week-row--future {
+  opacity: 0.35;
 }
 
-.pd-carousel::-webkit-scrollbar {
-  display: none;
-}
-
-/* ─── Day card ────────────────────────────────────────────────── */
-.pd-day-card {
-  flex-shrink: 0;
-  scroll-snap-align: center;
-  width: 52px;
-  height: 68px;
-  border: 1.5px solid var(--border, rgba(28, 26, 23, 0.1));
-  border-radius: 12px;
+.pd-week-day-label {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  gap: 2px;
-  background: white;
-  position: relative;
-  transition:
-    background 0.2s,
-    border-color 0.2s;
-  user-select: none;
+  width: 36px;
+  flex-shrink: 0;
 }
 
-.pd-day-abbr {
+.pd-week-abbr {
   font-size: 9px;
   font-weight: 600;
   text-transform: uppercase;
@@ -63,55 +52,51 @@
   color: var(--ink-muted, #7a766d);
 }
 
-.pd-day-num {
+.pd-week-num {
   font-family: "Cormorant Garamond", serif;
-  font-size: 20px;
+  font-size: 18px;
   font-weight: 500;
   color: var(--ink, #1c1a17);
   line-height: 1;
 }
 
-.pd-day-check {
-  font-size: 10px;
-  font-weight: 700;
-  color: white;
-  line-height: 1;
+.pd-week-row--today .pd-week-abbr,
+.pd-week-row--today .pd-week-num {
+  color: var(--gold, #c9a84c);
 }
 
-/* Today — gold at 50% opacity */
-.pd-day-card--today {
-  background: rgba(201, 168, 76, 0.5);
-  border-color: var(--gold, #c9a84c);
+.pd-week-tasks {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-rows: auto auto;
+
+  gap: 6px;
+  padding-top: 2px;
 }
 
-.pd-day-card--today .pd-day-abbr {
-  color: var(--ink-soft, #3d3a34);
-}
-.pd-day-card--today .pd-day-num {
-  color: var(--ink, #1c1a17);
-}
-
-/* Practiced — full sage green */
-.pd-day-card--done {
-  background: var(--sage, #7a9e87);
-  border-color: var(--sage, #7a9e87);
-}
-
-.pd-day-card--done .pd-day-abbr,
-.pd-day-card--done .pd-day-num {
-  color: white;
+.pd-week-pill {
+  font-size: 11px;
+  font-weight: 500;
+  padding: 4px 10px;
+  border-radius: 20px;
+  border: 0.5px solid var(--border, rgba(28, 26, 23, 0.15));
+  background: transparent;
+  color: var(--ink-muted, #7a766d);
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s, border-color 0.2s;
 }
 
-/* Today + practiced — full green, no opacity reduction */
-.pd-day-card--today.pd-day-card--done {
-  background: var(--sage, #7a9e87);
-  border-color: var(--sage, #7a9e87);
-  opacity: 1;
+.pd-week-pill--done {
+  background: rgba(122, 158, 135, 0.15);
+  border-color: rgba(122, 158, 135, 0.4);
+  color: #3b6d45;
 }
 
-/* Future — muted */
-.pd-day-card--future {
-  opacity: 0.38;
+.pd-week-no-practice {
+  font-size: 12px;
+  color: var(--ink-muted, #7a766d);
+  font-style: italic;
 }
 
 /* ─── Practice summary — base ─────────────────────────────────── */
@@ -181,95 +166,3 @@
   color: #2d6b48;
 }
 
-/* ─── Homework task list ───────────────────────────────────────── */
-.pd-tasklist {
-  padding-top: 16px;
-}
-
-.pd-tasklist-title {
-  font-family: "Cormorant Garamond", serif;
-  font-size: 10px;
-  font-weight: 600;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--ink-muted, #7a766d);
-  margin-bottom: 12px;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.pd-tasklist-title::after {
-  content: "";
-  flex: 1;
-  height: 1px;
-  background: rgba(28, 26, 23, 0.3);
-}
-
-.pd-task-item {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 12px 0;
-  border-bottom: 1px solid rgba(28, 26, 23, 0.3);
-  cursor: pointer;
-  min-height: 44px;
-}
-
-.pd-task-item:last-child {
-  border-bottom: none;
-}
-
-/* Hide native checkbox — replaced by custom box */
-.pd-task-input {
-  position: absolute;
-  opacity: 0;
-  width: 0;
-  height: 0;
-}
-
-/* Custom checkbox box */
-.pd-task-box {
-  flex-shrink: 0;
-  width: 22px;
-  height: 22px;
-  border: 1.5px solid var(--border, rgba(28, 26, 23, 0.2));
-  border-radius: 6px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 13px;
-  font-weight: 600;
-  color: transparent;
-  background: white;
-  transition:
-    background 0.2s,
-    border-color 0.2s,
-    color 0.2s;
-}
-
-.pd-task-box--done {
-  background: var(--sage, #7a9e87);
-  border-color: var(--sage, #7a9e87);
-  color: white;
-}
-
-/* Task label */
-.pd-task-label {
-  font-size: 15px;
-  font-weight: 500;
-  color: var(--ink-soft, #3d3a34);
-  flex: 1;
-  transition: color 0.2s;
-}
-
-.pd-task-label--done {
-  color: var(--ink-muted, #7a766d);
-  text-decoration: line-through;
-  text-decoration-color: var(--sage, #7a9e87);
-}
-
-/* Row hover */
-.pd-task-item:hover .pd-task-box:not(.pd-task-box--done) {
-  border-color: var(--sage, #7a9e87);
-}

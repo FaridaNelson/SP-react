@@ -20,7 +20,6 @@
 
 .pd-donut-progress {
   fill: none;
-  stroke: url(#pdGoldGrad);
   stroke-width: 9;
   stroke-linecap: round;
   stroke-dasharray: 257.6;

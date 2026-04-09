@@ -2,12 +2,12 @@ import { useState, useEffect, useCallback } from "react";
 import { API_BASE } from "../../../lib/api";
 
 export function useParentData() {
-  const [students,        setStudents]        = useState([]);
-  const [selectedId,      setSelectedId]      = useState(null);
-  const [items,           setItems]           = useState([]);
+  const [students, setStudents] = useState([]);
+  const [selectedId, setSelectedId] = useState(null);
+  const [items, setItems] = useState([]);
   const [loadingStudents, setLoadingStudents] = useState(true);
-  const [loadingItems,    setLoadingItems]    = useState(false);
-  const [error,           setError]           = useState(null);
+  const [loadingItems, setLoadingItems] = useState(false);
+  const [error, setError] = useState(null);
 
   // Fetch children list on mount
   useEffect(() => {
@@ -44,11 +44,10 @@ export function useParentData() {
 
   const selectStudent = useCallback((id) => {
     setSelectedId(id);
-    setItems([]);
   }, []);
 
   const selectedStudent = students.find((s) => s._id === selectedId) ?? null;
-  const cycle           = selectedStudent?.activeExamCycleId ?? null;
+  const cycle = selectedStudent?.activeExamCycleId ?? null;
 
   return {
     students,

@@ -291,4 +291,9 @@
   .ecl__sparkBar {
     width: 16px;
   }
+
+  .exam-cycle-lessons.open {
+    max-height: 10000px;
+    padding: 6px;
+  }
 }

@@ -133,6 +133,16 @@ function PercentBar({ pct, label }) {
   );
 }
 
+function ScaleName({ name }) {
+  const match = name.match(/^(.*?(?:Major|Minor))(.*)/);
+  if (!match) return <span className="scale-name-display">{name}</span>;
+  return (
+    <span className="scale-name-display">
+      {match[1].trim()}<br />{match[2].trim()}
+    </span>
+  );
+}
+
 /* ── Lesson body renderer ── */
 
 function LessonBody({ lesson }) {
@@ -145,13 +155,17 @@ function LessonBody({ lesson }) {
 
   function formatScaleName(scaleId) {
     if (!scaleId) return "";
-    // Strip grade prefix (e.g. "G1_", "G2_") and hand suffix ("_ht", "_hs", "_rh", "_lh")
-    // "G1_c_major_ht" → "C major"
     return scaleId
-      .replace(/^G\d+_/, "") // remove "G1_" prefix
-      .replace(/_(ht|hs|rh|lh)$/, "") // remove hand suffix
-      .replace(/_/g, " ") // underscores → spaces
-      .replace(/\b\w/g, (c) => c.toUpperCase()); // capitalise each word
+      .replace(/^g\d+_/, "")                          // strip grade prefix g7_
+      .replace(/_(ht|hs|rh|lh)$/, "")                // strip hand suffix
+      .replace(/_/g, " ")                             // underscores → spaces
+      .replace(/\b\w/g, (c) => c.toUpperCase())       // capitalise each word
+      .replace(/([A-G])s\b/g, "$1♯")                 // Cs → C♯
+      .replace(/([A-G])b\b/g, "$1♭")                 // Bb → B♭, Db → D♭
+      .replace(/\bSm\b/g, "Similar Motion")          // Sm → Similar Motion
+      .replace(/\bArp\b/g, "Arpeggio")               // Arp → Arpeggio
+      .replace(/\bDom7\b/g, "Dominant 7th")          // Dom7 → Dominant 7th
+      .replace(/\bDim7\b/g, "Diminished 7th");       // Dim7 → Diminished 7th
   }
 
   return (
@@ -300,7 +314,7 @@ function LessonBody({ lesson }) {
                   >
                     {ready ? "✓" : "✗"}
                   </span>
-                  <span className="scale-name-display">{name}</span>
+                  <ScaleName name={name} />
                   {item.note && (
                     <span className="scale-note-display">{item.note}</span>
                   )}
