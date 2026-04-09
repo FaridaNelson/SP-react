@@ -61,6 +61,7 @@ export default function PracticeSection({
   examType,
   studentId,
   cycle,
+  saveRef,
 }) {
   const today = useMemo(getToday, []);
   const todayKey = useMemo(() => dateKey(today), [today]);
@@ -76,11 +77,17 @@ export default function PracticeSection({
     tasksByDayRef.current = tasksByDay;
   }, [tasksByDay]);
 
-  // ── Save practice data on unmount ─────────────────────────────
+  // ── Expose save function via ref for parent to call on navigate-away ──
   useEffect(() => {
-    return () => {
+    if (!saveRef) return;
+    saveRef.current = () => {
       const snapshot = tasksByDayRef.current;
       if (!studentId || !cycle?._id) return;
+
+      const hasData = Object.values(snapshot).some((dayTasks) =>
+        Object.values(dayTasks).some(Boolean),
+      );
+      if (!hasData) return;
 
       // Build homeworkTaskList from the 7-day window
       const homeworkTaskList = {};
@@ -135,7 +142,7 @@ export default function PracticeSection({
         }),
       }).catch(() => {}); // silent fail — this is a background save
     };
-  }, []); // empty deps — runs cleanup only on unmount
+  }, [saveRef, studentId, cycle?._id]);
 
   // ── Single source of truth: which days have any task done ─────
   // Derived directly from tasksByDay — no closures, no stale reads.
@@ -153,21 +160,14 @@ export default function PracticeSection({
   );
 
   const summaryTheme = summaryThemeFor(practicedCount);
-  const todayTasks = tasksByDay[todayKey] ?? {};
 
-  // ── Toggle a task for today ────────────────────────────────────
-  const toggleTask = useCallback(
-    (taskId) => {
-      setTasksByDay((prev) => {
-        const current = prev[todayKey] ?? {};
-        return {
-          ...prev,
-          [todayKey]: { ...current, [taskId]: !current[taskId] },
-        };
-      });
-    },
-    [todayKey],
-  );
+  // ── Toggle a task for any day ───────────────────────────────────
+  const toggleTaskForDay = useCallback((dayKey, taskId) => {
+    setTasksByDay((prev) => {
+      const current = prev[dayKey] ?? {};
+      return { ...prev, [dayKey]: { ...current, [taskId]: !current[taskId] } };
+    });
+  }, []);
 
   // ── Render ────────────────────────────────────────────────────
 
@@ -215,49 +215,24 @@ export default function PracticeSection({
                 <span className="pd-week-num">{d.getDate()}</span>
               </div>
               <div className="pd-week-tasks">
-                {practicedItems.length > 0 ? (
-                  practicedItems.map((t) => (
-                    <span key={t.id} className="pd-week-task-pill">
-                      {t.label}
-                    </span>
-                  ))
+                {isFuture ? (
+                  <span className="pd-week-no-practice">—</span>
                 ) : (
-                  <span className="pd-week-no-practice">
-                    {isFuture ? "—" : "No practice logged"}
-                  </span>
+                  tasks.map((task) => {
+                    const done = !!tasksByDay[key]?.[task.id];
+                    return (
+                      <button
+                        key={task.id}
+                        className={`pd-week-pill${done ? " pd-week-pill--done" : ""}`}
+                        onClick={() => toggleTaskForDay(key, task.id)}
+                      >
+                        {task.label}
+                      </button>
+                    );
+                  })
                 )}
               </div>
             </div>
-          );
-        })}
-      </div>
-
-      {/* Homework task list */}
-      <div className="pd-tasklist">
-        <div className="pd-tasklist-title">Today&apos;s homework</div>
-        {tasks.map((task) => {
-          const done = !!todayTasks[task.id];
-          return (
-            <label key={task.id} className="pd-task-item">
-              <span
-                className={`pd-task-box${done ? " pd-task-box--done" : ""}`}
-                aria-hidden="true"
-              >
-                {done && "✓"}
-              </span>
-              <input
-                type="checkbox"
-                className="pd-task-input"
-                checked={done}
-                onChange={() => toggleTask(task.id)}
-                aria-label={task.label}
-              />
-              <span
-                className={`pd-task-label${done ? " pd-task-label--done" : ""}`}
-              >
-                {task.label}
-              </span>
-            </label>
           );
         })}
       </div>

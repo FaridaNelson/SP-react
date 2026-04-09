@@ -8,6 +8,7 @@ import SnapshotSection from "./views/SnapshotSection";
 import ProgressSection from "./views/ProgressSection";
 import PracticeSection from "./views/PracticeSection";
 import ProfileView from "./views/ProfileView";
+import DetailedSection from "./views/DetailedSection";
 import ExamsSection from "./views/ExamsSection";
 
 // Must match the order of nav items in BottomNav
@@ -21,6 +22,8 @@ export default function ParentProfilePage({ currentUser, onSignOut }) {
   const scrollRef = useRef(null);
   const isScrollingRef = useRef(false); // true while programmatic scroll runs
   const activeSectionRef = useRef("snapshot"); // shadow of state for scroll handler
+  const practiceSaveRef = useRef(null);
+  const prevSectionRef = useRef(activeSection);
 
   const {
     students,
@@ -37,6 +40,14 @@ export default function ParentProfilePage({ currentUser, onSignOut }) {
   // Keep ref in sync so scroll handler never reads stale state
   useEffect(() => {
     activeSectionRef.current = activeSection;
+  }, [activeSection]);
+
+  // Save practice log when navigating away from the practice pane
+  useEffect(() => {
+    if (prevSectionRef.current === "practice" && activeSection !== "practice") {
+      practiceSaveRef.current?.();
+    }
+    prevSectionRef.current = activeSection;
   }, [activeSection]);
 
   // ── Programmatic navigation (bottom nav taps) ─────────────────
@@ -173,21 +184,13 @@ export default function ParentProfilePage({ currentUser, onSignOut }) {
                 examType={cycle?.examType}
                 studentId={selectedId}
                 cycle={cycle}
+                saveRef={practiceSaveRef}
               />
             </div>
 
-            {/* 4 — Detailed (coming soon) */}
+            {/* 4 — Detailed */}
             <div className="pd-view-pane">
-              <div className="pd-card pd-card--pad">
-                <div className="pd-coming-soon">
-                  <div className="pd-coming-soon-icon" aria-hidden="true">
-                    ♩
-                  </div>
-                  <div className="pd-coming-soon-text">
-                    Pieces overview coming soon…
-                  </div>
-                </div>
-              </div>
+              <DetailedSection studentId={selectedId} cycle={cycle} />
             </div>
 
             {/* 5 — Exams */}

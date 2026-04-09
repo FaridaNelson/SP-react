@@ -61,6 +61,7 @@ export default function ExamsSection({ studentId }) {
             studentId={studentId}
             allLessons={allLessons}
             readOnly
+            hideLessons
           />
         ))}
       </div>

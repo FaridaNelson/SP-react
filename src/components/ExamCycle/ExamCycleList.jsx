@@ -70,7 +70,7 @@ function MetaLine({ cycle, status }) {
 }
 
 /* ── Individual card (needs hooks, so must be a component) ── */
-export function ExamCycleCard({ cycle, studentId, allLessons, onSelect, onComplete, onWithdraw, readOnly = false }) {
+export function ExamCycleCard({ cycle, studentId, allLessons, onSelect, onComplete, onWithdraw, readOnly = false, hideLessons = false }) {
   const id = cycle._id || cycle.id;
   const st = cycle.cycleStatus || cycle.status;
   const meta = STATUS_META[st] || STATUS_META.current;
@@ -146,7 +146,7 @@ export function ExamCycleCard({ cycle, studentId, allLessons, onSelect, onComple
           </div>
         )}
 
-        {rawLessons && rawLessons.length > 0 && (
+        {!hideLessons && rawLessons && rawLessons.length > 0 && (
           <>
             <button
               className="exam-cycle-view-lessons"
