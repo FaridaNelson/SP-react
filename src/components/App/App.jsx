@@ -61,7 +61,12 @@ export default function App() {
   const isParentView = pathname.startsWith("/parent");
   const hideFooter = isTeacherView || isParentView;
 
-  const BARE_ROUTES = ["/privacy-policy", "/terms-of-service", "/reset-password", "/parent"];
+  const BARE_ROUTES = [
+    "/privacy-policy",
+    "/terms-of-service",
+    "/reset-password",
+    "/parent",
+  ];
   const hideHeader = BARE_ROUTES.some((r) => pathname.startsWith(r));
 
   const openSignIn = () => setAuthMode("signin");
@@ -193,7 +198,11 @@ export default function App() {
                 user={user}
                 allowedRoles={["parent", "admin"]}
                 element={
-                  <ParentProfilePage studentId={user?.studentId} user={user} />
+                  <ParentProfilePage
+                    studentId={user?.studentId}
+                    user={user}
+                    onSignOut={logout}
+                  />
                 }
               />
             }

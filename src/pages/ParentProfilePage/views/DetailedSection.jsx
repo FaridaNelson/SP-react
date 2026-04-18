@@ -3,7 +3,6 @@ import LessonCard from "../../../components/LessonCard/LessonCard";
 import { API_BASE } from "../../../lib/api";
 
 export default function DetailedSection({ studentId, cycle }) {
-  console.log("[DetailedSection] studentId:", studentId, "cycle:", cycle);
   const [lesson, setLesson] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
