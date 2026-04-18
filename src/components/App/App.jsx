@@ -72,21 +72,16 @@ export default function App() {
   const openSignIn = () => setAuthMode("signin");
   const openSignUp = () => setAuthMode("signup");
   const closeAuth = () => setAuthMode(null);
-
   useEffect(() => {
     (async () => {
       try {
-        const health = await api("/api/health");
-        console.log("Health OK:", health);
+        await api("/api/health");
       } catch (e) {
         console.error("Health ERROR:", e?.message, e);
       }
 
       try {
-        const me = await api("/api/auth/me", { expectUnauthorized: true });
-        if (me?.user) {
-          console.log("ME OK:", me);
-        }
+        await api("/api/auth/me", { expectUnauthorized: true });
       } catch (e) {
         console.warn("ME unexpected error:", e?.status, e?.message);
       }
