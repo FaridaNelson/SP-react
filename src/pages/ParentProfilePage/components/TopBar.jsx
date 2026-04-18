@@ -2,9 +2,14 @@ import "./TopBar.css";
 import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { getInitials } from "../lib/parentUtils";
+import { API_BASE } from "../../../lib/api";
 
-export default function TopBar({ students, selectedId, onSelect, onProfileClick, user }) {
+export default function TopBar({ students, selectedId, onSelect, onProfileClick, user, onStudentLinked }) {
   const [open,   setOpen]  = useState(false);
+  const [addOpen, setAddOpen] = useState(false);
+  const [code, setCode] = useState("");
+  const [addError, setAddError] = useState("");
+  const [adding, setAdding] = useState(false);
   const dropRef            = useRef(null);
   const navigate           = useNavigate();
   const selected           = students.find((s) => s._id === selectedId);
@@ -18,6 +23,28 @@ export default function TopBar({ students, selectedId, onSelect, onProfileClick,
     document.addEventListener("mousedown", handler);
     return () => document.removeEventListener("mousedown", handler);
   }, []);
+
+  async function handleLinkStudent() {
+    setAdding(true);
+    setAddError("");
+    try {
+      const res = await fetch(`${API_BASE}/api/parent/link-student`, {
+        method: "POST",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ inviteCode: code }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Failed to link student");
+      setAddOpen(false);
+      setCode("");
+      onStudentLinked?.();
+    } catch (err) {
+      setAddError(err.message);
+    } finally {
+      setAdding(false);
+    }
+  }
 
   return (
     <div className="pd-topbar">
@@ -70,6 +97,10 @@ export default function TopBar({ students, selectedId, onSelect, onProfileClick,
                   </div>
                 </div>
               ))}
+              <div className="pd-dropdown-divider" />
+              <button className="pd-dropdown-add-btn" onClick={() => { setOpen(false); setAddOpen(true); }}>
+                + Add a Sibling
+              </button>
             </div>
           )}
         </div>
@@ -81,6 +112,30 @@ export default function TopBar({ students, selectedId, onSelect, onProfileClick,
           </div>
         </button>
       </div>
+
+      {addOpen && (
+        <div className="pd-add-modal-overlay" onClick={() => setAddOpen(false)}>
+          <div className="pd-add-modal" onClick={e => e.stopPropagation()}>
+            <div className="pd-add-modal-title">Add a Sibling</div>
+            <div className="pd-add-modal-sub">Enter the 8-character invite code from the student's teacher</div>
+            <input
+              className="pd-add-modal-input"
+              maxLength={8}
+              placeholder="e.g. AB12CD34"
+              value={code}
+              onChange={e => setCode(e.target.value.toUpperCase())}
+              autoFocus
+            />
+            {addError && <div className="pd-add-modal-error">{addError}</div>}
+            <div className="pd-add-modal-actions">
+              <button className="pd-add-modal-cancel" onClick={() => { setAddOpen(false); setCode(""); setAddError(""); }}>Cancel</button>
+              <button className="pd-add-modal-confirm" onClick={handleLinkStudent} disabled={code.length !== 8 || adding}>
+                {adding ? "Linking…" : "Link Student"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

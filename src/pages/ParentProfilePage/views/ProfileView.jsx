@@ -4,8 +4,6 @@ import { getInitials } from "../lib/parentUtils";
 import "./ProfileView.css";
 
 export default function ProfileView({ user, onBack, onSignOut }) {
-  console.log("[ProfileView] onSignOut:", typeof onSignOut, onSignOut);
-
   const [showSignOutModal, setShowSignOutModal] = useState(false);
 
   return (

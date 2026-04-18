@@ -35,6 +35,7 @@ export default function ParentProfilePage({ currentUser, onSignOut }) {
     loadingItems,
     error,
     selectStudent,
+    refetchStudents,
   } = useParentData();
 
   // Keep ref in sync so scroll handler never reads stale state
@@ -140,6 +141,7 @@ export default function ParentProfilePage({ currentUser, onSignOut }) {
         onSelect={selectStudent}
         onProfileClick={() => setShowProfile(true)}
         user={currentUser}
+        onStudentLinked={() => refetchStudents()}
       />
 
       {showProfile ? (

@@ -160,3 +160,119 @@ button.pd-topbar-logo { font-family: inherit; }
   font-size: 30px;
   margin: 0 auto 16px;
 }
+
+/* ─── Add-a-sibling dropdown button ──────────────────────────── */
+.pd-dropdown-divider {
+  height: 1px;
+  background: rgba(255,255,255,0.08);
+  margin: 4px 0;
+}
+
+.pd-dropdown-add-btn {
+  width: 100%;
+  padding: 12px 16px;
+  background: transparent;
+  border: none;
+  color: var(--gold, #c9a84c);
+  font-family: "DM Sans", sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.pd-dropdown-add-btn:hover { background: rgba(201,168,76,0.1); }
+
+/* ─── Add-a-sibling modal ────────────────────────────────────── */
+.pd-add-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.6);
+  z-index: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.pd-add-modal {
+  background: #1c1a17;
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 16px;
+  padding: 28px 24px;
+  width: 100%;
+  max-width: 340px;
+}
+
+.pd-add-modal-title {
+  font-family: "Cormorant Garamond", serif;
+  font-size: 22px;
+  font-weight: 500;
+  color: white;
+  margin-bottom: 8px;
+}
+
+.pd-add-modal-sub {
+  font-size: 13px;
+  color: rgba(255,255,255,0.5);
+  margin-bottom: 20px;
+  line-height: 1.5;
+}
+
+.pd-add-modal-input {
+  width: 100%;
+  padding: 12px 14px;
+  background: rgba(255,255,255,0.07);
+  border: 1px solid rgba(255,255,255,0.15);
+  border-radius: 10px;
+  color: white;
+  font-family: "DM Sans", sans-serif;
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-align: center;
+  outline: none;
+  box-sizing: border-box;
+  margin-bottom: 12px;
+}
+.pd-add-modal-input:focus { border-color: var(--gold, #c9a84c); }
+
+.pd-add-modal-error {
+  font-size: 13px;
+  color: #d4806a;
+  margin-bottom: 12px;
+}
+
+.pd-add-modal-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 4px;
+}
+
+.pd-add-modal-cancel {
+  flex: 1;
+  padding: 11px;
+  background: transparent;
+  border: 1px solid rgba(255,255,255,0.15);
+  border-radius: 10px;
+  color: rgba(255,255,255,0.6);
+  font-family: "DM Sans", sans-serif;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.pd-add-modal-confirm {
+  flex: 1;
+  padding: 11px;
+  background: var(--gold, #c9a84c);
+  border: none;
+  border-radius: 10px;
+  color: #1c1a17;
+  font-family: "DM Sans", sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  opacity: 1;
+  transition: opacity 0.2s;
+}
+.pd-add-modal-confirm:disabled { opacity: 0.45; cursor: not-allowed; }

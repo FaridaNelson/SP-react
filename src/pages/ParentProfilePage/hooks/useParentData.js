@@ -8,8 +8,13 @@ export function useParentData() {
   const [loadingStudents, setLoadingStudents] = useState(true);
   const [loadingItems, setLoadingItems] = useState(false);
   const [error, setError] = useState(null);
+  const [refreshKey, setRefreshKey] = useState(0);
 
-  // Fetch children list on mount
+  const refetchStudents = useCallback(() => {
+    setRefreshKey((k) => k + 1);
+  }, []);
+
+  // Fetch children list on mount (and on refreshKey change)
   useEffect(() => {
     setLoadingStudents(true);
     fetch(`${API_BASE}/api/parent/students`, { credentials: "include" })
@@ -23,7 +28,7 @@ export function useParentData() {
       })
       .catch((e) => setError(e.message))
       .finally(() => setLoadingStudents(false));
-  }, []);
+  }, [refreshKey]);
 
   // Fetch progress whenever selected child changes
   useEffect(() => {
@@ -59,5 +64,6 @@ export function useParentData() {
     loadingItems,
     error,
     selectStudent,
+    refetchStudents,
   };
 }
