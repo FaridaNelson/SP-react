@@ -123,6 +123,18 @@ function SelectedStudentPane({
 }) {
   const studentId = student?._id || student?.id;
 
+  // local state first
+  const [wizardOpen, setWizardOpen] = useState(false);
+  const [examCycleRefreshKey, setExamCycleRefreshKey] = useState(0);
+  const [fetchedCycle, setFetchedCycle] = useState(null);
+  const [cyclesFetched, setCyclesFetched] = useState(false);
+
+  // derive resolved cycle
+  const resolvedCycle = initialCycle || fetchedCycle;
+  const currentCycleId = resolvedCycle?._id || resolvedCycle?.id || null;
+  const currentInstrument =
+    resolvedCycle?.instrument || student?.instrument || null;
+
   const { items, saveScores, isLoading } = useProgress(studentId);
 
   const readiness = useMemo(() => computeReadiness(items), [items]);
@@ -145,16 +157,13 @@ function SelectedStudentPane({
     latestLesson,
     setLatestLesson,
     isLoading: latestLoading,
-  } = useLatestLesson(studentId, { enabled: !!studentId });
+  } = useLatestLesson(studentId, {
+    examPreparationCycleId: currentCycleId,
+    instrument: currentInstrument,
+    enabled: progressOpen,
+  });
 
   const { lessons: allLessons } = useStudentLessons(studentId);
-
-  const [wizardOpen, setWizardOpen] = useState(false);
-  const [examCycleRefreshKey, setExamCycleRefreshKey] = useState(0);
-
-  // Fetch cycles once at student level, find active one
-  const [fetchedCycle, setFetchedCycle] = useState(null);
-  const [cyclesFetched, setCyclesFetched] = useState(false);
 
   useEffect(() => {
     if (!studentId) return;
@@ -181,9 +190,6 @@ function SelectedStudentPane({
       cancelled = true;
     };
   }, [studentId, initialCycle]);
-
-  // The cycle to pass down: prefer initialCycle (from history), else auto-fetched
-  const resolvedCycle = initialCycle || fetchedCycle;
 
   const handleExamCycleCreated = useCallback(() => {
     setWizardOpen(false);

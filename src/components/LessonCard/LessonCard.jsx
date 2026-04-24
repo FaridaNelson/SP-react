@@ -12,14 +12,18 @@ function parseLessonDate(dateStr) {
 
 function formatLessonMeta(lesson) {
   if (!lesson.lessonStartAt) return "";
+
   const start = new Date(lesson.lessonStartAt);
+
   const timeStr = start.toLocaleTimeString("en-US", {
     hour: "numeric",
     minute: "2-digit",
-    hour12: true,
   });
+
   if (!lesson.lessonEndAt) return timeStr;
+
   const mins = Math.round((new Date(lesson.lessonEndAt) - start) / 60000);
+
   return `${timeStr} · ${mins} min`;
 }
 
@@ -138,7 +142,9 @@ function ScaleName({ name }) {
   if (!match) return <span className="scale-name-display">{name}</span>;
   return (
     <span className="scale-name-display">
-      {match[1].trim()}<br />{match[2].trim()}
+      {match[1].trim()}
+      <br />
+      {match[2].trim()}
     </span>
   );
 }
@@ -156,16 +162,16 @@ function LessonBody({ lesson }) {
   function formatScaleName(scaleId) {
     if (!scaleId) return "";
     return scaleId
-      .replace(/^g\d+_/, "")                          // strip grade prefix g7_
-      .replace(/_(ht|hs|rh|lh)$/, "")                // strip hand suffix
-      .replace(/_/g, " ")                             // underscores → spaces
-      .replace(/\b\w/g, (c) => c.toUpperCase())       // capitalise each word
-      .replace(/([A-G])s\b/g, "$1♯")                 // Cs → C♯
-      .replace(/([A-G])b\b/g, "$1♭")                 // Bb → B♭, Db → D♭
-      .replace(/\bSm\b/g, "Similar Motion")          // Sm → Similar Motion
-      .replace(/\bArp\b/g, "Arpeggio")               // Arp → Arpeggio
-      .replace(/\bDom7\b/g, "Dominant 7th")          // Dom7 → Dominant 7th
-      .replace(/\bDim7\b/g, "Diminished 7th");       // Dim7 → Diminished 7th
+      .replace(/^g\d+_/, "") // strip grade prefix g7_
+      .replace(/_(ht|hs|rh|lh)$/, "") // strip hand suffix
+      .replace(/_/g, " ") // underscores → spaces
+      .replace(/\b\w/g, (c) => c.toUpperCase()) // capitalise each word
+      .replace(/([A-G])s\b/g, "$1♯") // Cs → C♯
+      .replace(/([A-G])b\b/g, "$1♭") // Bb → B♭, Db → D♭
+      .replace(/\bSm\b/g, "Similar Motion") // Sm → Similar Motion
+      .replace(/\bArp\b/g, "Arpeggio") // Arp → Arpeggio
+      .replace(/\bDom7\b/g, "Dominant 7th") // Dom7 → Dominant 7th
+      .replace(/\bDim7\b/g, "Diminished 7th"); // Dim7 → Diminished 7th
   }
 
   return (
@@ -377,7 +383,10 @@ export default function LessonCard({ lesson, readOnly = false }) {
           </div>
           {lessonMeta && <div className="lesson-meta">{lessonMeta}</div>}
         </div>
-        <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+        <div
+          className="lesson-card-right"
+          style={{ display: "flex", alignItems: "center", gap: 12 }}
+        >
           {!readOnly && (
             <button
               className="lesson-edit-btn"

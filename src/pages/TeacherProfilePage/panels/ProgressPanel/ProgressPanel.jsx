@@ -35,6 +35,24 @@ function isSightAuralTouched(val) {
   return val?.score !== undefined && val?.score !== null && val?.score !== "";
 }
 
+const TIME_OPTIONS = Array.from({ length: 24 * 4 }, (_, i) => {
+  const hours = Math.floor(i / 4);
+  const minutes = (i % 4) * 15;
+
+  const value = `${String(hours).padStart(2, "0")}:${String(minutes).padStart(2, "0")}`;
+
+  const label = new Date(2000, 0, 1, hours, minutes).toLocaleTimeString(
+    "en-US",
+    {
+      hour: "numeric",
+      minute: "2-digit",
+      hour12: true,
+    },
+  );
+
+  return { value, label };
+});
+
 export default function ProgressPanel({
   open,
   onClose,
@@ -47,6 +65,8 @@ export default function ProgressPanel({
   const [lessonDate, setLessonDate] = useState(() =>
     new Date().toISOString().slice(0, 10),
   );
+  const [lessonStartTime, setLessonStartTime] = useState("");
+  const [lessonEndTime, setLessonEndTime] = useState("");
   const studentId = student?._id || student?.id;
   const [latestLesson, setLatestLesson] = useState(null);
   const [pieceErrors, setPieceErrors] = useState({});
@@ -109,6 +129,7 @@ export default function ProgressPanel({
     adequateTempo: "",
     confidentPresentation: "",
   }));
+
   const [aural, setAural] = useState(() => ({
     score: undefined,
     rhythmAccuracy: "",
@@ -135,6 +156,8 @@ export default function ProgressPanel({
       musicalPerceptiveness: "",
     });
     setTeacherNarrative("");
+    setLessonStartTime("");
+    setLessonEndTime("");
     setErr("");
   };
 
@@ -170,8 +193,15 @@ export default function ProgressPanel({
       if (d?.scales) setScales(d.scales);
       if (d?.sight) setSight(d.sight);
       if (d?.aural) setAural(d.aural);
-      if (typeof d?.teacherNarrative === "string")
+      if (typeof d?.teacherNarrative === "string") {
         setTeacherNarrative(d.teacherNarrative);
+      }
+      if (typeof d?.lessonStartTime === "string") {
+        setLessonStartTime(d.lessonStartTime);
+      }
+      if (typeof d?.lessonEndTime === "string") {
+        setLessonEndTime(d.lessonEndTime);
+      }
     } catch {
       // ignore bad drafts
     }
@@ -180,17 +210,24 @@ export default function ProgressPanel({
   useEffect(() => {
     if (!open) return;
     if (!studentId) return;
+    if (!activeCycle?._id) {
+      setLatestLesson(null);
+      return;
+    }
 
     (async () => {
       try {
-        const latest = await getLatestLesson(studentId);
-        setLatestLesson(latest);
+        const latest = await getLatestLesson(studentId, {
+          examPreparationCycleId: activeCycle._id,
+          instrument: activeCycle.instrument,
+        });
+        setLatestLesson(latest || null);
       } catch (e) {
         console.warn("Failed to load latest lesson:", e);
         setLatestLesson(null);
       }
     })();
-  }, [open, studentId]);
+  }, [open, studentId, activeCycle?._id, activeCycle?.instrument]);
 
   useEffect(() => {
     if (!open) return;
@@ -202,6 +239,8 @@ export default function ProgressPanel({
 
     const draft = {
       lessonDate,
+      lessonStartTime,
+      lessonEndTime,
       pieces,
       scales,
       sight,
@@ -210,7 +249,17 @@ export default function ProgressPanel({
     };
 
     localStorage.setItem(draftKey, JSON.stringify(draft));
-  }, [pieces, scales, sight, aural, teacherNarrative, lessonDate, open]);
+  }, [
+    pieces,
+    scales,
+    sight,
+    aural,
+    teacherNarrative,
+    lessonStartTime,
+    lessonEndTime,
+    lessonDate,
+    open,
+  ]);
 
   // --- computed piece percent scores (0..100) based on criteria 0..6 ---
   const piecePercents = useMemo(() => {
@@ -227,98 +276,21 @@ export default function ProgressPanel({
   // --- used to show student header ---
   const studentName = student?.name || "Student";
 
-  async function handleSavePiece(pieceId, { share = false } = {}) {
-    setErr("");
+  function handleCopyPieceFromLastLesson(pieceId) {
+    const lastPiece = lastPiecesMap[pieceId];
+    if (!lastPiece) return;
 
-    const todayStr = new Date().toISOString().slice(0, 10);
-    if (lessonDate > todayStr) {
-      setErr("Date cannot be in the future");
-      return;
-    }
+    setPieces((prev) => ({
+      ...prev,
+      [pieceId]: {
+        criteria: { ...(lastPiece.criteria || {}) },
+      },
+    }));
 
-    const pieceDef = activePieces.find((p) => p.id === pieceId);
-    if (!pieceDef) {
-      setErr("Unknown piece");
-      return;
-    }
-
-    // Validate only this piece (must have all criteria scored)
-    const missing = getMissingPieceCriteria(
-      pieces?.[pieceId],
-      pieceDef.criteria,
-    );
-
-    // Only this piece should show validation errors, not the whole form
-    if (missing.length) {
-      setPieceErrors({ [pieceId]: missing });
-      setErr("");
-      return;
-    }
-
-    // Clear errors for this piece if validation passed
-    setPieceErrors({});
-
-    try {
-      setBusy(true);
-
-      // ✅ merge latest lesson + this edited piece, recompute all percents
-      const {
-        mergedPieces,
-        mergedPiecePercents,
-        baselineScales,
-        baselineScalesPercent,
-        baselineSight,
-        baselineAural,
-      } = mergeOnePieceAndRecompute({
-        pieceId,
-        piecesDraft: pieces,
-        latestLesson,
-        piecesDef: activePieces,
-      });
-
-      // Update progress snapshot (Phase 1)
-      const nextItems = mergeIntoProgressItems(items, {
-        pieceA: mergedPiecePercents.pieceA,
-        pieceB: mergedPiecePercents.pieceB,
-        pieceC: mergedPiecePercents.pieceC,
-        scales: baselineScalesPercent,
-        sightReading: baselineSight?.score ?? null,
-        auralTraining: baselineAural?.score ?? null,
-      });
-
-      if (onSaveScores)
-        await onSaveScores(nextItems, {
-          examPreparationCycleId: activeCycle?._id,
-          instrument: activeCycle?.instrument,
-          lessonDate,
-        });
-
-      // Save a FULL lesson snapshot (Phase 2) so backend upsert doesn't wipe other fields
-      const lessonPayload = buildLessonPayload({
-        lessonDate,
-        studentId,
-        examPreparationCycleId: activeCycle?._id,
-        instrument: activeCycle?.instrument,
-        pieces: mergedPieces,
-        piecePercents: mergedPiecePercents,
-        scales: baselineScales,
-        scalesPercent: baselineScalesPercent,
-        sight: baselineSight,
-        aural: baselineAural,
-        teacherNarrative, // keep current text
-        share,
-      });
-
-      const savedLesson = await upsertLesson(lessonPayload);
-
-      setLatestLesson(savedLesson);
-      onLessonSaved?.(savedLesson);
-      setErr("");
-    } catch (e) {
-      setErr(e?.message || "Failed to save this piece");
-    } finally {
-      setBusy(false);
-    }
+    setPieceErrors((prev) => ({
+      ...prev,
+      [pieceId]: [],
+    }));
   }
 
   async function handleSave({ share = false } = {}) {
@@ -327,6 +299,21 @@ export default function ProgressPanel({
     const todayStr = new Date().toISOString().slice(0, 10);
     if (lessonDate > todayStr) {
       setErr("Date cannot be in the future");
+      return;
+    }
+    if (!lessonStartTime || !lessonEndTime) {
+      setErr("Please select lesson start and end time.");
+      return;
+    }
+
+    const startParts = lessonStartTime.split(":").map(Number);
+    const endParts = lessonEndTime.split(":").map(Number);
+
+    const startMinutes = startParts[0] * 60 + startParts[1];
+    const endMinutes = endParts[0] * 60 + endParts[1];
+
+    if (endMinutes <= startMinutes) {
+      setErr("Lesson end time must be later than lesson start time.");
       return;
     }
 
@@ -371,6 +358,23 @@ export default function ProgressPanel({
       const auralTouched = isSightAuralTouched(aural);
       const finalAural = auralTouched ? aural : lastAural || null;
 
+      const TIME_OPTIONS = Array.from({ length: 24 * 4 }, (_, i) => {
+        const hours = Math.floor(i / 4);
+        const minutes = (i % 4) * 15;
+
+        const value = `${String(hours).padStart(2, "0")}:${String(minutes).padStart(2, "0")}`;
+
+        const label = new Date(2000, 0, 1, hours, minutes).toLocaleTimeString(
+          "en-US",
+          {
+            hour: "numeric",
+            minute: "2-digit",
+            hour12: true,
+          },
+        );
+
+        return { value, label };
+      });
       // Recompute piece percents using final (merged) pieces
       const finalPiecePercents = {};
       for (const p of activePieces) {
@@ -416,6 +420,8 @@ export default function ProgressPanel({
         aural: finalAural,
         teacherNarrative,
         share,
+        lessonStartTime,
+        lessonEndTime,
       });
 
       const savedLesson = await upsertLesson(lessonPayload);
@@ -489,22 +495,63 @@ export default function ProgressPanel({
               Today’s Progress — <h2 className="pp__title">{studentName}</h2>
             </div>
 
-            <div className="pp__dateWrap">
-              <label htmlFor="lesson-date" className="pp__dateLabel">
-                Lesson date:
-              </label>
-              <div className="pp__dateRow">
-                <input
-                  id="lesson-date"
-                  name="lessonDate"
-                  type="date"
-                  className="pp__dateInput"
-                  value={lessonDate}
-                  max={new Date().toISOString().slice(0, 10)}
-                  onChange={(e) => setLessonDate(e.target.value)}
-                  disabled={busy}
-                />
-                <div className="pp__dateDisplay">{formatLocal(lessonDate)}</div>
+            <div className="pp__metaRow">
+              <div className="pp__dateWrap">
+                <label htmlFor="lesson-date" className="pp__dateLabel">
+                  Lesson date:
+                </label>
+
+                <div className="pp__dateRow">
+                  <input
+                    id="lesson-date"
+                    name="lessonDate"
+                    type="date"
+                    className="pp__dateInput"
+                    value={lessonDate}
+                    max={new Date().toISOString().slice(0, 10)}
+                    onChange={(e) => setLessonDate(e.target.value)}
+                    disabled={busy}
+                  />
+                  <div className="pp__dateDisplay">
+                    {formatLocal(lessonDate)}
+                  </div>
+                </div>
+              </div>
+
+              <div className="pp__timeWrap">
+                <label className="pp__timeLabel">Lesson time:</label>
+
+                <div className="pp__timeInputs">
+                  <select
+                    className="pp__timeSelect"
+                    value={lessonStartTime}
+                    onChange={(e) => setLessonStartTime(e.target.value)}
+                    disabled={busy}
+                  >
+                    <option value="">Start</option>
+                    {TIME_OPTIONS.map((t) => (
+                      <option key={`start-${t.value}`} value={t.value}>
+                        {t.label}
+                      </option>
+                    ))}
+                  </select>
+
+                  <span className="pp__timeDash">—</span>
+
+                  <select
+                    className="pp__timeSelect"
+                    value={lessonEndTime}
+                    onChange={(e) => setLessonEndTime(e.target.value)}
+                    disabled={busy}
+                  >
+                    <option value="">End</option>
+                    {TIME_OPTIONS.map((t) => (
+                      <option key={`end-${t.value}`} value={t.value}>
+                        {t.label}
+                      </option>
+                    ))}
+                  </select>
+                </div>
               </div>
             </div>
           </div>
@@ -536,7 +583,6 @@ export default function ProgressPanel({
                 onFocusCriterion={() =>
                   setPieceErrors((prev) => ({ ...prev, [p.id]: [] }))
                 } // clear errors for this piece when user focuses any criterion
-                onSavePiece={() => handleSavePiece(p.id, { share: true })}
                 lastWeekPercent={piecePercentFromLesson(latestLesson, p.id)}
                 disabled={busy}
                 onSetScore={(criterionId, score) =>
@@ -569,6 +615,8 @@ export default function ProgressPanel({
                     },
                   }))
                 }
+                onCopyLastLesson={() => handleCopyPieceFromLastLesson(p.id)}
+                canCopyLastLesson={!!lastPiecesMap[p.id]}
               />
             ))}
           </section>
@@ -657,6 +705,8 @@ export default function ProgressPanel({
             onClick={() => {
               const draft = {
                 lessonDate,
+                lessonStartTime,
+                lessonEndTime,
                 pieces,
                 scales,
                 sight,

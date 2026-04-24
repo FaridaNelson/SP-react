@@ -8,17 +8,23 @@ export function upsertLesson(body) {
   });
 }
 
-// GET /api/lessons/student/:studentId  — returns list; pick the latest
-export async function getLatestLesson(studentId) {
-  const data = await api(`/api/lessons/student/${studentId}`);
-  const lessons = Array.isArray(data) ? data : data?.lessons ?? [];
-  if (lessons.length === 0) return null;
+export async function getLatestLesson(
+  studentId,
+  { examPreparationCycleId, instrument } = {},
+) {
+  const params = new URLSearchParams();
 
-  // Sort descending by lessonDate (or createdAt) and return the first
-  lessons.sort(
-    (a, b) =>
-      new Date(b.lessonDate || b.createdAt) -
-      new Date(a.lessonDate || a.createdAt),
-  );
-  return lessons[0];
+  if (examPreparationCycleId) {
+    params.set("examPreparationCycleId", examPreparationCycleId);
+  }
+
+  if (instrument) {
+    params.set("instrument", instrument);
+  }
+
+  const query = params.toString();
+  const url = `/api/lessons/student/${studentId}/latest${query ? `?${query}` : ""}`;
+
+  const data = await api(url);
+  return data?.lesson || null;
 }
