@@ -352,7 +352,7 @@ function LessonBody({ lesson }) {
 
 /* ── Main component ── */
 
-export default function LessonCard({ lesson, readOnly = false }) {
+export default function LessonCard({ lesson, readOnly = false, onEditLesson }) {
   const [bodyOpen, setBodyOpen] = useState(false);
 
   const lessonId = lesson._id || lesson.id;
@@ -387,14 +387,27 @@ export default function LessonCard({ lesson, readOnly = false }) {
           className="lesson-card-right"
           style={{ display: "flex", alignItems: "center", gap: 12 }}
         >
+          {/* Total Score */}
+          {typeof lesson?.lessonTotalScore === "number" && (
+            <span className="lesson-total-score">
+              {Math.round(lesson.lessonTotalScore)}%
+            </span>
+          )}
+
+          {/* Edit Button */}
           {!readOnly && (
             <button
               className="lesson-edit-btn"
-              onClick={(e) => e.stopPropagation()}
+              onClick={(e) => {
+                e.stopPropagation();
+                onEditLesson?.(lesson);
+              }}
             >
               Edit Grades
             </button>
           )}
+
+          {/* Dropdown arrow */}
           <span style={{ color: "rgba(255,255,255,0.5)", fontSize: 12 }}>
             {bodyOpen ? "▴" : "▾"}
           </span>

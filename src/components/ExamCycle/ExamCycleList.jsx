@@ -1,6 +1,11 @@
 import { useEffect, useState, useMemo } from "react";
 import { listExamCycles } from "../../lib/examCycleApi";
-import { sortCycles, buildLessonReadiness, filterLessonsForCycle, useStudentLessons } from "./examCycleUtils";
+import {
+  sortCycles,
+  buildLessonReadiness,
+  filterLessonsForCycle,
+  useStudentLessons,
+} from "./examCycleUtils";
 import CycleCompleteWizard from "../ExamCycle/CycleCompleteWizard";
 import LessonCard from "../LessonCard/LessonCard";
 import "./ExamCycleList.css";
@@ -62,15 +67,25 @@ function MetaLine({ cycle, status }) {
     parts.push(`Taken ${formatDate(cycle.examTaken)}`);
   }
   if (status === "withdrawn") {
-    parts.push(`Withdrawn ${cycle.updatedAt ? formatDate(cycle.updatedAt) : ""}`);
+    parts.push(
+      `Withdrawn ${cycle.updatedAt ? formatDate(cycle.updatedAt) : ""}`,
+    );
   }
-  return (
-    <div className="ecl__meta">{parts.join(" · ") || "In progress"}</div>
-  );
+  return <div className="ecl__meta">{parts.join(" · ") || "In progress"}</div>;
 }
 
 /* ── Individual card (needs hooks, so must be a component) ── */
-export function ExamCycleCard({ cycle, studentId, allLessons, onSelect, onComplete, onWithdraw, readOnly = false, hideLessons = false }) {
+export function ExamCycleCard({
+  cycle,
+  studentId,
+  allLessons,
+  onSelect,
+  onComplete,
+  onWithdraw,
+  onEditLesson,
+  readOnly = false,
+  hideLessons = false,
+}) {
   const id = cycle._id || cycle.id;
   const st = cycle.cycleStatus || cycle.status;
   const meta = STATUS_META[st] || STATUS_META.current;
@@ -78,12 +93,12 @@ export function ExamCycleCard({ cycle, studentId, allLessons, onSelect, onComple
 
   const rawLessons = useMemo(
     () => filterLessonsForCycle(allLessons || [], id),
-    [allLessons, id]
+    [allLessons, id],
   );
 
   const sparkData = useMemo(
     () => buildLessonReadiness(rawLessons),
-    [rawLessons]
+    [rawLessons],
   );
 
   const [lessonsOpen, setLessonsOpen] = useState(false);
@@ -109,9 +124,7 @@ export function ExamCycleCard({ cycle, studentId, allLessons, onSelect, onComple
           <span className="ecl__headerLabel">
             {cycle.instrument || "Piano"} · ABRSM
           </span>
-          <span className={`ecl__badge ${meta.className}`}>
-            {meta.label}
-          </span>
+          <span className={`ecl__badge ${meta.className}`}>{meta.label}</span>
         </div>
 
         <div className="ecl__gradeType">
@@ -150,18 +163,24 @@ export function ExamCycleCard({ cycle, studentId, allLessons, onSelect, onComple
           <>
             <button
               className="exam-cycle-view-lessons"
-              onClick={(e) => { e.stopPropagation(); setLessonsOpen(v => !v); }}
+              onClick={(e) => {
+                e.stopPropagation();
+                setLessonsOpen((v) => !v);
+              }}
             >
-              <span className={lessonsOpen ? 'open' : ''}>▾</span>
-              {lessonsOpen ? 'Hide Lessons' : `View ${rawLessons.length} Lessons`}
+              <span className={lessonsOpen ? "open" : ""}>▾</span>
+              {lessonsOpen
+                ? "Hide Lessons"
+                : `View ${rawLessons.length} Lessons`}
             </button>
 
-            <div className={`exam-cycle-lessons${lessonsOpen ? ' open' : ''}`}>
+            <div className={`exam-cycle-lessons${lessonsOpen ? " open" : ""}`}>
               {rawLessons.map((lesson) => (
                 <LessonCard
                   key={lesson._id || lesson.id}
                   lesson={lesson}
                   readOnly={readOnly}
+                  onEditLesson={onEditLesson}
                 />
               ))}
             </div>
@@ -179,6 +198,7 @@ export default function ExamCycleList({
   refreshKey,
   onCyclesLoaded,
   onCycleAction,
+  onEditLesson,
 }) {
   const { lessons: allLessons } = useStudentLessons(studentId);
   const [cycles, setCycles] = useState([]);
@@ -262,6 +282,7 @@ export default function ExamCycleList({
             studentId={studentId}
             allLessons={allLessons}
             onSelect={onSelect}
+            onEditLesson={onEditLesson}
             onComplete={(cycle) => {
               setWizardStartWithdraw(false);
               setWizardCycle(cycle);
