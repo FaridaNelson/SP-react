@@ -36,6 +36,20 @@ function daysToGo(examDate) {
   return Math.ceil((target - now) / (1000 * 60 * 60 * 24));
 }
 
+function formatLessonDateLabel(dateValue) {
+  if (!dateValue) return "";
+
+  const dateOnly = String(dateValue).slice(0, 10);
+  const [year, month, day] = dateOnly.split("-").map(Number);
+
+  if (!year || !month || !day) return "";
+
+  return new Date(year, month - 1, day).toLocaleDateString("en-GB", {
+    day: "numeric",
+    month: "short",
+  });
+}
+
 export default function TeacherStudentInfo({
   student,
   items = [],
@@ -76,13 +90,12 @@ export default function TeacherStudentInfo({
     const cycleLessons = filterLessonsForCycle(allLessons || [], activeCycleId)
       .slice()
       .sort((a, b) => {
-        // 1. Primary: lessonDate (SOURCE OF TRUTH)
-        const aDate = new Date(a.lessonDate).getTime();
-        const bDate = new Date(b.lessonDate).getTime();
+        const aDate = String(a.lessonDate || "").slice(0, 10);
+        const bDate = String(b.lessonDate || "").slice(0, 10);
 
-        if (aDate !== bDate) return aDate - bDate;
+        if (aDate !== bDate) return aDate.localeCompare(bDate);
 
-        // 2. Secondary: lessonStartAt (only if both exist)
+        // same day → sort by time if exists
         if (a.lessonStartAt && b.lessonStartAt) {
           return (
             new Date(a.lessonStartAt).getTime() -
@@ -90,11 +103,9 @@ export default function TeacherStudentInfo({
           );
         }
 
-        // 3. If only one has time → prioritize the one WITH time
         if (a.lessonStartAt) return -1;
         if (b.lessonStartAt) return 1;
 
-        // 4. Otherwise stable (do nothing)
         return 0;
       });
 
@@ -106,20 +117,13 @@ export default function TeacherStudentInfo({
       )
       .map((lesson, index) => {
         // ALWAYS use lessonDate for display (not createdAt)
-        const dateObj = lesson.lessonDate ? new Date(lesson.lessonDate) : null;
-
         const score = Number.isFinite(lesson.lessonTotalScore)
           ? Math.round(lesson.lessonTotalScore)
           : 0;
 
         return {
           lessonLabel: `L${index + 1}`,
-          dateLabel: dateObj
-            ? dateObj.toLocaleDateString("en-GB", {
-                day: "numeric",
-                month: "short",
-              })
-            : "",
+          dateLabel: formatLessonDateLabel(lesson.lessonDate),
           score,
         };
       });
@@ -135,10 +139,11 @@ export default function TeacherStudentInfo({
     const groups = new Map();
     for (const h of history) {
       const d = h.lessonDate || h.createdAt;
-      const dt = d ? new Date(d) : null;
-      const key = dt
-        ? `${dt.getFullYear()}-${String(dt.getMonth() + 1).padStart(2, "0")}-${String(dt.getDate()).padStart(2, "0")}`
-        : "unknown";
+      const raw = h.lessonDate || h.createdAt;
+
+      const dateOnly = raw ? String(raw).slice(0, 10) : null;
+
+      const key = dateOnly || "unknown";
       if (!groups.has(key)) groups.set(key, []);
       groups.get(key).push(h);
     }
