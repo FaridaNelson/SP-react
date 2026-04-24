@@ -1,6 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
 import { ALL_PIECES, PIECES } from "./TodayProgress/progressConfig";
-import { mergeOnePieceAndRecompute } from "./TodayProgress/lessonMerge";
 import "./ProgressPanel.css";
 import { getMissingPieceCriteria } from "./TodayProgress/scoreMath";
 import PieceCard from "./PieceCard";
@@ -17,7 +16,15 @@ import {
 import ScalesCard from "./ScalesCard";
 import SightreadingCard from "./SightreadingCard";
 import AuralCard from "./AuralCard";
-import { upsertLesson, getLatestLesson } from "../../../../lib/lessons";
+import {
+  upsertLesson,
+  getLatestLesson,
+  updateLesson,
+} from "../../../../lib/lessons";
+import {
+  lessonPiecesToDraftMap,
+  lessonScalesToDraftMap,
+} from "./TodayProgress/lessonMerge";
 
 function isPieceTouched(pieceValue) {
   if (!pieceValue?.criteria) return false;
@@ -56,12 +63,15 @@ const TIME_OPTIONS = Array.from({ length: 24 * 4 }, (_, i) => {
 export default function ProgressPanel({
   open,
   onClose,
+  editLesson = null,
   student,
   items = [],
   onSaveScores,
   onLessonSaved,
   activeCycle,
 }) {
+  const isEditing = !!editLesson?._id;
+
   const [lessonDate, setLessonDate] = useState(() =>
     new Date().toISOString().slice(0, 10),
   );
@@ -164,10 +174,44 @@ export default function ProgressPanel({
   const draftKey = `studiopulse:draft:${student?._id || student?.id}:${lessonDate}`;
   const [teacherNarrative, setTeacherNarrative] = useState("");
 
+  useEffect(() => {
+    if (!open || !isEditing) return;
+
+    setLessonDate(String(editLesson.lessonDate || "").slice(0, 10));
+
+    if (editLesson.lessonStartAt) {
+      const start = new Date(editLesson.lessonStartAt);
+      setLessonStartTime(
+        `${String(start.getHours()).padStart(2, "0")}:${String(start.getMinutes()).padStart(2, "0")}`,
+      );
+    }
+
+    if (editLesson.lessonEndAt) {
+      const end = new Date(editLesson.lessonEndAt);
+      setLessonEndTime(
+        `${String(end.getHours()).padStart(2, "0")}:${String(end.getMinutes()).padStart(2, "0")}`,
+      );
+    }
+
+    setPieces({
+      ...initPieces(activePieces),
+      ...lessonPiecesToDraftMap(editLesson.pieces || []),
+    });
+
+    setScales({
+      ...initScales(gradeScales),
+      ...lessonScalesToDraftMap(editLesson.scales || {}),
+    });
+
+    setSight(editLesson.sightReading || {});
+    setAural(editLesson.auralTraining || {});
+    setTeacherNarrative(editLesson.teacherNarrative || "");
+    setErr("");
+  }, [open, isEditing, editLesson, activePieces, gradeScales]);
   // Reset panel ONLY when it opens fresh (optional)
   // If you want "draft persists even after closing", remove this effect.
   useEffect(() => {
-    if (!open) return;
+    if (!open || isEditing) return;
     setPieces((prev) => {
       const next = initPieces(activePieces);
 
@@ -179,10 +223,10 @@ export default function ProgressPanel({
 
       return next;
     });
-  }, [open, activePieces]);
+  }, [open, isEditing, activePieces]);
 
   useEffect(() => {
-    if (!open) return;
+    if (!open || isEditing) return;
 
     const raw = localStorage.getItem(draftKey);
     if (!raw) return;
@@ -205,7 +249,7 @@ export default function ProgressPanel({
     } catch {
       // ignore bad drafts
     }
-  }, [open, draftKey]);
+  }, [open, isEditing, draftKey]);
 
   useEffect(() => {
     if (!open) return;
@@ -230,12 +274,12 @@ export default function ProgressPanel({
   }, [open, studentId, activeCycle?._id, activeCycle?.instrument]);
 
   useEffect(() => {
-    if (!open) return;
+    if (!open || isEditing) return;
     setScales(initScales(gradeScales));
-  }, [open, gradeScales]);
+  }, [open, isEditing, gradeScales]);
 
   useEffect(() => {
-    if (!open) return;
+    if (!open || isEditing) return;
 
     const draft = {
       lessonDate,
@@ -259,6 +303,8 @@ export default function ProgressPanel({
     lessonEndTime,
     lessonDate,
     open,
+    isEditing,
+    draftKey,
   ]);
 
   // --- computed piece percent scores (0..100) based on criteria 0..6 ---
@@ -338,43 +384,48 @@ export default function ProgressPanel({
 
       // ── Carry-forward logic ──
       // For each element — if not touched today, use last lesson's data
-      const finalPieces = {};
-      for (const p of activePieces) {
-        const touched = isPieceTouched(pieces[p.id]);
-        finalPieces[p.id] = touched
-          ? pieces[p.id]
-          : lastPiecesMap[p.id] || { criteria: {} };
+      let finalPieces;
+
+      if (editLesson) {
+        // EDIT MODE → use EXACT state
+        finalPieces = pieces;
+      } else {
+        // CREATE MODE → use carry-forward
+        finalPieces = {};
+        for (const p of activePieces) {
+          const touched = isPieceTouched(pieces?.[p.id]);
+          finalPieces[p.id] = touched
+            ? pieces[p.id]
+            : lastPiecesMap[p.id] || { criteria: {} };
+        }
       }
 
       const scalesTouched = isScalesTouched(scales);
-      const finalScales = scalesTouched ? scales : lastScalesMap;
-      const finalScalesPercent = scalesTouched
+      const finalScales = editLesson
+        ? scales
+        : scalesTouched
+          ? scales
+          : lastScalesMap;
+      const finalScalesPercent = editLesson
         ? scalesPercent
-        : lastScalesPercent;
+        : scalesTouched
+          ? scalesPercent
+          : lastScalesPercent;
 
       const sightTouched = isSightAuralTouched(sight);
-      const finalSight = sightTouched ? sight : lastSight || null;
+      const finalSight = editLesson
+        ? sight
+        : sightTouched
+          ? sight
+          : lastSight || null;
 
       const auralTouched = isSightAuralTouched(aural);
-      const finalAural = auralTouched ? aural : lastAural || null;
+      const finalAural = editLesson
+        ? aural
+        : auralTouched
+          ? aural
+          : lastAural || null;
 
-      const TIME_OPTIONS = Array.from({ length: 24 * 4 }, (_, i) => {
-        const hours = Math.floor(i / 4);
-        const minutes = (i % 4) * 15;
-
-        const value = `${String(hours).padStart(2, "0")}:${String(minutes).padStart(2, "0")}`;
-
-        const label = new Date(2000, 0, 1, hours, minutes).toLocaleTimeString(
-          "en-US",
-          {
-            hour: "numeric",
-            minute: "2-digit",
-            hour12: true,
-          },
-        );
-
-        return { value, label };
-      });
       // Recompute piece percents using final (merged) pieces
       const finalPiecePercents = {};
       for (const p of activePieces) {
@@ -424,7 +475,9 @@ export default function ProgressPanel({
         lessonEndTime,
       });
 
-      const savedLesson = await upsertLesson(lessonPayload);
+      const savedLesson = editLesson?._id
+        ? await updateLesson(editLesson._id, lessonPayload)
+        : await upsertLesson(lessonPayload);
 
       setLatestLesson(savedLesson);
       onLessonSaved?.(savedLesson);
@@ -528,7 +581,9 @@ export default function ProgressPanel({
                     onChange={(e) => setLessonStartTime(e.target.value)}
                     disabled={busy}
                   >
-                    <option value="">Start</option>
+                    <option value="" disabled>
+                      Start
+                    </option>
                     {TIME_OPTIONS.map((t) => (
                       <option key={`start-${t.value}`} value={t.value}>
                         {t.label}

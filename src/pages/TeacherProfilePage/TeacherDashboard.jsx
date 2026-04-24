@@ -348,8 +348,13 @@ export default function TeacherDashboard({
   const [historyActiveCycle, setHistoryActiveCycle] = useState(null);
   const [historyRefreshKey, setHistoryRefreshKey] = useState(0);
 
-  function handleEditLesson(lesson) {
+  function handleEditLesson(lesson, cycle) {
+    if (cycle) {
+      setSelectedCycle(cycle);
+    }
+
     setEditingLesson(lesson);
+    setView("snapshot");
     setProgressOpen(true);
   }
 

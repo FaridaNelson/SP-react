@@ -180,7 +180,7 @@ export function ExamCycleCard({
                   key={lesson._id || lesson.id}
                   lesson={lesson}
                   readOnly={readOnly}
-                  onEditLesson={onEditLesson}
+                  onEditLesson={(lesson) => onEditLesson?.(lesson, cycle)}
                 />
               ))}
             </div>
