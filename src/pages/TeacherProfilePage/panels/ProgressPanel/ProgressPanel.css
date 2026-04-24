@@ -71,27 +71,47 @@
   color: rgba(245, 241, 232, 0.75);
 }
 
-.pp__dateWrap {
-  margin-top: 6px;
-  display: flex;
-  justify-content: space-around;
-}
-
-.pp__dateLabel {
-  display: block;
-  margin: 7px 4px 0;
-  font-size: 12px;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: rgba(245, 241, 232, 0.72);
-}
-
 .pp__dateRow {
   display: flex;
   flex-direction: row-reverse;
   align-items: center;
   gap: 10px;
   flex-wrap: wrap;
+}
+.pp__metaRow {
+  display: flex;
+  align-items: flex-start;
+  gap: 28px;
+  flex-wrap: nowrap;
+  margin-top: 8px;
+}
+
+.pp__dateWrap,
+.pp__timeWrap {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin-top: 6px;
+}
+
+.pp__dateLabel,
+.pp__timeLabel {
+  display: block;
+  margin: 0;
+  padding-top: 6px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--gold);
+  white-space: nowrap;
+}
+
+.pp__dateRow,
+.pp__timeInputs {
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
 
 .pp__dateInput {
@@ -140,6 +160,33 @@
 /* Firefox fallback */
 .pp__dateInput::-moz-focus-inner {
   border: 0;
+}
+
+.pp__timeSelect {
+  min-width: 132px;
+  height: 30px;
+  border: 1px solid rgba(201, 168, 76, 0.28);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--paper, #f8f4ec);
+  padding: 0 12px;
+  font-size: 14px;
+}
+
+.pp__timeSelect option {
+  color: #1c1a17;
+}
+
+.pp__timeSelect:focus {
+  outline: none;
+  border-color: var(--gold);
+  box-shadow: 0 0 0 3px rgba(201, 168, 76, 0.12);
+}
+
+.pp__timeDash {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 16px;
+  font-weight: 600;
 }
 
 .pp__close {
@@ -306,8 +353,26 @@
     font-size: 16px;
   }
 
-  .pp__dateWrap {
+  .pp__metaRow {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .pp__dateWrap,
+  .pp__timeWrap {
+    width: 100%;
     margin-top: 4px;
+  }
+
+  .pp__timeInputs {
+    width: 100%;
+    flex-wrap: nowrap;
+  }
+
+  .pp__timeSelect {
+    flex: 1;
+    min-width: 0;
   }
 
   .pp__dateDisplay {

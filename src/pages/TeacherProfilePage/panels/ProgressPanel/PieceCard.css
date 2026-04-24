@@ -398,7 +398,7 @@
   border-top: 1px solid rgba(31, 28, 24, 0.08);
 }
 
-.pc__saveOne {
+.pc__copyBtn {
   padding: 12px 20px;
   border-radius: 15px;
   border: 1px solid rgba(31, 28, 24, 0.16);
@@ -407,12 +407,12 @@
   font: 600 12px/1 var(--td-sans);
 }
 
-.pc__saveOne:disabled {
+.pc__copyBtn:disabled {
   opacity: 0.45;
   cursor: not-allowed;
 }
 
-.pc__saveOne:hover:not(:disabled) {
+.pc__copyBtn:hover:not(:disabled) {
   background: rgba(239, 129, 129, 0.89);
   border-color: rgba(31, 28, 24, 0.25);
   transform: translateY(-1px);

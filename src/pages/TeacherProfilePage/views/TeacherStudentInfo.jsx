@@ -73,25 +73,56 @@ export default function TeacherStudentInfo({
   const progressScoreHistory = useMemo(() => {
     if (!activeCycleId) return [];
 
-    const cycleLessons = filterLessonsForCycle(allLessons || [], activeCycleId);
-    const readinessSeries = buildLessonReadiness(cycleLessons);
+    const cycleLessons = filterLessonsForCycle(allLessons || [], activeCycleId)
+      .slice()
+      .sort((a, b) => {
+        // 1. Primary: lessonDate (SOURCE OF TRUTH)
+        const aDate = new Date(a.lessonDate).getTime();
+        const bDate = new Date(b.lessonDate).getTime();
 
-    return readinessSeries.map((point, index) => {
-      const lesson = cycleLessons[index];
-      const rawDate =
-        lesson?.lessonDate || lesson?.lessonStartAt || lesson?.createdAt;
+        if (aDate !== bDate) return aDate - bDate;
 
-      return {
-        lessonLabel: `L${index + 1}`,
-        dateLabel: rawDate
-          ? new Date(rawDate).toLocaleDateString("en-GB", {
-              day: "numeric",
-              month: "short",
-            })
-          : "",
-        score: Math.round(Number(point?.readiness) || 0),
-      };
-    });
+        // 2. Secondary: lessonStartAt (only if both exist)
+        if (a.lessonStartAt && b.lessonStartAt) {
+          return (
+            new Date(a.lessonStartAt).getTime() -
+            new Date(b.lessonStartAt).getTime()
+          );
+        }
+
+        // 3. If only one has time → prioritize the one WITH time
+        if (a.lessonStartAt) return -1;
+        if (b.lessonStartAt) return 1;
+
+        // 4. Otherwise stable (do nothing)
+        return 0;
+      });
+
+    return cycleLessons
+      .filter(
+        (lesson) =>
+          lesson.lessonTotalScore !== null &&
+          lesson.lessonTotalScore !== undefined,
+      )
+      .map((lesson, index) => {
+        // ALWAYS use lessonDate for display (not createdAt)
+        const dateObj = lesson.lessonDate ? new Date(lesson.lessonDate) : null;
+
+        const score = Number.isFinite(lesson.lessonTotalScore)
+          ? Math.round(lesson.lessonTotalScore)
+          : 0;
+
+        return {
+          lessonLabel: `L${index + 1}`,
+          dateLabel: dateObj
+            ? dateObj.toLocaleDateString("en-GB", {
+                day: "numeric",
+                month: "short",
+              })
+            : "",
+          score,
+        };
+      });
   }, [allLessons, activeCycleId]);
 
   const activeCycleStatus = cycleStatus(activeCycle);

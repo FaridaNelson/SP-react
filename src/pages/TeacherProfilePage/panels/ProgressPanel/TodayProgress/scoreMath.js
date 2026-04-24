@@ -113,6 +113,8 @@ export function mergeIntoProgressItems(items, scores) {
 
 export function buildLessonPayload({
   lessonDate,
+  lessonStartTime,
+  lessonEndTime,
   studentId,
   examPreparationCycleId,
   instrument,
@@ -125,16 +127,29 @@ export function buildLessonPayload({
   teacherNarrative,
   share,
 }) {
-  // Build lessonStartAt from lessonDate (Using noon to avoid timezone issues)
-  const [y, m, d] = String(lessonDate).split("-").map(Number);
-  const lessonStartAt = new Date(y, m - 1, d, 12, 0, 0).toISOString();
+  function combineDateAndTime(dateStr, timeStr) {
+    if (!dateStr || !timeStr) return null;
+
+    const [y, m, d] = String(dateStr).split("-").map(Number);
+    const [hh, mm] = String(timeStr).split(":").map(Number);
+
+    if (!y || !m || !d || !Number.isFinite(hh) || !Number.isFinite(mm)) {
+      return null;
+    }
+
+    return new Date(y, m - 1, d, hh, mm, 0).toISOString();
+  }
+
+  const lessonStartAt = combineDateAndTime(lessonDate, lessonStartTime);
+  const lessonEndAt = combineDateAndTime(lessonDate, lessonEndTime);
 
   return {
     lessonDate,
+    lessonStartAt,
+    lessonEndAt,
     studentId,
     examPreparationCycleId,
     instrument,
-    lessonStartAt,
     share,
     pieces: Object.entries(pieces || {}).map(([pieceId, pv]) => ({
       pieceId,
