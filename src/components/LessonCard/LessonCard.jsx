@@ -12,14 +12,18 @@ function parseLessonDate(dateStr) {
 
 function formatLessonMeta(lesson) {
   if (!lesson.lessonStartAt) return "";
+
   const start = new Date(lesson.lessonStartAt);
+
   const timeStr = start.toLocaleTimeString("en-US", {
     hour: "numeric",
     minute: "2-digit",
-    hour12: true,
   });
+
   if (!lesson.lessonEndAt) return timeStr;
+
   const mins = Math.round((new Date(lesson.lessonEndAt) - start) / 60000);
+
   return `${timeStr} · ${mins} min`;
 }
 

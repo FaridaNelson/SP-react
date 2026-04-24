@@ -25,7 +25,8 @@ export default function PieceCard({
   lastWeekPercent, // last week's percent for this piece
   onSetScore,
   onSetNote,
-  onSavePiece,
+  onCopyLastLesson,
+  canCopyLastLesson,
   disabled,
   missingCriteria = [],
   onFocusCriterion,
@@ -177,15 +178,17 @@ export default function PieceCard({
         </div>
       </div>
       <div className="pc__actions">
-        <button
-          type="button"
-          className="pc__saveOne"
-          onClick={() => onSavePiece?.()}
-          disabled={disabled}
-          title="Save progress for this piece only"
-        >
-          Save this piece
-        </button>
+        {canCopyLastLesson && (
+          <button
+            type="button"
+            className="pc__copyBtn"
+            onClick={onCopyLastLesson}
+            disabled={disabled}
+            title="Copy last lesson notes and grades"
+          >
+            Copy last lesson notes & values
+          </button>
+        )}
       </div>
     </article>
   );
