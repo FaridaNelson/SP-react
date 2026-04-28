@@ -28,3 +28,10 @@ export async function getLatestLesson(
   const data = await api(url);
   return data?.lesson || null;
 }
+
+export function updateLesson(lessonId, body) {
+  return api(`/api/lessons/${lessonId}`, {
+    method: "PATCH",
+    body,
+  });
+}

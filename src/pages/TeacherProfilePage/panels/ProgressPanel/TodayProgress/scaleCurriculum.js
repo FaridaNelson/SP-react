@@ -158,7 +158,7 @@ export const SCALE_CURRICULUM = {
     },
     {
       id: "g3_d_minor_ht",
-      label: "D minor",
+      label: "E minor",
       category: "Similar Motion Scales",
       detail: "2 octaves, hands together (harmonic or melodic)",
     },

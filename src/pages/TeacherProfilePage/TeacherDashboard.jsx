@@ -115,6 +115,7 @@ function SelectedStudentPane({
   progressOpen,
   onOpenProgress,
   onCloseProgress,
+  editingLesson,
   onToast,
   initialCycle,
   onGoToHistory,
@@ -275,6 +276,7 @@ function SelectedStudentPane({
       <ProgressPanel
         open={progressOpen}
         onClose={onCloseProgress}
+        editLesson={editingLesson}
         student={student}
         items={items}
         onSaveScores={saveScores}
@@ -334,6 +336,7 @@ export default function TeacherDashboard({
 
   // TeacherDashboard controls panel open state
   const [progressOpen, setProgressOpen] = useState(false);
+  const [editingLesson, setEditingLesson] = useState(null);
 
   // snapshot | history | info
   const [view, setView] = useState("snapshot");
@@ -344,6 +347,16 @@ export default function TeacherDashboard({
   const [historyBlockedOpen, setHistoryBlockedOpen] = useState(false);
   const [historyActiveCycle, setHistoryActiveCycle] = useState(null);
   const [historyRefreshKey, setHistoryRefreshKey] = useState(0);
+
+  function handleEditLesson(lesson, cycle) {
+    if (cycle) {
+      setSelectedCycle(cycle);
+    }
+
+    setEditingLesson(lesson);
+    setView("snapshot");
+    setProgressOpen(true);
+  }
 
   useEffect(() => setRoster(students), [students]);
 
@@ -543,8 +556,15 @@ export default function TeacherDashboard({
             <SelectedStudentPane
               student={selectedStudent}
               progressOpen={progressOpen}
-              onOpenProgress={() => setProgressOpen(true)}
-              onCloseProgress={() => setProgressOpen(false)}
+              onOpenProgress={() => {
+                setEditingLesson(null);
+                setProgressOpen(true);
+              }}
+              onCloseProgress={() => {
+                setProgressOpen(false);
+                setEditingLesson(null);
+              }}
+              editingLesson={editingLesson}
               onToast={showToast}
               initialCycle={selectedCycle}
               onGoToHistory={() => setView("history")}
@@ -590,6 +610,7 @@ export default function TeacherDashboard({
                 studentId={selectedStudent._id || selectedStudent.id}
                 studentName={studentDisplayName(selectedStudent)}
                 refreshKey={historyRefreshKey}
+                onEditLesson={handleEditLesson}
                 onSelect={(cycle) => {
                   setSelectedCycle(cycle);
                   setView("snapshot");
