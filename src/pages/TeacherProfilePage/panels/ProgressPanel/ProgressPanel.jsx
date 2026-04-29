@@ -84,6 +84,14 @@ export default function ProgressPanel({
 
   // Determine which elements to show based on active cycle's examType
   const isPerformance = activeCycle?.examType === "Performance";
+  console.log("ProgressPanel activeCycle:", {
+    id: activeCycle?._id,
+    examType: activeCycle?.examType,
+    examGrade: activeCycle?.examGrade,
+    instrument: activeCycle?.instrument,
+    requiredElements: activeCycle?.progressSummary?.requiredElements,
+  });
+
   const requiredElements = activeCycle?.progressSummary?.requiredElements || [];
 
   // Build piece list: 4 pieces for Performance, 3 for Practical
