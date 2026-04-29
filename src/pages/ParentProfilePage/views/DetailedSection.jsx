@@ -48,5 +48,5 @@ export default function DetailedSection({ studentId, cycle }) {
   if (error) return <div className="pd-error">Could not load lesson.</div>;
   if (!lesson) return <div className="pd-empty">No lessons recorded yet.</div>;
 
-  return <LessonCard lesson={lesson} readOnly />;
+  return <LessonCard lesson={lesson} cycle={cycle} readOnly={true} />;
 }

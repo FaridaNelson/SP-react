@@ -179,6 +179,7 @@ export function ExamCycleCard({
                 <LessonCard
                   key={lesson._id || lesson.id}
                   lesson={lesson}
+                  cycle={cycle} // THIS LINE was causin scales to render on edit, because cycle object was changing - now passing cycle directly to avoid that
                   readOnly={readOnly}
                   onEditLesson={(lesson) => onEditLesson?.(lesson, cycle)}
                 />

@@ -151,13 +151,41 @@ function ScaleName({ name }) {
 
 /* ── Lesson body renderer ── */
 
-function LessonBody({ lesson }) {
+function LessonBody({ lesson, cycle }) {
+  if (!cycle) {
+    if (process.env.NODE_ENV === "development") {
+      console.warn("LessonCard missing cycle for lesson:", {
+        lessonId: lesson?._id,
+        lesson,
+      });
+    }
+  }
+
   const piecesWithCriteria = (lesson.pieces || []).filter((p) =>
     p.criteria?.some((c) => c.score !== null && c.score !== undefined),
   );
-  const scaleItems = lesson.scales?.items || [];
-  const sightScore = lesson.sightReading?.score;
-  const auralScore = lesson.auralTraining?.score;
+  const requiredElements = cycle?.progressSummary?.requiredElements || [];
+
+  const showScales =
+    requiredElements.length > 0
+      ? requiredElements.includes("scales")
+      : cycle?.examType === "Performance"
+        ? false
+        : true;
+
+  const showSightReading =
+    requiredElements.length > 0
+      ? requiredElements.includes("sightReading")
+      : cycle?.examType !== "Performance";
+
+  const showAural =
+    requiredElements.length > 0
+      ? requiredElements.includes("auralTraining")
+      : cycle?.examType !== "Performance";
+
+  const scaleItems = showScales ? lesson.scales?.items || [] : [];
+  const sightScore = showSightReading ? lesson.sightReading?.score : null;
+  const auralScore = showAural ? lesson.auralTraining?.score : null;
 
   function formatScaleName(scaleId) {
     if (!scaleId) return "";
@@ -352,10 +380,13 @@ function LessonBody({ lesson }) {
 
 /* ── Main component ── */
 
-export default function LessonCard({ lesson, readOnly = false, onEditLesson }) {
+export default function LessonCard({
+  lesson,
+  cycle,
+  readOnly = false,
+  onEditLesson,
+}) {
   const [bodyOpen, setBodyOpen] = useState(false);
-
-  const lessonId = lesson._id || lesson.id;
   const d = parseLessonDate(lesson.lessonDate);
   const dayOfWeek = d
     .toLocaleDateString("en-US", { weekday: "long" })
@@ -415,7 +446,7 @@ export default function LessonCard({ lesson, readOnly = false, onEditLesson }) {
       </div>
 
       <div className={`lesson-card-body${bodyOpen ? " open" : ""}`}>
-        <LessonBody lesson={lesson} />
+        <LessonBody lesson={lesson} cycle={cycle} />
       </div>
     </div>
   );
