@@ -1,5 +1,23 @@
 export const API_BASE = import.meta.env.VITE_API_BASE || "";
 
+let csrfToken = null;
+
+async function getCsrfToken() {
+  if (csrfToken) return csrfToken;
+
+  const res = await fetch(`${API_BASE}/api/csrf-token`, {
+    credentials: "include",
+  });
+
+  if (!res.ok) {
+    throw new Error("Failed to fetch CSRF token");
+  }
+
+  const data = await res.json();
+  csrfToken = data.csrfToken;
+  return csrfToken;
+}
+
 export async function api(path, options = {}) {
   const {
     method = "GET",
@@ -17,8 +35,17 @@ export async function api(path, options = {}) {
   const isBlob = typeof Blob !== "undefined" && body instanceof Blob;
 
   const headers = { ...optHeaders };
+
+  const upperMethod = method.toUpperCase();
+  const needsCsrf = !["GET", "HEAD", "OPTIONS"].includes(upperMethod);
+
+  if (needsCsrf && !headers["CSRF-Token"] && !headers["X-CSRF-Token"]) {
+    headers["CSRF-Token"] = await getCsrfToken();
+  }
+
   const shouldJson =
     body != null && !isFormData && !isBlob && typeof body !== "string";
+
   if (shouldJson && !headers["Content-Type"]) {
     headers["Content-Type"] = "application/json";
   }
@@ -46,6 +73,10 @@ export async function api(path, options = {}) {
   }
 
   if (!res.ok) {
+    if (res.status === 403) {
+      csrfToken = null;
+    }
+
     const message =
       (isJson && (data?.error || data?.message)) ||
       (typeof data === "string" ? data : null) ||
@@ -56,5 +87,6 @@ export async function api(path, options = {}) {
     err.data = data;
     throw err;
   }
+
   return data;
 }
