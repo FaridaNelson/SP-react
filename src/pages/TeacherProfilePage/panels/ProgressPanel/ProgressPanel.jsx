@@ -92,11 +92,16 @@ export default function ProgressPanel({
     requiredElements: activeCycle?.progressSummary?.requiredElements,
   });
 
-  const requiredElements = activeCycle?.progressSummary?.requiredElements || [];
-
+  const requiredElements = useMemo(
+  () => activeCycle?.progressSummary?.requiredElements || [],
+  [activeCycle?.progressSummary?.requiredElements],
+  );
   // Build piece list: 4 pieces for Performance, 3 for Practical
   // Overlay piece names from the cycle if available
-  const cyclePieces = activeCycle?.pieces || [];
+  const cyclePieces = useMemo(
+  () => activeCycle?.pieces || [],
+  [activeCycle?.pieces],
+  );
   const activePieces = useMemo(() => {
     const base = isPerformance ? ALL_PIECES : PIECES;
     // Only show pieces that are in requiredElements (if available)

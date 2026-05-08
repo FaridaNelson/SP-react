@@ -22,7 +22,7 @@ function statusLabel(pct) {
 export default function AssignmentBreakdown({
   items = [],
   passMark = PASS_MARK,
-  title = "Skill breakdown",
+  // title = "Skill breakdown",
   animateKey,
   subtitle, // optional little helper text
 }) {

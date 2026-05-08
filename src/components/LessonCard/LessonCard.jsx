@@ -153,7 +153,7 @@ function ScaleName({ name }) {
 
 function LessonBody({ lesson, cycle }) {
   if (!cycle) {
-    if (process.env.NODE_ENV === "development") {
+    if (import.meta.env.DEV) {
       console.warn("LessonCard missing cycle for lesson:", {
         lessonId: lesson?._id,
         lesson,
