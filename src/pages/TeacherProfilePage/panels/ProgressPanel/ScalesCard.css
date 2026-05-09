@@ -31,6 +31,49 @@
   opacity: 0.85;
 }
 
+.sc__headRight {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.sc__toggleBtn {
+  border: none;
+  background: var(--gold-light);
+  color: var(--ink);
+
+  padding: 5px 10px;
+  border-radius: 12px;
+
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+
+  cursor: pointer;
+
+  transition:
+    background 0.2s ease,
+    transform 0.15s ease,
+    box-shadow 0.2s ease;
+
+  box-shadow:
+    inset 0 0 0 1px rgba(28, 26, 23, 0.08);
+
+  white-space: nowrap;
+}
+
+.sc__toggleBtn:hover {
+  background: var(--gold);
+}
+
+.sc__toggleBtn:active {
+  transform: scale(0.98);
+}
+
+.sc__toggleBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
 /* column titles */
 .sc__colsHead {
   display: grid;

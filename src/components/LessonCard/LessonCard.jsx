@@ -186,6 +186,14 @@ function LessonBody({ lesson, cycle }) {
   const scaleItems = showScales ? lesson.scales?.items || [] : [];
   const sightScore = showSightReading ? lesson.sightReading?.score : null;
   const auralScore = showAural ? lesson.auralTraining?.score : null;
+  const scalesTotalScore = Math.round(lesson.scales?.percent || 0);
+  const [scalesOpen, setScalesOpen] = useState(false);
+const pieceGridCols = (criterionCount) => `
+  1fr
+  ${Array.from({ length: criterionCount }, () => "72px").join(" ")}
+  1.5fr
+  1.5fr
+`;
 
   function formatScaleName(scaleId) {
     if (!scaleId) return "";
@@ -231,7 +239,7 @@ function LessonBody({ lesson, cycle }) {
             }
           }
 
-          const gridCols = `100px ${allCriterionIds.map(() => "1fr").join(" ")} 1fr ${allCriterionIds.length}fr`;
+          const gridCols = pieceGridCols(allCriterionIds.length);
 
           return (
             <div className="lesson-section">
@@ -330,32 +338,52 @@ function LessonBody({ lesson, cycle }) {
           );
         })()}
 
-      {/* Scales */}
-      {scaleItems.length > 0 && (
-        <div className="lesson-section">
-          <div className="lesson-section-title">Scales</div>
-          <div className="scale-grade-grid">
-            {scaleItems.map((item, i) => {
-              const ready = !!item.ready;
-              const name = item.scaleId ? formatScaleName(item.scaleId) : "";
-              return (
-                <div
-                  key={i}
-                  className={`scale-grade-item ${ready ? "ready" : "not-ready"}`}
+         {/* Scales */}
+        {scaleItems.length > 0 && (
+          <div className="lesson-section">
+            <div className="lesson-section-header lesson-section-header--scales">
+              <div className="lesson-section-title lesson-section-title--no-line">
+                Scales
+              </div>
+
+              <div className="lesson-scales-header-right">
+                <button
+                  type="button"
+                  className="lesson-scales-toggle-btn"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setScalesOpen((prev) => !prev);
+                  }}
                 >
-                  <span
-                    className={`scale-check ${ready ? "ready" : "not-ready"}`}
+                  {scalesOpen ? "Hide Scales" : "Show Scales"}
+                </button>
+              </div>
+            </div>
+
+            <PercentBar pct={scalesTotalScore} label="Scales" />
+
+            {scalesOpen && (
+            <div className="scale-grade-grid">
+              {scaleItems.map((item, i) => {
+                const ready = !!item.ready;
+                const name = item.scaleId ? formatScaleName(item.scaleId) : "";
+                return (
+                  <div
+                    key={i}
+                    className={`scale-grade-item ${ready ? "ready" : "not-ready"}`}
                   >
-                    {ready ? "✓" : "✗"}
-                  </span>
-                  <ScaleName name={name} />
-                  {item.note && (
-                    <span className="scale-note-display">{item.note}</span>
-                  )}
-                </div>
-              );
-            })}
-          </div>
+                    <span className={`scale-check ${ready ? "ready" : "not-ready"}`}>
+                      {ready ? "✓" : "✗"}
+                    </span>
+                    <ScaleName name={name} />
+                    {item.note && (
+                      <span className="scale-note-display">{item.note}</span>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          )}
         </div>
       )}
 
