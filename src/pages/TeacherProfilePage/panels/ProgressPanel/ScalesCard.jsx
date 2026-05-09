@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import "./ScalesCard.css";
 
 const PASS_THRESHOLD = 67; // same idea as PieceCard (adjust if you want)
@@ -14,6 +14,8 @@ export default function ScalesCard({
   onSetNote,
   disabled,
 }) {
+  const [isOpen, setIsOpen] = useState(false);
+
   const afterIsPass = Number(percent) >= PASS_THRESHOLD;
   const lastIsPass = Number(lastWeekPercent) >= PASS_THRESHOLD;
 
@@ -39,12 +41,29 @@ export default function ScalesCard({
 
   return (
     <article className="sc__card">
-      {/* header bar (match PieceCard styling) */}
+      {/* header bar */}
       <div className="sc__head">
         <div className="sc__title">{title}</div>
-        <div className="sc__percent">{percent}%</div>
+
+        <div className="sc__headRight">
+          <div className="sc__percent">{Math.round(percent)}%</div>
+
+          <button
+            type="button"
+            className="sc__toggleBtn"
+            onClick={(e) => {
+              e.stopPropagation();
+              setIsOpen((prev) => !prev);
+            }}
+            disabled={disabled}
+          >
+            {isOpen ? "Hide Scales" : "Show Scales"}
+          </button>
+        </div>
       </div>
 
+    {isOpen && (
+    <>
       {/* column titles */}
       <div className="sc__colsHead sc__colsHead--3">
         <div className="sc__colTitle">
@@ -181,6 +200,9 @@ export default function ScalesCard({
           </span>
         </div>
       </div>
+    </>
+    )}
     </article>
   );
 }
+

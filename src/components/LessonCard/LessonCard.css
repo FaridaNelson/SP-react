@@ -95,20 +95,47 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-
+  cursor: pointer;
+  user-select: none;
   padding-bottom: 14px;
   margin-bottom: 18px;
 
   border-bottom: 1px solid rgba(28, 26, 23, 0.08);
 }
 
-.lesson-scales-total-score {
-  font-size: 12px;
-  font-weight: 600;
-  color: var(--ink-muted);
+.lesson-scales-header-right {
+  display: flex;
+  align-items: center;
+  gap: 14px;
 }
 
+.lesson-scales-toggle-btn {
+  border: none;
+  background: var(--gold-light);
+  color: var(--ink);
 
+  padding: 7px 14px;
+  border-radius: 10px;
+  margin-left: 55px;
+
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+
+  cursor: pointer;
+
+  transition:
+    background 0.2s ease,
+    transform 0.15s ease;
+}
+
+.lesson-scales-toggle-btn:hover {
+  background: var(--gold);
+}
+
+.lesson-scales-toggle-btn:active {
+  transform: scale(0.98);
+}
 
 .lesson-note-display {
   background: var(--cream);
