@@ -186,6 +186,13 @@ function LessonBody({ lesson, cycle }) {
   const scaleItems = showScales ? lesson.scales?.items || [] : [];
   const sightScore = showSightReading ? lesson.sightReading?.score : null;
   const auralScore = showAural ? lesson.auralTraining?.score : null;
+  const scalesTotalScore = Math.round(lesson.scales?.percent || 0);
+const pieceGridCols = (criterionCount) => `
+  1fr
+  ${Array.from({ length: criterionCount }, () => "72px").join(" ")}
+  1.5fr
+  1.5fr
+`;
 
   function formatScaleName(scaleId) {
     if (!scaleId) return "";
@@ -231,7 +238,7 @@ function LessonBody({ lesson, cycle }) {
             }
           }
 
-          const gridCols = `100px ${allCriterionIds.map(() => "1fr").join(" ")} 1fr ${allCriterionIds.length}fr`;
+          const gridCols = pieceGridCols(allCriterionIds.length);
 
           return (
             <div className="lesson-section">
@@ -333,7 +340,13 @@ function LessonBody({ lesson, cycle }) {
       {/* Scales */}
       {scaleItems.length > 0 && (
         <div className="lesson-section">
-          <div className="lesson-section-title">Scales</div>
+          <div className="lesson-section-header lesson-section-header--scales">
+  <div className="lesson-section-title">Scales</div>
+
+  <div className="lesson-scales-total-score">
+    SCALES TOTAL SCORE:<strong> {scalesTotalScore}% </strong>
+  </div>
+</div>
           <div className="scale-grade-grid">
             {scaleItems.map((item, i) => {
               const ready = !!item.ready;
