@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { api } from "../../lib/api";
 
 export function sortCycles(cycles = []) {
@@ -75,36 +75,32 @@ export function useStudentLessons(studentId) {
   const [lessons, setLessons] = useState([]);
   const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
+  const refetch = useCallback(async () => {
     if (!studentId) {
       setLessons([]);
-      return;
+      return [];
     }
 
-    let alive = true;
     setLoading(true);
 
-    api(`/api/lessons/student/${studentId}`)
-      .then((res) => {
-        if (!alive) return;
-        const all = Array.isArray(res)
-          ? res
-          : (res?.lessons ?? res?.items ?? []);
-        setLessons(all);
-      })
-      .catch(() => {
-        if (alive) setLessons([]);
-      })
-      .finally(() => {
-        if (alive) setLoading(false);
-      });
-
-    return () => {
-      alive = false;
-    };
+    try {
+      const res = await api(`/api/lessons/student/${studentId}`);
+      const all = Array.isArray(res) ? res : (res?.lessons ?? res?.items ?? []);
+      setLessons(all);
+      return all;
+    } catch {
+      setLessons([]);
+      return [];
+    } finally {
+      setLoading(false);
+    }
   }, [studentId]);
 
-  return { lessons, loading };
+  useEffect(() => {
+    refetch();
+  }, [refetch]);
+
+  return { lessons, loading, refetch };
 }
 
 export function filterLessonsForCycle(allLessons = [], cycleId) {

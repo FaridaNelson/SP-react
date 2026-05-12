@@ -6,10 +6,7 @@ import AttendanceCalendar from "../attendance/AttendanceCalendar";
 import { api } from "../../../lib/api";
 import "./TeacherStudentInfo.css";
 import PanelHeader from "../../../components/PanelHeader/PanelHeader";
-import {
-  filterLessonsForCycle,
-  buildLessonReadiness,
-} from "../../../components/ExamCycle/examCycleUtils";
+import { filterLessonsForCycle } from "../../../components/ExamCycle/examCycleUtils";
 import ProgressScoreOverTime from "../components/ProgressScoreOverTime/ProgressScoreOverTime";
 
 function cycleStatus(c) {
@@ -52,13 +49,10 @@ function formatLessonDateLabel(dateValue) {
 
 export default function TeacherStudentInfo({
   student,
-  items = [],
-  readiness = 0,
   latestLesson,
   latestLessonLoading,
   onOpenProgress,
   onNewExamCycle,
-  examCycleRefreshKey,
   onToast,
   initialCycle,
   onGoToHistory,
@@ -129,6 +123,14 @@ export default function TeacherStudentInfo({
       });
   }, [allLessons, activeCycleId]);
 
+  const matchingLessonsForCycle = filterLessonsForCycle(
+    allLessons || [],
+    activeCycleId,
+  );
+
+  console.log("MATCHING LESSONS FOR CURRENT CYCLE:", matchingLessonsForCycle);
+  console.log("PROGRESS SCORE HISTORY:", progressScoreHistory);
+
   const activeCycleStatus = cycleStatus(activeCycle);
   const isActiveCycleReadOnly =
     activeCycle &&
@@ -138,7 +140,6 @@ export default function TeacherStudentInfo({
   const grouped = useMemo(() => {
     const groups = new Map();
     for (const h of history) {
-      const d = h.lessonDate || h.createdAt;
       const raw = h.lessonDate || h.createdAt;
 
       const dateOnly = raw ? String(raw).slice(0, 10) : null;
@@ -174,14 +175,6 @@ export default function TeacherStudentInfo({
     } finally {
       setHistoryLoading(false);
     }
-  }
-
-  if (!student) {
-    return (
-      <div className="teacherStudentInfo teacherStudentInfo--empty">
-        <p>Select a student.</p>
-      </div>
-    );
   }
 
   // Element label mapping
@@ -251,9 +244,36 @@ export default function TeacherStudentInfo({
     return Math.round(weighted / totalWeight);
   }, [filteredItems]);
 
+  console.log("CHART SCORE SOURCE:", {
+    progressScoreHistory,
+    latestChartPoint: progressScoreHistory[progressScoreHistory.length - 1],
+    latestLessonTotalScore: latestLesson?.lessonTotalScore,
+    donutComputedReadiness: computedReadiness,
+  });
   // Exam card derived data
   const examLabel = getExamLabel(activeCycle);
   const days = daysToGo(activeCycle?.examDate);
+
+  console.log("Donut value:", {
+    computedReadiness,
+    latestScores: activeCycle?.progressSummary?.latestScores,
+    updatedAt: activeCycle?.progressSummary?.updatedAt,
+  });
+  console.log("SCORE SOURCES:", {
+    donutComputedReadiness: computedReadiness,
+    cycleReadinessScore: activeCycle?.progressSummary?.readinessScore,
+    cycleLatestScores: activeCycle?.progressSummary?.latestScores,
+    latestLessonTotalScore: latestLesson?.lessonTotalScore,
+    chartHistory: progressScoreHistory,
+  });
+
+  if (!student) {
+    return (
+      <div className="teacherStudentInfo teacherStudentInfo--empty">
+        <p>Select a student.</p>
+      </div>
+    );
+  }
 
   return (
     <section className="teacherStudentInfo">

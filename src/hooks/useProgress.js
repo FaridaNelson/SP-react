@@ -65,7 +65,7 @@ export function useProgress(studentId, { scope = "teacher" } = {}) {
   const saveScores = useCallback(
     async (
       nextItems,
-      { examPreparationCycleId, instrument, lessonDate } = {},
+      { examPreparationCycleId, instrument, lessonDate, lessonId } = {},
     ) => {
       setItems(nextItems); // optimistic
       try {
@@ -80,12 +80,20 @@ export function useProgress(studentId, { scope = "teacher" } = {}) {
                 studentId,
                 examPreparationCycleId,
                 instrument,
+                lessonId,
                 lessonDate: lessonDate || new Date().toISOString().slice(0, 10),
                 elementId: it.id,
                 score: it.score,
               },
             }),
           );
+        console.log("SAVING SCORE ENTRIES:", {
+          lessonId,
+          examPreparationCycleId,
+          instrument,
+          lessonDate,
+          nextItems,
+        });
         await Promise.all(promises);
       } catch (err) {
         console.error("Failed to save score entries", err);
