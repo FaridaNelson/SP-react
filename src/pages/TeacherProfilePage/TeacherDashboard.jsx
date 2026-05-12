@@ -131,7 +131,7 @@ function SelectedStudentPane({
   const [cyclesFetched, setCyclesFetched] = useState(false);
 
   // derive resolved cycle
-  const resolvedCycle = initialCycle || fetchedCycle;
+  const resolvedCycle = fetchedCycle || initialCycle;
   const currentCycleId = resolvedCycle?._id || resolvedCycle?.id || null;
   const currentInstrument =
     resolvedCycle?.instrument || student?.instrument || null;
@@ -164,7 +164,8 @@ function SelectedStudentPane({
     enabled: progressOpen,
   });
 
-  const { lessons: allLessons } = useStudentLessons(studentId);
+  const { lessons: allLessons, refetch: refetchLessons } =
+    useStudentLessons(studentId);
 
   useEffect(() => {
     if (!studentId) return;
@@ -283,6 +284,11 @@ function SelectedStudentPane({
         onLessonSaved={async (saved) => {
           setLatestLesson(saved);
           await refreshActiveCycle();
+
+          const freshLessons = await refetchLessons?.();
+          console.log("REFETCHED LESSONS AFTER EDIT:", freshLessons);
+
+          setExamCycleRefreshKey((k) => k + 1);
           onRosterRefresh?.();
         }}
         activeCycle={resolvedCycle}
@@ -317,7 +323,7 @@ export default function TeacherDashboard({
   user,
 }) {
   const teacherId = user?._id || user?.id;
-  const { students, isLoading, error, refresh } = useTeacherStudents(teacherId);
+  const { students, isLoading, refresh } = useTeacherStudents(teacherId);
 
   const [roster, setRoster] = useState([]);
   const [greeting, setGreeting] = useState(() => getPacificGreeting());

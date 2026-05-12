@@ -27,14 +27,21 @@ const EXAM_TYPES = [
 const GRADES = Array.from({ length: 8 }, (_, i) => i + 1);
 
 const PIECES_3 = [
-  { key: "pieceA", label: "Piece A", title: "", composer: "" },
-  { key: "pieceB", label: "Piece B", title: "", composer: "" },
-  { key: "pieceC", label: "Piece C", title: "", composer: "" },
+  { key: "pieceA", label: "Piece A", title: "", composer: "", publication: "" },
+  { key: "pieceB", label: "Piece B", title: "", composer: "", publication: "" },
+  { key: "pieceC", label: "Piece C", title: "", composer: "", publication: "" },
 ];
 
 const PIECES_4 = [
   ...PIECES_3,
-  { key: "pieceD", label: "Piece D", title: "", composer: "" },
+  {
+    key: "pieceD",
+    label: "Piece D",
+    title: "",
+    composer: "",
+    publication: "",
+    isCustom: true,
+  },
 ];
 
 const LIST_MAP = { pieceA: "A", pieceB: "B", pieceC: "C", pieceD: "D" };
@@ -75,7 +82,13 @@ export default function ExamCycleWizard({
       case 0:
         return examType && examGrade;
       case 1:
-        return pieces.every((p) => p.title.trim());
+        return pieces.every((p) => {
+          if (p.key === "pieceD" && isPerformance) {
+            return p.title.trim() && p.composer.trim();
+          }
+
+          return p.title.trim();
+        });
       case 2:
         return true;
       case 3:
@@ -114,6 +127,8 @@ export default function ExamCycleWizard({
           label: p.label,
           title: p.title,
           composer: p.composer,
+          publication: p.publication || "",
+          isCustom: Boolean(p.isCustom),
         })),
     };
 
@@ -279,7 +294,6 @@ export default function ExamCycleWizard({
   }
 
   function renderPieces() {
-    const subtitle = STEP_SUBTITLES(studentName, pieces.length)[1];
     const hasTypeAndGrade = examType && examGrade;
 
     return (
@@ -299,6 +313,56 @@ export default function ExamCycleWizard({
               const currentValue =
                 p.title && p.composer ? `${p.title}|||${p.composer}` : "";
 
+              const isCustomPerformancePieceD =
+                isPerformance && p.key === "pieceD";
+
+              if (isCustomPerformancePieceD) {
+                return (
+                  <div key={p.key} className="ecw__pieceGroup">
+                    <span className="ecw__pieceCaption">
+                      {p.label.toUpperCase()}
+                    </span>
+
+                    <label className="spModal__field">
+                      <span className="spModal__label">TITLE</span>
+                      <input
+                        className="spModal__input"
+                        value={p.title}
+                        onChange={(e) =>
+                          updatePiece(i, "title", e.target.value)
+                        }
+                        placeholder="Enter custom piece title"
+                      />
+                    </label>
+
+                    <label className="spModal__field">
+                      <span className="spModal__label">COMPOSER</span>
+                      <input
+                        className="spModal__input"
+                        value={p.composer}
+                        onChange={(e) =>
+                          updatePiece(i, "composer", e.target.value)
+                        }
+                        placeholder="Enter composer name"
+                      />
+                    </label>
+
+                    <label className="spModal__field">
+                      <span className="spModal__label">
+                        PUBLICATION / SOURCE
+                      </span>
+                      <input
+                        className="spModal__input"
+                        value={p.publication || ""}
+                        onChange={(e) =>
+                          updatePiece(i, "publication", e.target.value)
+                        }
+                        placeholder="Book, collection, or publication name"
+                      />
+                    </label>
+                  </div>
+                );
+              }
               return (
                 <div key={p.key} className="ecw__pieceGroup">
                   <span className="ecw__pieceCaption">

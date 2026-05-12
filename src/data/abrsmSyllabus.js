@@ -1,15 +1,9 @@
-// ABRSM_PIECES[examType][grade] = { A: [...], B: [...], C: [...], D?: [...] }
+// ABRSM_PIECES[examType][grade] = { A: [...], B: [...], C: [...] }
+// Performance Piece D is entered manually in the ExamCycleWizard.
 // examType keys: "ABRSM - Practical" | "ABRSM - Performance"
 // grade keys: 1–8 (numbers)
-// Each piece: { title: string, composer: string }
+// Each piece: { title: string, composer: string, publication: string }
 // TODO: Replace placeholders with official 2025–2026 ABRSM syllabus data
-
-function placeholder(list, grade, count = 3) {
-  return Array.from({ length: count }, (_, i) => ({
-    title: `${list} List ${list} – Grade ${grade} Piece ${i + 1} (placeholder)`,
-    composer: `Composer ${list}${i + 1}`,
-  }));
-}
 
 const PRACTICAL = {};
 
@@ -368,7 +362,8 @@ PRACTICAL[2] = {
     {
       title: "Haggis Hunt (from Celtic Piano Music - Initial to Grade 2)",
       composer: "Donald Thomson",
-      composer: "Donald Thomson: Celtic Piano Music - Initial to Grade 2 (EVC)",
+      publication:
+        "Donald Thomson: Celtic Piano Music - Initial to Grade 2 (EVC)",
     },
   ],
   B: [
@@ -2155,24 +2150,14 @@ PRACTICAL[8] = {
 const PERFORMANCE = {};
 
 for (let g = 1; g <= 8; g++) {
-  const A =
-    g <= 3 && PRACTICAL[g]
-      ? PRACTICAL[g].A.map((p) => ({ ...p }))
-      : placeholder("A", g);
-  const B =
-    g <= 3 && PRACTICAL[g]
-      ? PRACTICAL[g].B.map((p) => ({ ...p }))
-      : placeholder("B", g);
-  const C =
-    g <= 3 && PRACTICAL[g]
-      ? PRACTICAL[g].C.map((p) => ({ ...p }))
-      : placeholder("C", g);
+  const A = PRACTICAL[g]?.A?.map((p) => ({ ...p })) ?? [];
+  const B = PRACTICAL[g]?.B?.map((p) => ({ ...p })) ?? [];
+  const C = PRACTICAL[g]?.C?.map((p) => ({ ...p })) ?? [];
 
   PERFORMANCE[g] = {
     A,
     B,
     C,
-    D: [...A, ...B, ...C],
   };
 }
 
