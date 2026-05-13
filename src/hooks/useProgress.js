@@ -87,13 +87,7 @@ export function useProgress(studentId, { scope = "teacher" } = {}) {
               },
             }),
           );
-        console.log("SAVING SCORE ENTRIES:", {
-          lessonId,
-          examPreparationCycleId,
-          instrument,
-          lessonDate,
-          nextItems,
-        });
+
         await Promise.all(promises);
       } catch (err) {
         console.error("Failed to save score entries", err);

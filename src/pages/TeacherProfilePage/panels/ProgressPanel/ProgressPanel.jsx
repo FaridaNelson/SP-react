@@ -84,13 +84,6 @@ export default function ProgressPanel({
 
   // Determine which elements to show based on active cycle's examType
   const isPerformance = activeCycle?.examType === "Performance";
-  console.log("ProgressPanel activeCycle:", {
-    id: activeCycle?._id,
-    examType: activeCycle?.examType,
-    examGrade: activeCycle?.examGrade,
-    instrument: activeCycle?.instrument,
-    requiredElements: activeCycle?.progressSummary?.requiredElements,
-  });
 
   const requiredElements = useMemo(
     () => activeCycle?.progressSummary?.requiredElements || [],
@@ -462,19 +455,6 @@ export default function ProgressPanel({
       if (showAural) scoreMap.auralTraining = finalAural?.score ?? null;
       const nextItems = mergeIntoProgressItems(items, scoreMap);
 
-      const savedLesson = editLesson?._id
-        ? await updateLesson(editLesson._id, lessonPayload)
-        : await upsertLesson(lessonPayload);
-
-      if (onSaveScores) {
-        await onSaveScores(nextItems, {
-          examPreparationCycleId: activeCycle?._id,
-          instrument: activeCycle?.instrument,
-          lessonDate,
-          lessonId: editLesson?._id,
-        });
-      }
-
       // 2) Save full lesson payload
       const lessonPayload = buildLessonPayload({
         lessonDate,
@@ -492,6 +472,19 @@ export default function ProgressPanel({
         lessonStartTime,
         lessonEndTime,
       });
+
+      const savedLesson = editLesson?._id
+        ? await updateLesson(editLesson._id, lessonPayload)
+        : await upsertLesson(lessonPayload);
+
+      if (onSaveScores) {
+        await onSaveScores(nextItems, {
+          examPreparationCycleId: activeCycle?._id,
+          instrument: activeCycle?.instrument,
+          lessonDate,
+          lessonId: savedLesson?._id,
+        });
+      }
 
       setLatestLesson(savedLesson);
       onLessonSaved?.(savedLesson);

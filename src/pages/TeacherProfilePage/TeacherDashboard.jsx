@@ -164,8 +164,7 @@ function SelectedStudentPane({
     enabled: progressOpen,
   });
 
-  const { lessons: allLessons, refetch: refetchLessons } =
-    useStudentLessons(studentId);
+  const { lessons: allLessons } = useStudentLessons(studentId);
 
   useEffect(() => {
     if (!studentId) return;
@@ -284,9 +283,6 @@ function SelectedStudentPane({
         onLessonSaved={async (saved) => {
           setLatestLesson(saved);
           await refreshActiveCycle();
-
-          const freshLessons = await refetchLessons?.();
-          console.log("REFETCHED LESSONS AFTER EDIT:", freshLessons);
 
           setExamCycleRefreshKey((k) => k + 1);
           onRosterRefresh?.();

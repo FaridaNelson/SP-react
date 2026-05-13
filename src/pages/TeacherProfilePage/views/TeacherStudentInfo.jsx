@@ -123,14 +123,6 @@ export default function TeacherStudentInfo({
       });
   }, [allLessons, activeCycleId]);
 
-  const matchingLessonsForCycle = filterLessonsForCycle(
-    allLessons || [],
-    activeCycleId,
-  );
-
-  console.log("MATCHING LESSONS FOR CURRENT CYCLE:", matchingLessonsForCycle);
-  console.log("PROGRESS SCORE HISTORY:", progressScoreHistory);
-
   const activeCycleStatus = cycleStatus(activeCycle);
   const isActiveCycleReadOnly =
     activeCycle &&
@@ -244,28 +236,9 @@ export default function TeacherStudentInfo({
     return Math.round(weighted / totalWeight);
   }, [filteredItems]);
 
-  console.log("CHART SCORE SOURCE:", {
-    progressScoreHistory,
-    latestChartPoint: progressScoreHistory[progressScoreHistory.length - 1],
-    latestLessonTotalScore: latestLesson?.lessonTotalScore,
-    donutComputedReadiness: computedReadiness,
-  });
   // Exam card derived data
   const examLabel = getExamLabel(activeCycle);
   const days = daysToGo(activeCycle?.examDate);
-
-  console.log("Donut value:", {
-    computedReadiness,
-    latestScores: activeCycle?.progressSummary?.latestScores,
-    updatedAt: activeCycle?.progressSummary?.updatedAt,
-  });
-  console.log("SCORE SOURCES:", {
-    donutComputedReadiness: computedReadiness,
-    cycleReadinessScore: activeCycle?.progressSummary?.readinessScore,
-    cycleLatestScores: activeCycle?.progressSummary?.latestScores,
-    latestLessonTotalScore: latestLesson?.lessonTotalScore,
-    chartHistory: progressScoreHistory,
-  });
 
   if (!student) {
     return (
