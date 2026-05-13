@@ -28,8 +28,6 @@ export default function ProgressDonut({
 
   const clamped = Math.max(0, Math.min(100, Number(value) || 0));
 
-  console.log("ProgressDonut received:", { value, clamped });
-
   const progressLen = (clamped / 100) * circumference;
 
   // NEW: decide tone
