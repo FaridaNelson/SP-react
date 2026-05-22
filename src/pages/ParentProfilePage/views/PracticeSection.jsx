@@ -54,6 +54,15 @@ function summaryThemeFor(count) {
   return "rose";
 }
 
+// Csrf token helper:
+async function getCsrfToken() {
+  const res = await fetch(`${API_BASE}/api/csrf-token`, {
+    credentials: "include",
+  });
+  const data = await res.json();
+  return data.csrfToken;
+}
+
 // ─── Component ────────────────────────────────────────────────────
 
 export default function PracticeSection({
@@ -64,10 +73,14 @@ export default function PracticeSection({
   saveRef,
 }) {
   const today = useMemo(getToday, []);
+
+  const tasks = useMemo(
+    () => (examType === "Performance" ? PERF_TASKS : GRADE_TASKS),
+    [examType],
+  );
+
   const todayKey = useMemo(() => dateKey(today), [today]);
   const days = useMemo(() => buildWeek(today), [today]);
-  const tasks = examType === "Performance" ? PERF_TASKS : GRADE_TASKS;
-
   // { "YYYY-MM-DD": { pieceA: true, scales: false, … } }
   const [tasksByDay, setTasksByDay] = useState({});
 
@@ -80,7 +93,7 @@ export default function PracticeSection({
   // ── Expose save function via ref for parent to call on navigate-away ──
   useEffect(() => {
     if (!saveRef) return;
-    saveRef.current = () => {
+    saveRef.current = async () => {
       const snapshot = tasksByDayRef.current;
       if (!studentId || !cycle?._id) return;
 
@@ -128,11 +141,15 @@ export default function PracticeSection({
       saturday.setDate(sunday.getDate() + 6);
       const weekStartDate = dateKey(sunday);
       const weekEndDate = dateKey(saturday);
+      const csrfToken = await getCsrfToken();
 
       fetch(`${API_BASE}/api/parent/students/${studentId}/practice-log`, {
         method: "POST",
         credentials: "include",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          "X-CSRF-Token": csrfToken,
+        },
         body: JSON.stringify({
           examCycleId: cycle._id,
           weekStartDate,
@@ -142,7 +159,7 @@ export default function PracticeSection({
         }),
       }).catch(() => {}); // silent fail — this is a background save
     };
-  }, [saveRef, studentId, cycle?._id]);
+  }, [saveRef, studentId, cycle?._id, tasks, today]);
 
   // ── Single source of truth: which days have any task done ─────
   // Derived directly from tasksByDay — no closures, no stale reads.
