@@ -477,12 +477,38 @@ export default function ProgressPanel({
         ? await updateLesson(editLesson._id, lessonPayload)
         : await upsertLesson(lessonPayload);
 
+      const savedLessonId = savedLesson?.lesson?._id || savedLesson?._id;
+
       if (onSaveScores) {
+        console.log("SAVING SCORES", {
+          lessonId: savedLessonId,
+          savedLesson,
+        });
+
+        const pieceCriteriaMap = Object.fromEntries(
+          Object.entries(finalPieces).map(([id, piece]) => [
+            id,
+            Object.entries(piece?.criteria || {}).map(([key, criterion]) => ({
+              key,
+              label: key
+                .replace(/([A-Z])/g, " $1")
+                .replace(/^./, (s) => s.toUpperCase()),
+              score: criterion?.score ?? null,
+              value: criterion?.note || "",
+            })),
+          ]),
+        );
+
         await onSaveScores(nextItems, {
           examPreparationCycleId: activeCycle?._id,
           instrument: activeCycle?.instrument,
           lessonDate,
-          lessonId: savedLesson?._id,
+          lessonId: savedLessonId,
+
+          sightReadingNotes: finalSight,
+          auralTrainingNotes: finalAural,
+
+          pieceCriteriaMap,
         });
       }
 

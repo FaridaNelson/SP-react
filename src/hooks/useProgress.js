@@ -65,7 +65,15 @@ export function useProgress(studentId, { scope = "teacher" } = {}) {
   const saveScores = useCallback(
     async (
       nextItems,
-      { examPreparationCycleId, instrument, lessonDate, lessonId } = {},
+      {
+        examPreparationCycleId,
+        instrument,
+        lessonDate,
+        lessonId,
+        sightReadingNotes,
+        auralTrainingNotes,
+        pieceCriteriaMap,
+      } = {},
     ) => {
       setItems(nextItems); // optimistic
       try {
@@ -73,20 +81,46 @@ export function useProgress(studentId, { scope = "teacher" } = {}) {
 
         const promises = nextItems
           .filter((it) => it.score != null && it.score > 0)
-          .map((it) =>
-            api("/api/score-entries/", {
+          .map((it) => {
+            const body = {
+              studentId,
+              examPreparationCycleId,
+              instrument,
+              lessonId,
+              lessonDate: lessonDate || new Date().toISOString().slice(0, 10),
+              elementId: it.id,
+              elementLabel: it.label,
+              score: it.score,
+            };
+
+            if (it.id === "sightReading") {
+              body.sightReadingNotes = {
+                pitchAccuracy: sightReadingNotes?.pitchAccuracy || "",
+                rhythmAccuracy: sightReadingNotes?.rhythmAccuracy || "",
+                adequateTempo: sightReadingNotes?.adequateTempo || "",
+                confidentPresentation:
+                  sightReadingNotes?.confidentPresentation || "",
+              };
+            }
+
+            if (it.id === "auralTraining") {
+              body.auralTrainingNotes = {
+                rhythmAccuracy: auralTrainingNotes?.rhythmAccuracy || "",
+                singingInPitch: auralTrainingNotes?.singingInPitch || "",
+                musicalMemory: auralTrainingNotes?.musicalMemory || "",
+                musicalPerceptiveness:
+                  auralTrainingNotes?.musicalPerceptiveness || "",
+              };
+            }
+            if (["pieceA", "pieceB", "pieceC", "pieceD"].includes(it.id)) {
+              body.pieceCriteria = pieceCriteriaMap?.[it.id] || [];
+            }
+
+            return api("/api/score-entries/", {
               method: "POST",
-              body: {
-                studentId,
-                examPreparationCycleId,
-                instrument,
-                lessonId,
-                lessonDate: lessonDate || new Date().toISOString().slice(0, 10),
-                elementId: it.id,
-                score: it.score,
-              },
-            }),
-          );
+              body,
+            });
+          });
 
         await Promise.all(promises);
       } catch (err) {
