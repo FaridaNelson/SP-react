@@ -149,6 +149,26 @@ function ScaleName({ name }) {
   );
 }
 
+function getScaleDisplayNote(item) {
+  if (item?.ready === null || item?.ready === undefined) {
+    return "Not Covered";
+  }
+
+  return String(item?.note || "").trim();
+}
+
+function getScaleStatus(item) {
+  if (item?.ready === true) return "ready";
+  if (item?.ready === false) return "not-ready";
+  return "not-covered";
+}
+
+function getScaleSymbol(item) {
+  if (item?.ready === true) return "✓";
+  if (item?.ready === false) return "✗";
+  return "○";
+}
+
 /* ── Lesson body renderer ── */
 
 function LessonBody({ lesson, cycle }) {
@@ -184,11 +204,13 @@ function LessonBody({ lesson, cycle }) {
       : cycle?.examType !== "Performance";
 
   const scaleItems = showScales ? lesson.scales?.items || [] : [];
+  console.log("LESSON CARD scaleItems", scaleItems);
+
   const sightScore = showSightReading ? lesson.sightReading?.score : null;
   const auralScore = showAural ? lesson.auralTraining?.score : null;
   const scalesTotalScore = Math.round(lesson.scales?.percent || 0);
   const [scalesOpen, setScalesOpen] = useState(false);
-const pieceGridCols = (criterionCount) => `
+  const pieceGridCols = (criterionCount) => `
   1fr
   ${Array.from({ length: criterionCount }, () => "72px").join(" ")}
   1.5fr
@@ -338,46 +360,52 @@ const pieceGridCols = (criterionCount) => `
           );
         })()}
 
-         {/* Scales */}
-        {scaleItems.length > 0 && (
-          <div className="lesson-section">
-            <div className="lesson-section-header lesson-section-header--scales">
-              <div className="lesson-section-title lesson-section-title--no-line">
-                Scales
-              </div>
-
-              <div className="lesson-scales-header-right">
-                <button
-                  type="button"
-                  className="lesson-scales-toggle-btn"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setScalesOpen((prev) => !prev);
-                  }}
-                >
-                  {scalesOpen ? "Hide Scales" : "Show Scales"}
-                </button>
-              </div>
+      {/* Scales */}
+      {scaleItems.length > 0 && (
+        <div className="lesson-section">
+          <div className="lesson-section-header lesson-section-header--scales">
+            <div className="lesson-section-title lesson-section-title--no-line">
+              Scales
             </div>
 
-            <PercentBar pct={scalesTotalScore} label="Scales" />
+            <div className="lesson-scales-header-right">
+              <button
+                type="button"
+                className="lesson-scales-toggle-btn"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setScalesOpen((prev) => !prev);
+                }}
+              >
+                {scalesOpen ? "Hide Scales" : "Show Scales"}
+              </button>
+            </div>
+          </div>
 
-            {scalesOpen && (
+          <PercentBar pct={scalesTotalScore} label="Scales" />
+
+          {scalesOpen && (
             <div className="scale-grade-grid">
               {scaleItems.map((item, i) => {
-                const ready = !!item.ready;
+                console.log(
+                  item.scaleId,
+                  item.ready,
+                  getScaleDisplayNote(item),
+                );
+                const status = getScaleStatus(item);
+                const displayNote = getScaleDisplayNote(item);
                 const name = item.scaleId ? formatScaleName(item.scaleId) : "";
+
                 return (
-                  <div
-                    key={i}
-                    className={`scale-grade-item ${ready ? "ready" : "not-ready"}`}
-                  >
-                    <span className={`scale-check ${ready ? "ready" : "not-ready"}`}>
-                      {ready ? "✓" : "✗"}
+                  <div key={i} className={`scale-grade-item ${status}`}>
+                    <span className={`scale-check ${status}`}>
+                      {getScaleSymbol(item)}
                     </span>
+
                     <ScaleName name={name} />
-                    {item.note && (
-                      <span className="scale-note-display">{item.note}</span>
+
+                    {displayNote && (
+                      <span className="scale-note-display">{displayNote}</span>
                     )}
                   </div>
                 );

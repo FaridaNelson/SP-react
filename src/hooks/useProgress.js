@@ -96,6 +96,7 @@ export function useProgress(studentId, { scope = "teacher" } = {}) {
 
             if (it.id === "scales") {
               body.scalesNotes = scalesNotes;
+              console.log("SCALES SCORE ENTRY BODY", body);
             }
 
             if (it.id === "sightReading") {

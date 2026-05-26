@@ -11,7 +11,7 @@ export function initPieces(PIECES) {
 
 export function initScales(list) {
   const out = {};
-  for (const s of list) out[s.id] = { ready: false, note: "" };
+  for (const s of list) out[s.id] = { ready: null, note: "" };
   return out;
 }
 
@@ -87,11 +87,13 @@ export function getMissingPieceCriteria(pieceValue, criteriaDef) {
 }
 
 export function computeScalesPercent(scalesMap) {
-  const entries = Object.values(scalesMap || {});
-  const answered = entries.filter((s) => s.ready === true || s.ready === false);
-  if (answered.length === 0) return 0;
-  const readyCount = answered.filter((s) => s.ready === true).length;
-  return Math.round((readyCount / answered.length) * 100);
+  if (!scalesMap) return 0;
+
+  const items = Object.values(scalesMap);
+
+  const readyCount = items.filter((s) => s?.ready === true).length;
+
+  return items.length ? Math.round((readyCount / items.length) * 100) : 0;
 }
 
 /**
@@ -167,13 +169,11 @@ export function buildLessonPayload({
     })),
     scales: {
       percent: scalesPercent ?? 0,
-      items: Object.entries(scales || {})
-        .filter(([, sv]) => sv?.ready === true || sv?.ready === false)
-        .map(([scaleId, sv]) => ({
-          scaleId,
-          ready: sv?.ready === true,
-          note: sv?.note?.trim() || null,
-        })),
+      items: Object.entries(scales || {}).map(([scaleId, sv]) => ({
+        scaleId,
+        ready: sv?.ready === true ? true : sv?.ready === false ? false : null,
+        note: sv?.note?.trim() || null,
+      })),
     },
     sightReading: normalizeNoteBlock(sight),
     auralTraining: normalizeNoteBlock(aural),

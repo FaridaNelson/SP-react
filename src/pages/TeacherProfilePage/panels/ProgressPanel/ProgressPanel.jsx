@@ -17,7 +17,7 @@ import ScalesCard from "./ScalesCard";
 import SightreadingCard from "./SightreadingCard";
 import AuralCard from "./AuralCard";
 import {
-  upsertLesson,
+  createLesson,
   getLatestLesson,
   updateLesson,
 } from "../../../../lib/lessons";
@@ -35,7 +35,14 @@ function isPieceTouched(pieceValue) {
 
 function isScalesTouched(scalesMap) {
   if (!scalesMap) return false;
-  return Object.values(scalesMap).some((s) => s?.ready === true);
+
+  return Object.values(scalesMap).some(
+    (s) =>
+      s?.ready === true ||
+      s?.ready === false ||
+      String(s?.note || "").trim() !== "" ||
+      String(s?.currentTempo || "").trim() !== "",
+  );
 }
 
 function isSightAuralTouched(val) {
@@ -475,7 +482,7 @@ export default function ProgressPanel({
 
       const savedLesson = editLesson?._id
         ? await updateLesson(editLesson._id, lessonPayload)
-        : await upsertLesson(lessonPayload);
+        : await createLesson(lessonPayload);
 
       const savedLessonId = savedLesson?.lesson?._id || savedLesson?._id;
 

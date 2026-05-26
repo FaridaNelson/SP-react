@@ -20,8 +20,13 @@ export function lessonPiecesToDraftMap(piecesArr = []) {
  */
 export function lessonScalesToDraftMap(scales = {}) {
   const out = {};
+
   for (const it of scales.items || []) {
-    out[it.scaleId] = { ready: it.ready === true, note: it.note ?? "" };
+    out[it.scaleId] = {
+      ready: it.ready === true ? true : it.ready === false ? false : null,
+      note: it.note ?? "",
+    };
   }
+
   return out;
 }

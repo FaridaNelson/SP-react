@@ -290,6 +290,22 @@
 .scale-grade-item.not-ready {
   background: rgba(212, 128, 106, 0.08);
 }
+.scale-grade-item.not-covered {
+  background: rgba(28, 26, 23, 0.04);
+  border: 1px dashed rgba(28, 26, 23, 0.12);
+}
+
+.scale-check.not-covered {
+  background: rgba(28, 26, 23, 0.08);
+  color: #777;
+}
+
+.scale-note-display {
+  font-size: 11px;
+  color: var(--ink-muted);
+  font-style: italic;
+  display: block;
+}
 
 .scale-check {
   display: inline-flex;

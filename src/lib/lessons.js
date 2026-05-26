@@ -1,6 +1,14 @@
 import { api } from "./api";
 
-// PUT /api/lessons/  (upsert)
+// POST /api/lessons/ create new lesson
+export function createLesson(body) {
+  return api("/api/lessons/", {
+    method: "POST",
+    body,
+  });
+}
+
+// PUT /api/lessons/  (upsert existing lesson by date)
 export function upsertLesson(body) {
   return api("/api/lessons/", {
     method: "PUT",
