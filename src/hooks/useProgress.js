@@ -70,6 +70,7 @@ export function useProgress(studentId, { scope = "teacher" } = {}) {
         instrument,
         lessonDate,
         lessonId,
+        scalesNotes,
         sightReadingNotes,
         auralTrainingNotes,
         pieceCriteriaMap,
@@ -92,6 +93,10 @@ export function useProgress(studentId, { scope = "teacher" } = {}) {
               elementLabel: it.label,
               score: it.score,
             };
+
+            if (it.id === "scales") {
+              body.scalesNotes = scalesNotes;
+            }
 
             if (it.id === "sightReading") {
               body.sightReadingNotes = {

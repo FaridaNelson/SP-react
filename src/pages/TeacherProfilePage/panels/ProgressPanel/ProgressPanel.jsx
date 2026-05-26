@@ -505,6 +505,7 @@ export default function ProgressPanel({
           lessonDate,
           lessonId: savedLessonId,
 
+          scalesNotes: finalScales,
           sightReadingNotes: finalSight,
           auralTrainingNotes: finalAural,
 
