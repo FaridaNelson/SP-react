@@ -468,6 +468,7 @@ export default function ProgressPanel({
         studentId,
         examPreparationCycleId: activeCycle?._id,
         instrument: activeCycle?.instrument,
+        examType: activeCycle?.examType,
         pieces: finalPieces,
         piecePercents: finalPiecePercents,
         scales: finalScales,
@@ -682,34 +683,42 @@ export default function ProgressPanel({
                 lastWeekPercent={piecePercentFromLesson(latestLesson, p.id)}
                 disabled={busy}
                 onSetScore={(criterionId, score) =>
-                  setPieces((prev) => ({
-                    ...prev,
-                    [p.id]: {
-                      ...prev[p.id],
-                      criteria: {
-                        ...prev[p.id].criteria,
-                        [criterionId]: {
-                          ...(prev[p.id].criteria?.[criterionId] || {}),
-                          score,
+                  setPieces((prev) => {
+                    const currentPiece = prev[p.id] || { criteria: {} };
+
+                    return {
+                      ...prev,
+                      [p.id]: {
+                        ...currentPiece,
+                        criteria: {
+                          ...(currentPiece.criteria || {}),
+                          [criterionId]: {
+                            ...(currentPiece.criteria?.[criterionId] || {}),
+                            score,
+                          },
                         },
                       },
-                    },
-                  }))
+                    };
+                  })
                 }
                 onSetNote={(criterionId, note) =>
-                  setPieces((prev) => ({
-                    ...prev,
-                    [p.id]: {
-                      ...prev[p.id],
-                      criteria: {
-                        ...prev[p.id].criteria,
-                        [criterionId]: {
-                          ...(prev[p.id].criteria?.[criterionId] || {}),
-                          note,
+                  setPieces((prev) => {
+                    const currentPiece = prev[p.id] || { criteria: {} };
+
+                    return {
+                      ...prev,
+                      [p.id]: {
+                        ...currentPiece,
+                        criteria: {
+                          ...(currentPiece.criteria || {}),
+                          [criterionId]: {
+                            ...(currentPiece.criteria?.[criterionId] || {}),
+                            note,
+                          },
                         },
                       },
-                    },
-                  }))
+                    };
+                  })
                 }
                 onCopyLastLesson={() => handleCopyPieceFromLastLesson(p.id)}
                 canCopyLastLesson={!!lastPiecesMap[p.id]}

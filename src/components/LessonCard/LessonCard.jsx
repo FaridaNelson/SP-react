@@ -203,8 +203,14 @@ function LessonBody({ lesson, cycle }) {
       ? requiredElements.includes("auralTraining")
       : cycle?.examType !== "Performance";
 
-  const scaleItems = showScales ? lesson.scales?.items || [] : [];
-  console.log("LESSON CARD scaleItems", scaleItems);
+  const isPerformanceCycle =
+    cycle?.examType === "ABRSM - Performance" ||
+    cycle?.examType === "Performance" ||
+    lesson?.examType === "ABRSM - Performance" ||
+    lesson?.examType === "Performance";
+
+  const scaleItems =
+    !isPerformanceCycle && showScales ? lesson?.scales?.items || [] : [];
 
   const sightScore = showSightReading ? lesson.sightReading?.score : null;
   const auralScore = showAural ? lesson.auralTraining?.score : null;
@@ -384,14 +390,9 @@ function LessonBody({ lesson, cycle }) {
 
           <PercentBar pct={scalesTotalScore} label="Scales" />
 
-          {scalesOpen && (
+          {!isPerformanceCycle && scalesOpen && (
             <div className="scale-grade-grid">
               {scaleItems.map((item, i) => {
-                console.log(
-                  item.scaleId,
-                  item.ready,
-                  getScaleDisplayNote(item),
-                );
                 const status = getScaleStatus(item);
                 const displayNote = getScaleDisplayNote(item);
                 const name = item.scaleId ? formatScaleName(item.scaleId) : "";

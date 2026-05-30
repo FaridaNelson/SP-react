@@ -120,6 +120,7 @@ export function buildLessonPayload({
   studentId,
   examPreparationCycleId,
   instrument,
+  examType,
   pieces,
   piecePercents,
   scales,
@@ -145,6 +146,9 @@ export function buildLessonPayload({
   const lessonStartAt = combineDateAndTime(lessonDate, lessonStartTime);
   const lessonEndAt = combineDateAndTime(lessonDate, lessonEndTime);
 
+  const isPerformanceCycle =
+    examType === "ABRSM - Performance" || examType === "Performance";
+
   return {
     lessonDate,
     lessonStartAt,
@@ -167,16 +171,19 @@ export function buildLessonPayload({
           note: cv?.note?.trim() || null,
         })),
     })),
-    scales: {
-      percent: scalesPercent ?? 0,
-      items: Object.entries(scales || {}).map(([scaleId, sv]) => ({
-        scaleId,
-        ready: sv?.ready === true ? true : sv?.ready === false ? false : null,
-        note: sv?.note?.trim() || null,
-      })),
-    },
-    sightReading: normalizeNoteBlock(sight),
-    auralTraining: normalizeNoteBlock(aural),
+    scales: isPerformanceCycle
+      ? { percent: 0, items: [] }
+      : {
+          percent: scalesPercent ?? 0,
+          items: Object.entries(scales || {}).map(([scaleId, sv]) => ({
+            scaleId,
+            ready:
+              sv?.ready === true ? true : sv?.ready === false ? false : null,
+            note: sv?.note?.trim() || null,
+          })),
+        },
+    sightReading: isPerformanceCycle ? null : normalizeNoteBlock(sight),
+    auralTraining: isPerformanceCycle ? null : normalizeNoteBlock(aural),
     teacherNarrative: teacherNarrative?.trim() || null,
   };
 }

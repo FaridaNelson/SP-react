@@ -16,6 +16,39 @@ const WITHDRAW_REASONS = [
 
 const viewToStep = { choose: 0, results: 1, withdraw: 1 };
 
+function ScoreInput({ label, max, value, onChange, disabled }) {
+  return (
+    <label className="ccw__scoreField">
+      <span className="ccw__scoreLabel">{label}</span>
+      <div className="ccw__scoreWrap">
+        <input
+          className="ccw__scoreInput"
+          type="text"
+          inputMode="numeric"
+          pattern="[0-9]*"
+          value={value}
+          onChange={(e) => {
+            const v = e.target.value.replace(/\D/g, "");
+
+            if (v === "") {
+              onChange("");
+              return;
+            }
+
+            const num = Number(v);
+
+            if (num >= 0 && num <= max) {
+              onChange(v);
+            }
+          }}
+          disabled={disabled}
+        />
+        <span className="ccw__scoreMax">/ {max}</span>
+      </div>
+    </label>
+  );
+}
+
 export default function CycleCompleteWizard({
   cycle,
   studentName,
@@ -29,22 +62,36 @@ export default function CycleCompleteWizard({
   const isPerformance = cycle?.examType === "Performance";
   const displayName = studentName || "this student";
 
+  function getCyclePiece(key) {
+    return cycle?.pieces?.find((p) => p.key === key) || {};
+  }
+
   // Navigation: "choose" | "results" | "withdraw"
   const [view, setView] = useState(startOnWithdraw ? "withdraw" : "choose");
   const [cameFromChoose, setCameFromChoose] = useState(!startOnWithdraw);
-
   // Results state
   const [examResult, setExamResult] = useState("");
   const [totalMark, setTotalMark] = useState("");
   const [examinerComments, setExaminerComments] = useState("");
+
+  const [examinerId, setExaminerId] = useState("");
+
   const [pieceA, setPieceA] = useState("");
   const [pieceB, setPieceB] = useState("");
   const [pieceC, setPieceC] = useState("");
   const [pieceD, setPieceD] = useState("");
+
+  const [pieceAComment, setPieceAComment] = useState("");
+  const [pieceBComment, setPieceBComment] = useState("");
+  const [pieceCComment, setPieceCComment] = useState("");
+  const [pieceDComment, setPieceDComment] = useState("");
+
+  const [performanceWholeScore, setPerformanceWholeScore] = useState("");
+  const [performanceWholeComment, setPerformanceWholeComment] = useState("");
+
   const [scalesScore, setScalesScore] = useState("");
   const [sightScore, setSightScore] = useState("");
   const [auralScore, setAuralScore] = useState("");
-
   // Withdraw state
   const [reason, setReason] = useState("");
   const [notes, setNotes] = useState("");
@@ -67,6 +114,63 @@ export default function CycleCompleteWizard({
         completion: {
           result: examResult,
           totalMark: totalMark ? parseInt(totalMark, 10) : undefined,
+          examinerId: examinerId.trim() || undefined,
+
+          pieces: [
+            {
+              slot: "A",
+              title: getCyclePiece("pieceA").title || undefined,
+              composer: getCyclePiece("pieceA").composer || undefined,
+              publication: getCyclePiece("pieceA").publication || undefined,
+              mark: pieceA ? parseInt(pieceA, 10) : undefined,
+              maxMark: 30,
+              examinerComment: pieceAComment.trim() || undefined,
+            },
+            {
+              slot: "B",
+              title: getCyclePiece("pieceB").title || undefined,
+              composer: getCyclePiece("pieceB").composer || undefined,
+              publication: getCyclePiece("pieceB").publication || undefined,
+              mark: pieceB ? parseInt(pieceB, 10) : undefined,
+              maxMark: 30,
+              examinerComment: pieceBComment.trim() || undefined,
+            },
+            {
+              slot: "C",
+              title: getCyclePiece("pieceC").title || undefined,
+              composer: getCyclePiece("pieceC").composer || undefined,
+              publication: getCyclePiece("pieceC").publication || undefined,
+              mark: pieceC ? parseInt(pieceC, 10) : undefined,
+              maxMark: 30,
+              examinerComment: pieceCComment.trim() || undefined,
+            },
+
+            ...(isPerformance
+              ? [
+                  {
+                    slot: "D",
+                    title: getCyclePiece("pieceD").title || undefined,
+                    composer: getCyclePiece("pieceD").composer || undefined,
+                    publication:
+                      getCyclePiece("pieceD").publication || undefined,
+                    mark: pieceD ? parseInt(pieceD, 10) : undefined,
+                    maxMark: 30,
+                    examinerComment: pieceDComment.trim() || undefined,
+                  },
+                ]
+              : []),
+          ],
+
+          performanceAsWhole: isPerformance
+            ? {
+                mark: performanceWholeScore
+                  ? parseInt(performanceWholeScore, 10)
+                  : undefined,
+                maxMark: 30,
+                examinerComment: performanceWholeComment.trim() || undefined,
+              }
+            : undefined,
+
           pieceScores: {
             pieceA: pieceA ? parseInt(pieceA, 10) : undefined,
             pieceB: pieceB ? parseInt(pieceB, 10) : undefined,
@@ -75,6 +179,7 @@ export default function CycleCompleteWizard({
               ? { pieceD: parseInt(pieceD, 10) }
               : {}),
           },
+
           ...(!isPerformance
             ? {
                 componentScores: {
@@ -118,22 +223,18 @@ export default function CycleCompleteWizard({
     }
   }
 
-  function ScoreInput({ label, max, value, onChange }) {
+  function TextInput({ label, value, onChange, placeholder }) {
     return (
-      <label className="ccw__scoreField">
-        <span className="ccw__scoreLabel">{label}</span>
-        <div className="ccw__scoreWrap">
-          <input
-            className="ccw__scoreInput"
-            type="number"
-            min={0}
-            max={max}
-            value={value}
-            onChange={(e) => onChange(e.target.value)}
-            disabled={busy}
-          />
-          <span className="ccw__scoreMax">/ {max}</span>
-        </div>
+      <label className="ccw__field">
+        <span className="ccw__label">{label}</span>
+        <input
+          className="ccw__input"
+          type="text"
+          value={value}
+          placeholder={placeholder}
+          onChange={(e) => onChange(e.target.value)}
+          disabled={busy}
+        />
       </label>
     );
   }
@@ -309,6 +410,14 @@ export default function CycleCompleteWizard({
           max={150}
           value={totalMark}
           onChange={setTotalMark}
+          disabled={busy}
+        />
+
+        <TextInput
+          label="Examiner ID"
+          value={examinerId}
+          onChange={setExaminerId}
+          placeholder="e.g. A454"
         />
 
         <div className="ccw__divider" />
@@ -317,31 +426,116 @@ export default function CycleCompleteWizard({
         </h3>
 
         <div className="ccw__scoreGrid">
+          <div className="ccw__pieceMeta">
+            {getCyclePiece("pieceA").composer} — {getCyclePiece("pieceA").title}
+          </div>
           <ScoreInput
             label="Piece A"
             max={30}
             value={pieceA}
             onChange={setPieceA}
+            disabled={busy}
           />
+
+          <label className="ccw__field">
+            <span className="ccw__label">Piece A Examiner Comment</span>
+            <textarea
+              className="ccw__textarea"
+              rows={3}
+              value={pieceAComment}
+              onChange={(e) => setPieceAComment(e.target.value)}
+              disabled={busy}
+            />
+          </label>
+          <div className="ccw__pieceMeta">
+            {getCyclePiece("pieceB").composer} — {getCyclePiece("pieceB").title}
+          </div>
           <ScoreInput
             label="Piece B"
             max={30}
             value={pieceB}
             onChange={setPieceB}
+            disabled={busy}
           />
+
+          <label className="ccw__field">
+            <span className="ccw__label">Piece B Examiner Comment</span>
+            <textarea
+              className="ccw__textarea"
+              rows={3}
+              value={pieceBComment}
+              onChange={(e) => setPieceBComment(e.target.value)}
+              disabled={busy}
+            />
+          </label>
+          <div className="ccw__pieceMeta">
+            {getCyclePiece("pieceC").composer} — {getCyclePiece("pieceC").title}
+          </div>
           <ScoreInput
             label="Piece C"
             max={30}
             value={pieceC}
             onChange={setPieceC}
+            disabled={busy}
           />
-          {isPerformance && (
-            <ScoreInput
-              label="Piece D"
-              max={30}
-              value={pieceD}
-              onChange={setPieceD}
+
+          <label className="ccw__field">
+            <span className="ccw__label">Piece C Examiner Comment</span>
+            <textarea
+              className="ccw__textarea"
+              rows={3}
+              value={pieceCComment}
+              onChange={(e) => setPieceCComment(e.target.value)}
+              disabled={busy}
             />
+          </label>
+
+          {isPerformance && (
+            <>
+              <div className="ccw__pieceMeta">
+                {getCyclePiece("pieceD").composer} —{" "}
+                {getCyclePiece("pieceD").title}
+              </div>
+              <ScoreInput
+                label="Piece D"
+                max={30}
+                value={pieceD}
+                onChange={setPieceD}
+                disabled={busy}
+              />
+
+              <label className="ccw__field">
+                <span className="ccw__label">Piece D Examiner Comment</span>
+                <textarea
+                  className="ccw__textarea"
+                  rows={3}
+                  value={pieceDComment}
+                  onChange={(e) => setPieceDComment(e.target.value)}
+                  disabled={busy}
+                />
+              </label>
+
+              <ScoreInput
+                label="Performance as a Whole"
+                max={30}
+                value={performanceWholeScore}
+                onChange={setPerformanceWholeScore}
+                disabled={busy}
+              />
+
+              <label className="ccw__field">
+                <span className="ccw__label">
+                  Performance as a Whole Comment
+                </span>
+                <textarea
+                  className="ccw__textarea"
+                  rows={3}
+                  value={performanceWholeComment}
+                  onChange={(e) => setPerformanceWholeComment(e.target.value)}
+                  disabled={busy}
+                />
+              </label>
+            </>
           )}
           {!isPerformance && (
             <>
@@ -350,18 +544,21 @@ export default function CycleCompleteWizard({
                 max={21}
                 value={scalesScore}
                 onChange={setScalesScore}
+                disabled={busy}
               />
               <ScoreInput
                 label="Sight-reading"
                 max={21}
                 value={sightScore}
                 onChange={setSightScore}
+                disabled={busy}
               />
               <ScoreInput
                 label="Aural"
                 max={18}
                 value={auralScore}
                 onChange={setAuralScore}
+                disabled={busy}
               />
             </>
           )}

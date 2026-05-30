@@ -100,7 +100,8 @@
 }
 
 .ccw__select,
-.ccw__textarea {
+.ccw__textarea,
+.ccw__input {
   font: 400 14px/1.4 var(--font-sans, "DM Sans", sans-serif);
   color: var(--ink, #1c1a17);
   padding: 10px 12px;
@@ -112,7 +113,8 @@
 }
 
 .ccw__select:focus,
-.ccw__textarea:focus {
+.ccw__textarea:focus,
+.ccw__input:focus {
   border-color: rgba(201, 168, 76, 0.55);
   box-shadow: 0 0 0 3px rgba(201, 168, 76, 0.16);
 }
@@ -135,10 +137,25 @@
   color: var(--ink, #1c1a17);
 }
 
+.ccw__pieceMeta {
+  grid-column: 1 / -1;
+  padding: 10px 12px;
+  margin-top: 6px;
+  border-radius: 10px;
+  background: rgba(201, 168, 76, 0.08);
+
+  font: 500 13px/1.4 var(--font-sans, "DM Sans", sans-serif);
+  color: var(--ink, #1c1a17);
+}
+
 .ccw__scoreGrid {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 10px;
+}
+
+.ccw__scoreGrid .ccw__field {
+  grid-column: 1 / -1;
 }
 
 .ccw__scoreField {
