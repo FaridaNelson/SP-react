@@ -1,6 +1,8 @@
 import { useEffect, useState, useCallback } from "react";
 import { api } from "../../lib/api";
 
+// Legacy flat sorting.
+// Replaced by grouped status rendering in ExamCycleList.
 export function sortCycles(cycles = []) {
   const active = [];
   const closed = [];
