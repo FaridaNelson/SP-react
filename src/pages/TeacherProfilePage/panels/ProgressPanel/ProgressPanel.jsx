@@ -135,8 +135,10 @@ export default function ProgressPanel({
 
   // Scales curriculum for this student (used to show scale names and which scales are relevant for this student's grade level)
   const gradeScales = useMemo(() => {
-    return getScalesForGrade(student?.grade);
-  }, [student?.grade]);
+    if (isPerformance) return [];
+
+    return getScalesForGrade(activeCycle?.examGrade);
+  }, [activeCycle?.examGrade, isPerformance]);
   // -------- local state (draft preserved if user closes without saving) --------
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState("");

@@ -9,6 +9,18 @@ const EXAM_TYPE_MAP = {
   Practical: "Practical",
 };
 
+export async function parseExamResultPdf(file) {
+  const formData = new FormData();
+  formData.append("file", file);
+
+  const res = await api("/api/exam-results/parse-pdf", {
+    method: "POST",
+    body: formData,
+  });
+
+  return res;
+}
+
 function normalizePayload(payload) {
   const out = { ...payload };
 

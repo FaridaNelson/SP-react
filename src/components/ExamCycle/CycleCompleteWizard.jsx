@@ -1,5 +1,9 @@
 import { useState } from "react";
-import { completeExamCycle, withdrawExamCycle } from "../../lib/examCycleApi";
+import {
+  completeExamCycle,
+  withdrawExamCycle,
+  parseExamResultPdf,
+} from "../../lib/examCycleApi";
 import Modal from "../Modal/Modal";
 import WizardPanel from "../WizardPanel/WizardPanel";
 import "./CycleCompleteWizard.css";
@@ -92,6 +96,12 @@ export default function CycleCompleteWizard({
   const [scalesScore, setScalesScore] = useState("");
   const [sightScore, setSightScore] = useState("");
   const [auralScore, setAuralScore] = useState("");
+
+  const [scalesComment, setScalesComment] = useState("");
+  const [sightComment, setSightComment] = useState("");
+  const [auralComment, setAuralComment] = useState("");
+
+  const [pdfBusy, setPdfBusy] = useState(false);
   // Withdraw state
   const [reason, setReason] = useState("");
   const [notes, setNotes] = useState("");
@@ -189,6 +199,11 @@ export default function CycleCompleteWizard({
                     : undefined,
                   aural: auralScore ? parseInt(auralScore, 10) : undefined,
                 },
+                componentComments: {
+                  scales: scalesComment.trim() || undefined,
+                  sightReading: sightComment.trim() || undefined,
+                  aural: auralComment.trim() || undefined,
+                },
               }
             : {}),
         },
@@ -199,6 +214,50 @@ export default function CycleCompleteWizard({
       setErr(e?.message || "Failed to complete cycle");
     } finally {
       setBusy(false);
+    }
+  }
+
+  async function handlePdfUpload(e) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setPdfBusy(true);
+    setErr("");
+
+    try {
+      const data = await parseExamResultPdf(file);
+      const parsed = data.parsed;
+
+      setExamResult(parsed.result || "");
+      setTotalMark(parsed.totalMark || "");
+      setExaminerId(parsed.examinerId || "");
+
+      setPieceA(String(parsed.pieceScores?.pieceA || ""));
+      setPieceB(String(parsed.pieceScores?.pieceB || ""));
+      setPieceC(String(parsed.pieceScores?.pieceC || ""));
+      setPieceD(String(parsed.pieceScores?.pieceD || ""));
+
+      setPieceAComment(parsed.pieceComments?.pieceA || "");
+      setPieceBComment(parsed.pieceComments?.pieceB || "");
+      setPieceCComment(parsed.pieceComments?.pieceC || "");
+      setPieceDComment(parsed.pieceComments?.pieceD || "");
+
+      setPerformanceWholeScore(String(parsed.performanceAsWhole?.mark || ""));
+
+      setPerformanceWholeComment(
+        parsed.performanceAsWhole?.examinerComment || "",
+      );
+
+      setScalesScore(String(parsed.componentScores?.scales || ""));
+      setSightScore(String(parsed.componentScores?.sightReading || ""));
+      setAuralScore(String(parsed.componentScores?.aural || ""));
+      setScalesComment(parsed.componentComments?.scales || "");
+      setSightComment(parsed.componentComments?.sightReading || "");
+      setAuralComment(parsed.componentComments?.aural || "");
+    } catch (e) {
+      setErr(e?.message || "Could not parse PDF");
+    } finally {
+      setPdfBusy(false);
     }
   }
 
@@ -389,6 +448,16 @@ export default function CycleCompleteWizard({
         <p className="ccw__subtitle">Record the official ABRSM results</p>
 
         <label className="ccw__field">
+          <span className="ccw__label">Upload ABRSM Mark Form PDF</span>
+          <input
+            className="ccw__input"
+            type="file"
+            accept="application/pdf"
+            onChange={handlePdfUpload}
+            disabled={busy || pdfBusy}
+          />
+        </label>
+        <label className="ccw__field">
           <span className="ccw__label">Overall Result</span>
           <select
             className="ccw__select"
@@ -546,6 +615,16 @@ export default function CycleCompleteWizard({
                 onChange={setScalesScore}
                 disabled={busy}
               />
+              <label className="ccw__field">
+                <span className="ccw__label">Scales Examiner Comment</span>
+                <textarea
+                  className="ccw__textarea"
+                  rows={3}
+                  value={scalesComment}
+                  onChange={(e) => setScalesComment(e.target.value)}
+                  disabled={busy}
+                />
+              </label>
               <ScoreInput
                 label="Sight-reading"
                 max={21}
@@ -553,6 +632,18 @@ export default function CycleCompleteWizard({
                 onChange={setSightScore}
                 disabled={busy}
               />
+              <label className="ccw__field">
+                <span className="ccw__label">
+                  Sight-reading Examiner Comment
+                </span>
+                <textarea
+                  className="ccw__textarea"
+                  rows={3}
+                  value={sightComment}
+                  onChange={(e) => setSightComment(e.target.value)}
+                  disabled={busy}
+                />
+              </label>
               <ScoreInput
                 label="Aural"
                 max={18}
@@ -560,16 +651,27 @@ export default function CycleCompleteWizard({
                 onChange={setAuralScore}
                 disabled={busy}
               />
+              <label className="ccw__field">
+                <span className="ccw__label">Aural Examiner Comment</span>
+                <textarea
+                  className="ccw__textarea"
+                  rows={3}
+                  value={auralComment}
+                  onChange={(e) => setAuralComment(e.target.value)}
+                  disabled={busy}
+                />
+              </label>
+              on
             </>
           )}
         </div>
 
         <label className="ccw__field">
-          <span className="ccw__label">Examiner Comments (optional)</span>
+          <span className="ccw__label">Teacher’s Closing Note (optional)</span>{" "}
           <textarea
             className="ccw__textarea"
             rows={3}
-            placeholder="Any notes from the examiner…"
+            placeholder="Optional private note about this exam result…"
             value={examinerComments}
             onChange={(e) => setExaminerComments(e.target.value)}
             disabled={busy}
