@@ -172,15 +172,6 @@ function getScaleSymbol(item) {
 /* ── Lesson body renderer ── */
 
 function LessonBody({ lesson, cycle }) {
-  if (!cycle) {
-    if (import.meta.env.DEV) {
-      console.warn("LessonCard missing cycle for lesson:", {
-        lessonId: lesson?._id,
-        lesson,
-      });
-    }
-  }
-
   const piecesWithCriteria = (lesson.pieces || []).filter((p) =>
     p.criteria?.some((c) => c.score !== null && c.score !== undefined),
   );
