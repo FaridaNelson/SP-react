@@ -248,6 +248,11 @@ export default function TeacherStudentInfo({
     );
   }
 
+  console.log("TeacherStudentInfo latestLesson:", latestLesson);
+  console.log(
+    "TeacherStudentInfo teacherNarrative:",
+    latestLesson?.teacherNarrative,
+  );
   return (
     <section className="teacherStudentInfo">
       <PanelHeader

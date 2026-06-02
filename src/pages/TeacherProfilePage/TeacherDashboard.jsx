@@ -161,7 +161,7 @@ function SelectedStudentPane({
   } = useLatestLesson(studentId, {
     examPreparationCycleId: currentCycleId,
     instrument: currentInstrument,
-    enabled: progressOpen,
+    enabled: !!studentId && !!currentCycleId,
   });
 
   const { lessons: allLessons } = useStudentLessons(studentId);
@@ -281,7 +281,9 @@ function SelectedStudentPane({
         items={items}
         onSaveScores={saveScores}
         onLessonSaved={async (saved) => {
-          setLatestLesson(saved);
+          const normalizedSavedLesson = saved?.lesson || saved;
+
+          setLatestLesson(normalizedSavedLesson);
           await refreshActiveCycle();
 
           setExamCycleRefreshKey((k) => k + 1);

@@ -87,6 +87,7 @@ export default function ProgressPanel({
   const studentId = student?._id || student?.id;
   const [latestLesson, setLatestLesson] = useState(null);
   const [pieceErrors, setPieceErrors] = useState({});
+  const [timeError, setTimeError] = useState("");
   // { [pieceId]: string[] missingCriterionIds } - used to show validation errors if user tries to save without filling all criteria scores
 
   // Determine which elements to show based on active cycle's examType
@@ -363,7 +364,8 @@ export default function ProgressPanel({
       return;
     }
     if (!lessonStartTime || !lessonEndTime) {
-      setErr("Please select lesson start and end time.");
+      setTimeError("missing");
+      setErr("Please select both lesson start and end time before saving.");
       return;
     }
 
@@ -374,6 +376,7 @@ export default function ProgressPanel({
     const endMinutes = endParts[0] * 60 + endParts[1];
 
     if (endMinutes <= startMinutes) {
+      setTimeError("invalidRange");
       setErr("Lesson end time must be later than lesson start time.");
       return;
     }
@@ -388,7 +391,9 @@ export default function ProgressPanel({
     }
     if (Object.keys(nextErrors).length) {
       setPieceErrors(nextErrors);
-      setErr("Please fill out all criteria for pieces you've started grading.");
+      setErr(
+        "Please complete all criteria for the pieces you started grading.",
+      );
       return;
     } else {
       setPieceErrors({});
@@ -522,9 +527,10 @@ export default function ProgressPanel({
           pieceCriteriaMap,
         });
       }
+      const normalizedSavedLesson = savedLesson?.lesson || savedLesson;
 
-      setLatestLesson(savedLesson);
-      onLessonSaved?.(savedLesson);
+      setLatestLesson(normalizedSavedLesson);
+      onLessonSaved?.(normalizedSavedLesson);
       localStorage.removeItem(draftKey);
       resetForm();
       onClose?.();
@@ -620,9 +626,16 @@ export default function ProgressPanel({
 
                 <div className="pp__timeInputs">
                   <select
-                    className="pp__timeSelect"
+                    className={`pp__timeSelect ${
+                      timeError === "missing" ? "pp__timeSelect--error" : ""
+                    }`}
                     value={lessonStartTime}
-                    onChange={(e) => setLessonStartTime(e.target.value)}
+                    onChange={(e) => {
+                      setLessonStartTime(e.target.value);
+
+                      if (err) setErr("");
+                      if (timeError) setTimeError("");
+                    }}
                     disabled={busy}
                   >
                     <option value="" disabled>
@@ -638,9 +651,18 @@ export default function ProgressPanel({
                   <span className="pp__timeDash">—</span>
 
                   <select
-                    className="pp__timeSelect"
+                    className={`pp__timeSelect ${
+                      timeError === "missing" || timeError === "invalidRange"
+                        ? "pp__timeSelect--error"
+                        : ""
+                    }`}
                     value={lessonEndTime}
-                    onChange={(e) => setLessonEndTime(e.target.value)}
+                    onChange={(e) => {
+                      setLessonEndTime(e.target.value);
+
+                      if (err) setErr("");
+                      if (timeError) setTimeError("");
+                    }}
                     disabled={busy}
                   >
                     <option value="">End</option>
@@ -664,7 +686,12 @@ export default function ProgressPanel({
             ✕
           </button>
         </header>
-
+        {err && (
+          <div className="pp__alert" role="alert" aria-live="assertive">
+            <span className="pp__alertIcon">⚠️</span>
+            <p className="pp__alertText">{err}</p>
+          </div>
+        )}
         <div className="pp__body">
           {/* Pieces */}
           <section className="pp__section">
@@ -684,7 +711,8 @@ export default function ProgressPanel({
                 } // clear errors for this piece when user focuses any criterion
                 lastWeekPercent={piecePercentFromLesson(latestLesson, p.id)}
                 disabled={busy}
-                onSetScore={(criterionId, score) =>
+                onSetScore={(criterionId, score) => {
+                  if (err) setErr("");
                   setPieces((prev) => {
                     const currentPiece = prev[p.id] || { criteria: {} };
 
@@ -701,8 +729,8 @@ export default function ProgressPanel({
                         },
                       },
                     };
-                  })
-                }
+                  });
+                }}
                 onSetNote={(criterionId, note) =>
                   setPieces((prev) => {
                     const currentPiece = prev[p.id] || { criteria: {} };
@@ -789,8 +817,6 @@ export default function ProgressPanel({
               disabled={busy}
             />
           </section>
-
-          {err && <p className="pp__error">{err}</p>}
         </div>
 
         <footer className="pp__foot">

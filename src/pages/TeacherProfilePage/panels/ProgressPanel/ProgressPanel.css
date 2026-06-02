@@ -183,6 +183,29 @@
   box-shadow: 0 0 0 3px rgba(201, 168, 76, 0.12);
 }
 
+.pp__timeSelect--error {
+  color: rgb(141, 3, 3);
+  font-weight: 600;
+  border-color: #dc2626 !important;
+  background-color: #fef2f2;
+  animation: ppPulseError 1.2s infinite;
+}
+
+@keyframes ppPulseError {
+  0% {
+    box-shadow: 0 0 0 0 rgba(220, 38, 38, 1);
+  }
+
+  70% {
+    box-shadow: 0 0 0 10px rgba(220, 38, 38, 0);
+  }
+
+  100% {
+    box-shadow: 0 0 0 0 rgba(220, 38, 38, 0);
+  }
+}
+
+
 .pp__timeDash {
   color: rgba(255, 255, 255, 0.7);
   font-size: 16px;
@@ -214,8 +237,34 @@
   color: #1a1713;
 }
 
-.pp__error {
-  color: #b00020;
+.pp__alert {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  margin: 0;
+  padding: 14px 24px;
+
+  background: #f8d6d8;
+  border-top: 1px solid #fecdd3;
+  border-bottom: 1px solid #f43f5e;
+
+  color: #9f1239;
+  font-size: 0.98rem;
+  font-weight: 700;
+  box-shadow: 0 4px 12px rgba(159, 18, 57, 0.12);
+}
+
+.pp__alertIcon {
+  font-size: 1.2rem;
+  line-height: 1;
+}
+
+.pp__alertText {
   margin: 0;
 }
 
