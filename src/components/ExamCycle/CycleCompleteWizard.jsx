@@ -7,6 +7,7 @@ import {
 import Modal from "../Modal/Modal";
 import WizardPanel from "../WizardPanel/WizardPanel";
 import "./CycleCompleteWizard.css";
+import ValidationAlert from "../ui/ValidationAlert/ValidationAlert";
 
 const RESULT_OPTIONS = ["Distinction", "Merit", "Pass", "Fail"];
 const WITHDRAW_REASONS = [
@@ -661,7 +662,6 @@ export default function CycleCompleteWizard({
                   disabled={busy}
                 />
               </label>
-              on
             </>
           )}
         </div>
@@ -687,12 +687,20 @@ export default function CycleCompleteWizard({
         <h2 className="ccw__title">Withdrawal Reason</h2>
         <p className="ccw__subtitle">Why didn't {displayName} take the exam?</p>
 
+        {err && <ValidationAlert message={err} variant="error" />}
+
         <label className="ccw__field">
-          <span className="ccw__label">Reason for Withdrawal</span>
+          <span className="ccw__label">Reason for Withdrawal (required)</span>
           <select
-            className="ccw__select"
+            className={`ccw__select ${err && !reason ? "spFieldError" : ""}`}
             value={reason}
-            onChange={(e) => setReason(e.target.value)}
+            onChange={(e) => {
+              setReason(e.target.value);
+
+              if (err) {
+                setErr("");
+              }
+            }}
             disabled={busy}
             required
           >
@@ -735,7 +743,6 @@ export default function CycleCompleteWizard({
       <WizardPanel
         stepCount={2}
         currentStep={viewToStep[view]}
-        error={err}
         footer={renderFooter()}
       >
         {renderBody()}

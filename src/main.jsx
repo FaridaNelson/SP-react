@@ -14,6 +14,7 @@ import ScrollToTop from "./components/router/ScrollToTop.jsx";
 
 import "./styles/variables.css";
 import "./styles/globals.css";
+import "./components/ui/FormValidation/FormValidation.css";
 import App from "./components/App/App.jsx"; // <-- correct path
 
 createRoot(document.getElementById("root")).render(
