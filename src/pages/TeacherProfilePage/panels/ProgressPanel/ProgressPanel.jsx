@@ -25,6 +25,7 @@ import {
   lessonPiecesToDraftMap,
   lessonScalesToDraftMap,
 } from "./TodayProgress/lessonMerge";
+import ValidationAlert from "../../../../components/ui/ValidationAlert/ValidationAlert";
 
 function isPieceTouched(pieceValue) {
   if (!pieceValue?.criteria) return false;
@@ -627,7 +628,7 @@ export default function ProgressPanel({
                 <div className="pp__timeInputs">
                   <select
                     className={`pp__timeSelect ${
-                      timeError === "missing" ? "pp__timeSelect--error" : ""
+                      timeError === "missing" ? "spFieldError" : ""
                     }`}
                     value={lessonStartTime}
                     onChange={(e) => {
@@ -653,7 +654,7 @@ export default function ProgressPanel({
                   <select
                     className={`pp__timeSelect ${
                       timeError === "missing" || timeError === "invalidRange"
-                        ? "pp__timeSelect--error"
+                        ? "spFieldError"
                         : ""
                     }`}
                     value={lessonEndTime}
@@ -686,12 +687,7 @@ export default function ProgressPanel({
             ✕
           </button>
         </header>
-        {err && (
-          <div className="pp__alert" role="alert" aria-live="assertive">
-            <span className="pp__alertIcon">⚠️</span>
-            <p className="pp__alertText">{err}</p>
-          </div>
-        )}
+        {err && <ValidationAlert message={err} variant="error" />}
         <div className="pp__body">
           {/* Pieces */}
           <section className="pp__section">

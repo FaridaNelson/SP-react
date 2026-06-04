@@ -1,0 +1,21 @@
+.spFieldError {
+  border-color: #dc2626 !important;
+  background-color: #fef2f2;
+  color: #b91c1c;
+  font-weight: 600;
+  animation: spPulseError 1.2s infinite;
+}
+
+@keyframes spPulseError {
+  0% {
+    box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.7);
+  }
+
+  70% {
+    box-shadow: 0 0 0 10px rgba(220, 38, 38, 0);
+  }
+
+  100% {
+    box-shadow: 0 0 0 0 rgba(220, 38, 38, 0);
+  }
+}

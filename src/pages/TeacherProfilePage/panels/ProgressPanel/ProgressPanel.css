@@ -183,7 +183,7 @@
   box-shadow: 0 0 0 3px rgba(201, 168, 76, 0.12);
 }
 
-.pp__timeSelect--error {
+.spFieldError {
   color: rgb(141, 3, 3);
   font-weight: 600;
   border-color: #dc2626 !important;
@@ -237,7 +237,7 @@
   color: #1a1713;
 }
 
-.pp__alert {
+/* .pp__alert {
   position: sticky;
   top: 0;
   z-index: 20;
@@ -266,7 +266,7 @@
 
 .pp__alertText {
   margin: 0;
-}
+} */
 
 .pp__foot {
   margin-top: auto;
