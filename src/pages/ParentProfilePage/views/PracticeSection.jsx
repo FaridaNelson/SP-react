@@ -63,6 +63,41 @@ async function getCsrfToken() {
   return data.csrfToken;
 }
 
+function normalizeTasksByDayForSave(snapshot, tasks) {
+  const result = {};
+
+  for (const [dayKey, dayTasks] of Object.entries(snapshot)) {
+    result[dayKey] = {};
+
+    for (const task of tasks) {
+      const practiced = !!dayTasks[task.id];
+
+      result[dayKey][task.id] = {
+        status: practiced ? "practiced" : "notCovered",
+        minutes: 0,
+        taskOutcome: practiced ? "inProgress" : "none",
+        note: "",
+      };
+    }
+  }
+
+  return result;
+}
+
+function normalizeTasksByDayFromServer(serverTasksByDay) {
+  const result = {};
+
+  for (const [dayKey, dayTasks] of Object.entries(serverTasksByDay || {})) {
+    result[dayKey] = {};
+
+    for (const [taskId, taskData] of Object.entries(dayTasks || {})) {
+      result[dayKey][taskId] = taskData?.status === "practiced";
+    }
+  }
+
+  return result;
+}
+
 // ─── Component ────────────────────────────────────────────────────
 
 export default function PracticeSection({
@@ -83,83 +118,138 @@ export default function PracticeSection({
   const days = useMemo(() => buildWeek(today), [today]);
   // { "YYYY-MM-DD": { pieceA: true, scales: false, … } }
   const [tasksByDay, setTasksByDay] = useState({});
-
+  const [savePracticeLogStatus, setSavePracticeLogStatus] = useState("idle"); // "idle" | "saving" | "saved" | "error"
   // Keep a ref to latest tasksByDay for the unmount save
   const tasksByDayRef = useRef(tasksByDay);
   useEffect(() => {
     tasksByDayRef.current = tasksByDay;
   }, [tasksByDay]);
 
+  const savePracticeLog = useCallback(async () => {
+    const snapshot = tasksByDayRef.current;
+    if (!studentId || !cycle?._id) return;
+
+    const hasData = Object.values(snapshot).some((dayTasks) =>
+      Object.values(dayTasks).some(Boolean),
+    );
+    if (!hasData) return;
+
+    setSavePracticeLogStatus("saving");
+
+    const homeworkTaskList = {};
+
+    tasks.forEach((task) => {
+      const practicedEntries = Object.entries(snapshot).filter(
+        ([, dayTasks]) => dayTasks[task.id],
+      );
+
+      const dates = practicedEntries.map(([date]) => date).sort();
+      const daysPracticed = dates.length;
+
+      let streak = 0;
+      if (dates.length > 0) {
+        streak = 1;
+        for (let i = dates.length - 1; i > 0; i--) {
+          const diff = (new Date(dates[i]) - new Date(dates[i - 1])) / 86400000;
+          if (diff === 1) streak++;
+          else break;
+        }
+      }
+
+      homeworkTaskList[task.id] = {
+        daysPracticed,
+        streak,
+        lastPracticedDate: dates[dates.length - 1] ?? null,
+        totalMinutes: 0,
+      };
+    });
+
+    const totalDaysPracticed = Object.values(snapshot).filter((dayTasks) =>
+      Object.values(dayTasks).some(Boolean),
+    ).length;
+
+    const sunday = new Date(today);
+    sunday.setDate(today.getDate() - today.getDay());
+
+    const saturday = new Date(sunday);
+    saturday.setDate(sunday.getDate() + 6);
+
+    const weekStartDate = dateKey(sunday);
+    const weekEndDate = dateKey(saturday);
+
+    const tasksByDayForSave = normalizeTasksByDayForSave(snapshot, tasks);
+
+    try {
+      const csrfToken = await getCsrfToken();
+
+      const res = await fetch(
+        `${API_BASE}/api/parent/students/${studentId}/practice-log`,
+        {
+          method: "POST",
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+            "X-CSRF-Token": csrfToken,
+          },
+          body: JSON.stringify({
+            examCycleId: cycle._id,
+            weekStartDate,
+            weekEndDate,
+            homeworkTaskList,
+            totalDaysPracticed,
+            tasksByDay: tasksByDayForSave,
+          }),
+        },
+      );
+
+      if (!res.ok) {
+        throw new Error("Practice log save failed");
+      }
+
+      setSavePracticeLogStatus("saved");
+    } catch (error) {
+      console.error("Failed to save practice log:", error);
+      setSavePracticeLogStatus("error");
+    }
+  }, [studentId, cycle?._id, tasks, today]);
+
+  useEffect(() => {
+    async function loadPracticeLog() {
+      if (!studentId || !cycle?._id) return;
+
+      const sunday = new Date(today);
+      sunday.setDate(today.getDate() - today.getDay());
+
+      const weekStartDate = dateKey(sunday);
+
+      try {
+        const res = await fetch(
+          `${API_BASE}/api/parent/students/${studentId}/practice-log?examCycleId=${cycle._id}&weekStartDate=${weekStartDate}`,
+          { credentials: "include" },
+        );
+
+        if (!res.ok) return;
+
+        const data = await res.json();
+
+        if (data.practiceLog?.tasksByDay) {
+          setTasksByDay(
+            normalizeTasksByDayFromServer(data.practiceLog.tasksByDay),
+          );
+        }
+      } catch (error) {
+        console.error("Failed to load practice log:", error);
+      }
+    }
+
+    loadPracticeLog();
+  }, [studentId, cycle?._id, today]);
+
   // ── Expose save function via ref for parent to call on navigate-away ──
   useEffect(() => {
     if (!saveRef) return;
-    saveRef.current = async () => {
-      const snapshot = tasksByDayRef.current;
-      if (!studentId || !cycle?._id) return;
-
-      const hasData = Object.values(snapshot).some((dayTasks) =>
-        Object.values(dayTasks).some(Boolean),
-      );
-      if (!hasData) return;
-
-      // Build homeworkTaskList from the 7-day window
-      const homeworkTaskList = {};
-      tasks.forEach((task) => {
-        const days = Object.entries(snapshot).filter(
-          ([, dayTasks]) => dayTasks[task.id],
-        );
-        const dates = days.map(([date]) => date).sort();
-        const daysPracticed = dates.length;
-
-        // Compute streak: consecutive days ending on the most recent practiced date
-        let streak = 0;
-        if (dates.length > 0) {
-          streak = 1;
-          for (let i = dates.length - 1; i > 0; i--) {
-            const diff =
-              (new Date(dates[i]) - new Date(dates[i - 1])) / 86400000;
-            if (diff === 1) streak++;
-            else break;
-          }
-        }
-
-        homeworkTaskList[task.id] = {
-          daysPracticed,
-          streak,
-          lastPracticedDate: dates[dates.length - 1] ?? null,
-        };
-      });
-
-      const totalDaysPracticed = Object.values(snapshot).filter((dayTasks) =>
-        Object.values(dayTasks).some(Boolean),
-      ).length;
-
-      // Week window: Sunday → Saturday containing today
-      const sunday = new Date(today);
-      sunday.setDate(today.getDate() - today.getDay());
-      const saturday = new Date(sunday);
-      saturday.setDate(sunday.getDate() + 6);
-      const weekStartDate = dateKey(sunday);
-      const weekEndDate = dateKey(saturday);
-      const csrfToken = await getCsrfToken();
-
-      fetch(`${API_BASE}/api/parent/students/${studentId}/practice-log`, {
-        method: "POST",
-        credentials: "include",
-        headers: {
-          "Content-Type": "application/json",
-          "X-CSRF-Token": csrfToken,
-        },
-        body: JSON.stringify({
-          examCycleId: cycle._id,
-          weekStartDate,
-          weekEndDate,
-          homeworkTaskList,
-          totalDaysPracticed,
-        }),
-      }).catch(() => {}); // silent fail — this is a background save
-    };
-  }, [saveRef, studentId, cycle?._id, tasks, today]);
+    saveRef.current = savePracticeLog;
+  }, [saveRef, savePracticeLog]);
 
   // ── Single source of truth: which days have any task done ─────
   // Derived directly from tasksByDay — no closures, no stale reads.
@@ -180,9 +270,20 @@ export default function PracticeSection({
 
   // ── Toggle a task for any day ───────────────────────────────────
   const toggleTaskForDay = useCallback((dayKey, taskId) => {
+    // User changed something after saving.
+    // Force Save button back to unsaved state.
+    setSavePracticeLogStatus("idle");
+
     setTasksByDay((prev) => {
       const current = prev[dayKey] ?? {};
-      return { ...prev, [dayKey]: { ...current, [taskId]: !current[taskId] } };
+
+      return {
+        ...prev,
+        [dayKey]: {
+          ...current,
+          [taskId]: !current[taskId],
+        },
+      };
     });
   }, []);
 
@@ -206,6 +307,29 @@ export default function PracticeSection({
         <div className="pd-practice-summary-sub">days practiced</div>
       </div>
 
+      {/* Action row: Save button + status */}
+      <div className="pd-practice-actions">
+        <button
+          type="button"
+          className="pd-practice-save-btn"
+          onClick={savePracticeLog}
+          disabled={savePracticeLogStatus === "saving"}
+        >
+          {savePracticeLogStatus === "saving"
+            ? "Saving..."
+            : "Save Practice Record"}
+        </button>
+
+        {savePracticeLogStatus === "saved" && (
+          <span className="pd-practice-save-status">Saved</span>
+        )}
+
+        {savePracticeLogStatus === "error" && (
+          <span className="pd-practice-save-status pd-practice-save-status--error">
+            Could not save
+          </span>
+        )}
+      </div>
       {/* Week list — one row per day */}
       <div className="pd-week-list">
         {days.map((d) => {
