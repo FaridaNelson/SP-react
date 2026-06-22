@@ -63,6 +63,34 @@ async function getCsrfToken() {
   return data.csrfToken;
 }
 
+function createEmptyTaskRecord() {
+  return {
+    status: "notCovered",
+    minutes: 0,
+    taskOutcome: "none",
+    note: "",
+  };
+}
+
+function createPracticedTaskRecord(existing = {}) {
+  return {
+    status: "practiced",
+    minutes: Number.isFinite(Number(existing.minutes))
+      ? Number(existing.minutes)
+      : 0,
+    taskOutcome: ["none", "inProgress", "needsHelp"].includes(
+      existing.taskOutcome,
+    )
+      ? existing.taskOutcome
+      : "none",
+    note: typeof existing.note === "string" ? existing.note : "",
+  };
+}
+
+function isTaskPracticed(taskRecord) {
+  return taskRecord?.status === "practiced";
+}
+
 function normalizeTasksByDayForSave(snapshot, tasks) {
   const result = {};
 
@@ -70,14 +98,11 @@ function normalizeTasksByDayForSave(snapshot, tasks) {
     result[dayKey] = {};
 
     for (const task of tasks) {
-      const practiced = !!dayTasks[task.id];
+      const taskRecord = dayTasks[task.id];
 
-      result[dayKey][task.id] = {
-        status: practiced ? "practiced" : "notCovered",
-        minutes: 0,
-        taskOutcome: practiced ? "inProgress" : "none",
-        note: "",
-      };
+      result[dayKey][task.id] = isTaskPracticed(taskRecord)
+        ? createPracticedTaskRecord(taskRecord)
+        : createEmptyTaskRecord();
     }
   }
 
@@ -91,7 +116,10 @@ function normalizeTasksByDayFromServer(serverTasksByDay) {
     result[dayKey] = {};
 
     for (const [taskId, taskData] of Object.entries(dayTasks || {})) {
-      result[dayKey][taskId] = taskData?.status === "practiced";
+      result[dayKey][taskId] =
+        taskData?.status === "practiced"
+          ? createPracticedTaskRecord(taskData)
+          : createEmptyTaskRecord();
     }
   }
 
@@ -116,7 +144,7 @@ export default function PracticeSection({
 
   const todayKey = useMemo(() => dateKey(today), [today]);
   const days = useMemo(() => buildWeek(today), [today]);
-  // { "YYYY-MM-DD": { pieceA: true, scales: false, … } }
+  // { "YYYY-MM-DD": { pieceA: { status, minutes, taskOutcome, note }, ... } }
   const [tasksByDay, setTasksByDay] = useState({});
   const [savePracticeLogStatus, setSavePracticeLogStatus] = useState("idle"); // "idle" | "saving" | "saved" | "error"
   // Keep a ref to latest tasksByDay for the unmount save
@@ -130,7 +158,7 @@ export default function PracticeSection({
     if (!studentId || !cycle?._id) return;
 
     const hasData = Object.values(snapshot).some((dayTasks) =>
-      Object.values(dayTasks).some(Boolean),
+      Object.values(dayTasks).some(isTaskPracticed),
     );
     if (!hasData) return;
 
@@ -139,8 +167,8 @@ export default function PracticeSection({
     const homeworkTaskList = {};
 
     tasks.forEach((task) => {
-      const practicedEntries = Object.entries(snapshot).filter(
-        ([, dayTasks]) => dayTasks[task.id],
+      const practicedEntries = Object.entries(snapshot).filter(([, dayTasks]) =>
+        isTaskPracticed(dayTasks[task.id]),
       );
 
       const dates = practicedEntries.map(([date]) => date).sort();
@@ -165,7 +193,7 @@ export default function PracticeSection({
     });
 
     const totalDaysPracticed = Object.values(snapshot).filter((dayTasks) =>
-      Object.values(dayTasks).some(Boolean),
+      Object.values(dayTasks).some(isTaskPracticed),
     ).length;
 
     const sunday = new Date(today);
@@ -256,7 +284,7 @@ export default function PracticeSection({
   const practicedDays = useMemo(() => {
     const set = new Set();
     for (const [day, dayTasks] of Object.entries(tasksByDay)) {
-      if (Object.values(dayTasks).some(Boolean)) set.add(day);
+      if (Object.values(dayTasks).some(isTaskPracticed)) set.add(day);
     }
     return set;
   }, [tasksByDay]);
@@ -270,18 +298,20 @@ export default function PracticeSection({
 
   // ── Toggle a task for any day ───────────────────────────────────
   const toggleTaskForDay = useCallback((dayKey, taskId) => {
-    // User changed something after saving.
-    // Force Save button back to unsaved state.
     setSavePracticeLogStatus("idle");
 
     setTasksByDay((prev) => {
       const current = prev[dayKey] ?? {};
+      const currentTask = current[taskId];
+      const currentlyPracticed = isTaskPracticed(currentTask);
 
       return {
         ...prev,
         [dayKey]: {
           ...current,
-          [taskId]: !current[taskId],
+          [taskId]: currentlyPracticed
+            ? createEmptyTaskRecord()
+            : createPracticedTaskRecord(currentTask),
         },
       };
     });
@@ -337,8 +367,9 @@ export default function PracticeSection({
           const isToday = key === todayKey;
           const isFuture = d > today;
           const dayTasks = tasksByDay[key] ?? {};
-          const practicedItems = tasks.filter((t) => dayTasks[t.id]);
-
+          const practicedItems = tasks.filter((t) =>
+            isTaskPracticed(dayTasks[t.id]),
+          );
           return (
             <div
               key={key}
@@ -360,7 +391,7 @@ export default function PracticeSection({
                   <span className="pd-week-no-practice">—</span>
                 ) : (
                   tasks.map((task) => {
-                    const done = !!tasksByDay[key]?.[task.id];
+                    const done = isTaskPracticed(tasksByDay[key]?.[task.id]);
                     return (
                       <button
                         key={task.id}
