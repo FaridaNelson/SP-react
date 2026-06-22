@@ -157,11 +157,6 @@ export default function PracticeSection({
     const snapshot = tasksByDayRef.current;
     if (!studentId || !cycle?._id) return;
 
-    const hasData = Object.values(snapshot).some((dayTasks) =>
-      Object.values(dayTasks).some(isTaskPracticed),
-    );
-    if (!hasData) return;
-
     setSavePracticeLogStatus("saving");
 
     const homeworkTaskList = {};
