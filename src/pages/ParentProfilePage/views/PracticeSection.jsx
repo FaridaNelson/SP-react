@@ -116,10 +116,13 @@ function normalizeTasksByDayFromServer(serverTasksByDay) {
     result[dayKey] = {};
 
     for (const [taskId, taskData] of Object.entries(dayTasks || {})) {
-      result[dayKey][taskId] =
-        taskData?.status === "practiced"
-          ? createPracticedTaskRecord(taskData)
-          : createEmptyTaskRecord();
+      if (taskData === true) {
+        result[dayKey][taskId] = createPracticedTaskRecord();
+      } else if (taskData?.status === "practiced") {
+        result[dayKey][taskId] = createPracticedTaskRecord(taskData);
+      } else {
+        result[dayKey][taskId] = createEmptyTaskRecord();
+      }
     }
   }
 
