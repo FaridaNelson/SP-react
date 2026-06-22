@@ -116,10 +116,13 @@ function normalizeTasksByDayFromServer(serverTasksByDay) {
     result[dayKey] = {};
 
     for (const [taskId, taskData] of Object.entries(dayTasks || {})) {
-      result[dayKey][taskId] =
-        taskData?.status === "practiced"
-          ? createPracticedTaskRecord(taskData)
-          : createEmptyTaskRecord();
+      if (taskData === true) {
+        result[dayKey][taskId] = createPracticedTaskRecord();
+      } else if (taskData?.status === "practiced") {
+        result[dayKey][taskId] = createPracticedTaskRecord(taskData);
+      } else {
+        result[dayKey][taskId] = createEmptyTaskRecord();
+      }
     }
   }
 
@@ -156,11 +159,6 @@ export default function PracticeSection({
   const savePracticeLog = useCallback(async () => {
     const snapshot = tasksByDayRef.current;
     if (!studentId || !cycle?._id) return;
-
-    const hasData = Object.values(snapshot).some((dayTasks) =>
-      Object.values(dayTasks).some(isTaskPracticed),
-    );
-    if (!hasData) return;
 
     setSavePracticeLogStatus("saving");
 
