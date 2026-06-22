@@ -63,12 +63,14 @@ async function getCsrfToken() {
   return data.csrfToken;
 }
 
-function createEmptyTaskRecord() {
+function createEmptyTaskRecord(existing = {}) {
   return {
     status: "notCovered",
-    minutes: 0,
+    minutes: Number.isFinite(Number(existing.minutes))
+      ? Number(existing.minutes)
+      : 0,
     taskOutcome: "none",
-    note: "",
+    note: typeof existing.note === "string" ? existing.note : "",
   };
 }
 
@@ -102,7 +104,7 @@ function normalizeTasksByDayForSave(snapshot, tasks) {
 
       result[dayKey][task.id] = isTaskPracticed(taskRecord)
         ? createPracticedTaskRecord(taskRecord)
-        : createEmptyTaskRecord();
+        : createEmptyTaskRecord(taskRecord);
     }
   }
 
