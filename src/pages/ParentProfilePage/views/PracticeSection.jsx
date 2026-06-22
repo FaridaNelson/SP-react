@@ -310,8 +310,30 @@ export default function PracticeSection({
         [dayKey]: {
           ...current,
           [taskId]: currentlyPracticed
-            ? createEmptyTaskRecord()
+            ? createEmptyTaskRecord(currentTask)
             : createPracticedTaskRecord(currentTask),
+        },
+      };
+    });
+  }, []);
+
+  const updateTaskMinutes = useCallback((dayKey, taskId, value) => {
+    const minutes = Math.max(0, Math.min(300, Number(value) || 0));
+
+    setSavePracticeLogStatus("idle");
+
+    setTasksByDay((prev) => {
+      const current = prev[dayKey] ?? {};
+      const currentTask = current[taskId] ?? createPracticedTaskRecord();
+
+      return {
+        ...prev,
+        [dayKey]: {
+          ...current,
+          [taskId]: {
+            ...createPracticedTaskRecord(currentTask),
+            minutes,
+          },
         },
       };
     });
@@ -393,13 +415,30 @@ export default function PracticeSection({
                   tasks.map((task) => {
                     const done = isTaskPracticed(tasksByDay[key]?.[task.id]);
                     return (
-                      <button
-                        key={task.id}
-                        className={`pd-week-pill${done ? " pd-week-pill--done" : ""}`}
-                        onClick={() => toggleTaskForDay(key, task.id)}
-                      >
-                        {task.label}
-                      </button>
+                      <div key={task.id} className="pd-practice-task">
+                        <button
+                          type="button"
+                          className={`pd-week-pill${done ? " pd-week-pill--done" : ""}`}
+                          onClick={() => toggleTaskForDay(key, task.id)}
+                        >
+                          {task.label}
+                        </button>
+
+                        {done && (
+                          <label className="pd-minutes-field">
+                            <span>Min</span>
+                            <input
+                              type="number"
+                              min="0"
+                              max="300"
+                              value={tasksByDay[key]?.[task.id]?.minutes ?? 0}
+                              onChange={(e) =>
+                                updateTaskMinutes(key, task.id, e.target.value)
+                              }
+                            />
+                          </label>
+                        )}
+                      </div>
                     );
                   })
                 )}
