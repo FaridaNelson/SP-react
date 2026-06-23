@@ -17,12 +17,8 @@
 }
 
 /* ---- Action button ─────────────────────────────────────────── */
+
 .pd-practice-actions {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin: 16px 0 18px;
-}.pd-practice-actions {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -67,6 +63,32 @@
 
 .pd-practice-save-status--error {
   color: var(--rose);
+}
+
+.pd-practice-task {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.pd-minutes-field {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.7rem;
+  color: #8a8178;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.pd-minutes-field input {
+  width: 4.25rem;
+  border: 1px solid #ddd4c8;
+  border-radius: 0.75rem;
+  padding: 0.35rem 0.5rem;
+  text-align: center;
+  background: #f8f4ee;
 }
 
 /* ─── Week list ──────────────────────────────────────────────── */
