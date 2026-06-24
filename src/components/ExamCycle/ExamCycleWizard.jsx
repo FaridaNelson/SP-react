@@ -44,6 +44,41 @@ const PIECES_4 = [
   },
 ];
 
+const CUSTOM_PERFORMANCE_PIECES = [
+  {
+    key: "pieceA",
+    label: "Piece A",
+    title: "",
+    composer: "",
+    publication: "",
+    isCustom: true,
+  },
+  {
+    key: "pieceB",
+    label: "Piece B",
+    title: "",
+    composer: "",
+    publication: "",
+    isCustom: true,
+  },
+  {
+    key: "pieceC",
+    label: "Piece C",
+    title: "",
+    composer: "",
+    publication: "",
+    isCustom: true,
+  },
+  {
+    key: "pieceD",
+    label: "Piece D",
+    title: "",
+    composer: "",
+    publication: "",
+    isCustom: true,
+  },
+];
+
 const LIST_MAP = { pieceA: "A", pieceB: "B", pieceC: "C", pieceD: "D" };
 
 export default function ExamCycleWizard({
@@ -61,14 +96,21 @@ export default function ExamCycleWizard({
   const [examGrade, setExamGrade] = useState("");
   const [examDate, setExamDate] = useState("");
   const [pieces, setPieces] = useState(PIECES_3);
+  const [pieceSource, setPieceSource] = useState("abrsm");
 
   const isPerformance = examType === "ABRSM - Performance";
 
   function handleExamTypeChange(value) {
     setExamType(value);
-    setPieces(value === "ABRSM - Performance" ? PIECES_4 : PIECES_3);
-  }
 
+    if (value === "ABRSM - Performance") {
+      setPieceSource("abrsm");
+      setPieces(PIECES_4);
+    } else {
+      setPieceSource("abrsm");
+      setPieces(PIECES_3);
+    }
+  }
   function updatePiece(index, field, value) {
     setPieces((prev) =>
       prev.map((p, i) => (i === index ? { ...p, [field]: value } : p)),
@@ -83,7 +125,7 @@ export default function ExamCycleWizard({
         return examType && examGrade;
       case 1:
         return pieces.every((p) => {
-          if (p.key === "pieceD" && isPerformance) {
+          if (pieceSource === "custom" || p.isCustom) {
             return p.title.trim() && p.composer.trim();
           }
 
@@ -119,6 +161,7 @@ export default function ExamCycleWizard({
       instrument: instrument || "Piano",
       examType,
       examGrade,
+      cycleSource: pieceSource === "custom" ? "custom" : "abrsm",
       examDate: examDate || undefined,
       pieces: pieces
         .filter((p) => p.title.trim())
@@ -128,7 +171,7 @@ export default function ExamCycleWizard({
           title: p.title,
           composer: p.composer,
           publication: p.publication || "",
-          isCustom: Boolean(p.isCustom),
+          isCustom: pieceSource === "custom" || Boolean(p.isCustom),
         })),
     };
 
@@ -140,7 +183,16 @@ export default function ExamCycleWizard({
     } finally {
       setBusy(false);
     }
-  }, [studentId, instrument, examType, examGrade, examDate, pieces, onSuccess]);
+  }, [
+    studentId,
+    instrument,
+    examType,
+    examGrade,
+    examDate,
+    pieces,
+    pieceSource,
+    onSuccess,
+  ]);
 
   /* ── shared component list renderer ── */
 
@@ -270,6 +322,27 @@ export default function ExamCycleWizard({
                   ))}
                 </select>
               </label>
+              {isPerformance && (
+                <label className="spModal__field">
+                  <span className="spModal__label">REPERTOIRE SOURCE</span>
+                  <select
+                    className="spModal__input"
+                    value={pieceSource}
+                    onChange={(e) => {
+                      const value = e.target.value;
+                      setPieceSource(value);
+                      setPieces(
+                        value === "custom"
+                          ? CUSTOM_PERFORMANCE_PIECES
+                          : PIECES_4,
+                      );
+                    }}
+                  >
+                    <option value="abrsm">ABRSM syllabus pieces</option>
+                    <option value="custom">Custom performance pieces</option>
+                  </select>
+                </label>
+              )}
 
               <label className="spModal__field">
                 <span className="spModal__label">EXAM DATE (OPTIONAL)</span>
@@ -300,8 +373,9 @@ export default function ExamCycleWizard({
       <div className="ecw__stepBody">
         <h2 className="ecw__title">{STEPS[step]}</h2>
         <p className="ecw__subtitle">
-          {" "}
-          Select the pieces this student will prepare for this exam.
+          {pieceSource === "custom"
+            ? "Enter the custom performance pieces this student will prepare."
+            : "Select the pieces this student will prepare for this exam."}
         </p>
 
         <div className="spModal__section">
@@ -313,10 +387,11 @@ export default function ExamCycleWizard({
               const currentValue =
                 p.title && p.composer ? `${p.title}|||${p.composer}` : "";
 
-              const isCustomPerformancePieceD =
-                isPerformance && p.key === "pieceD";
+              const shouldRenderCustomInputs =
+                pieceSource === "custom" ||
+                (isPerformance && p.key === "pieceD");
 
-              if (isCustomPerformancePieceD) {
+              if (shouldRenderCustomInputs) {
                 return (
                   <div key={p.key} className="ecw__pieceGroup">
                     <span className="ecw__pieceCaption">
