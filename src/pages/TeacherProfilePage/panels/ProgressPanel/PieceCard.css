@@ -74,6 +74,137 @@
   white-space: nowrap;
 }
 
+.pc__lessonMeta {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr)) 40px repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  padding: 14px 12px;
+  border-top: 1px solid rgba(31, 28, 24, 0.08);
+  background: rgba(197, 128, 92, 0.04);
+  align-items: end;
+}
+
+.pc__metaHeader {
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(31, 28, 24, 0.62);
+  text-align: start;
+}
+
+.pc__metaHeader--tempo {
+  grid-column: 1 / 4;
+}
+
+.pc__metaHeader--time {
+  grid-column: 5 / 7;
+}
+
+.pc__metaSpacer {
+  grid-column: 4;
+  grid-row: 2;
+}
+
+.pc__miniField {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  min-width: 0;
+  width: 100%;
+}
+
+.pc__miniLabel {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(31, 28, 24, 0.42);
+  text-align: start;
+}
+
+.pc__smallInput {
+  width: 100%;
+  min-width: 0;
+  height: 46px;
+  padding: 0 10px;
+  border-radius: 12px;
+  border: 1px solid rgba(31, 28, 24, 0.14);
+  background: rgba(255, 255, 255, 0.86);
+  font: 700 14px/1 var(--font-sans);
+  color: rgba(31, 28, 24, 0.88);
+  text-align: center;
+  box-sizing: border-box;
+}
+
+.pc__smallInput--readonly {
+  background: rgba(31, 28, 24, 0.04);
+  color: rgba(31, 28, 24, 0.45);
+}
+
+.pc__noteValuePicker {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+}
+
+.pc__noteValueBtn {
+  height: 46px;
+  border-radius: 12px;
+  border: 1px solid rgba(31, 28, 24, 0.14);
+  background: rgba(255, 255, 255, 0.86);
+  font-size: 22px;
+  font-family: var(--font-serif);
+  cursor: pointer;
+}
+
+.pc__noteValueBtn--active {
+  border-color: rgba(197, 128, 92, 0.9);
+  background: rgba(197, 128, 92, 0.16);
+  box-shadow: 0 0 0 3px rgba(197, 128, 92, 0.1);
+}
+
+.pc__homeworkBlock {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 12px;
+  padding-top: 14px;
+  border-top: 1px solid rgba(31, 28, 24, 0.08);
+}
+
+.pc__homeworkBlock .pc__metaLabel {
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: rgba(31, 28, 24, 0.62);
+}
+
+.pc__homeworkInput {
+  min-height: 96px;
+  resize: vertical;
+  padding: 16px 18px;
+  border-radius: 18px;
+  border: 1px solid rgba(31, 28, 24, 0.14);
+  background: rgba(255, 255, 255, 0.86);
+  font: 500 13px/1.35 var(--font-sans);
+  color: rgba(31, 28, 24, 0.88);
+  box-sizing: border-box;
+}
+
+.pc__homeworkInput:focus,
+.pc__smallInput:focus {
+  outline: none;
+  border-color: rgba(197, 128, 92, 0.85);
+  background: #fff;
+  box-shadow: 0 0 0 3px rgba(197, 128, 92, 0.12);
+}
+
+.pc__homeworkInput::placeholder {
+  color: rgba(31, 28, 24, 0.38);
+}
 /* reuse color logic */
 .pc__status--green {
   color: #2e7d32;
@@ -505,6 +636,26 @@
     font-size: 8px;
     min-width: auto;
   }
+
+  .pc__lessonMeta {
+  grid-template-columns: 1fr;
+}
+
+.pc__metaHeader,
+.pc__metaHeader--tempo,
+.pc__metaHeader--time,
+.pc__metaSpacer,
+.pc__homeworkBlock {
+  grid-column: 1;
+}
+
+.pc__metaSpacer {
+  display: none;
+}
+
+.pc__noteValuePicker {
+  grid-template-columns: repeat(3, 1fr);
+}
 
   /* FIX 2: today section full width */
   .pc__today {

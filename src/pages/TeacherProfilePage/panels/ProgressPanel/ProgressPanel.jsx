@@ -28,10 +28,19 @@ import {
 import ValidationAlert from "../../../../components/ui/ValidationAlert/ValidationAlert";
 
 function isPieceTouched(pieceValue) {
-  if (!pieceValue?.criteria) return false;
-  return Object.values(pieceValue.criteria).some((c) =>
+  if (!pieceValue) return false;
+
+  const hasCriteria = Object.values(pieceValue.criteria || {}).some((c) =>
     Number.isFinite(c?.score),
   );
+
+  const hasMeta =
+    String(pieceValue.goalTempo || "").trim() !== "" ||
+    String(pieceValue.currentTempo || "").trim() !== "" ||
+    String(pieceValue.minutesInClass || "").trim() !== "" ||
+    String(pieceValue.homework || "").trim() !== "";
+
+  return hasCriteria || hasMeta;
 }
 
 function isScalesTouched(scalesMap) {
@@ -347,6 +356,11 @@ export default function ProgressPanel({
       ...prev,
       [pieceId]: {
         criteria: { ...(lastPiece.criteria || {}) },
+        tempoNoteValue: lastPiece.tempoNoteValue || "quarter",
+        goalTempo: lastPiece.goalTempo ?? "",
+        currentTempo: lastPiece.currentTempo ?? "",
+        minutesInClass: lastPiece.minutesInClass ?? "",
+        homework: lastPiece.homework ?? "",
       },
     }));
 
@@ -552,7 +566,14 @@ export default function ProgressPanel({
           note: c.note ?? "",
         };
       }
-      out[p.pieceId] = { criteria };
+      out[p.pieceId] = {
+        criteria,
+        tempoNoteValue: p.tempoNoteValue || "quarter",
+        goalTempo: p.goalTempo ?? "",
+        currentTempo: p.currentTempo ?? "",
+        minutesInClass: p.minutesInClass ?? "",
+        homework: p.homework ?? "",
+      };
     }
     return out;
   }
@@ -748,6 +769,54 @@ export default function ProgressPanel({
                 }
                 onCopyLastLesson={() => handleCopyPieceFromLastLesson(p.id)}
                 canCopyLastLesson={!!lastPiecesMap[p.id]}
+                onSetGoalTempo={(goalTempo) =>
+                  setPieces((prev) => ({
+                    ...prev,
+                    [p.id]: {
+                      ...(prev[p.id] || { criteria: {} }),
+                      goalTempo,
+                    },
+                  }))
+                }
+                onSetCurrentTempo={(currentTempo) =>
+                  setPieces((prev) => ({
+                    ...prev,
+                    [p.id]: {
+                      ...(prev[p.id] || { criteria: {} }),
+                      currentTempo,
+                    },
+                  }))
+                }
+                onSetTempoNoteValue={(tempoNoteValue) =>
+                  setPieces((prev) => ({
+                    ...prev,
+                    [p.id]: {
+                      ...(prev[p.id] || { criteria: {} }),
+                      tempoNoteValue,
+                    },
+                  }))
+                }
+                onSetHomework={(homework) =>
+                  setPieces((prev) => ({
+                    ...prev,
+                    [p.id]: {
+                      ...(prev[p.id] || { criteria: {} }),
+                      homework,
+                    },
+                  }))
+                }
+                onSetMinutesInClass={(minutesInClass) =>
+                  setPieces((prev) => ({
+                    ...prev,
+                    [p.id]: {
+                      ...(prev[p.id] || { criteria: {} }),
+                      minutesInClass: Math.max(
+                        0,
+                        Math.min(300, Number(minutesInClass) || 0),
+                      ),
+                    },
+                  }))
+                }
               />
             ))}
           </section>

@@ -26,6 +26,11 @@ export default function PieceCard({
   onSetScore,
   onSetNote,
   onCopyLastLesson,
+  onSetTempoNoteValue,
+  onSetGoalTempo,
+  onSetCurrentTempo,
+  onSetMinutesInClass,
+  onSetHomework,
   canCopyLastLesson,
   disabled,
   missingCriteria = [],
@@ -33,6 +38,11 @@ export default function PieceCard({
 }) {
   const today = value || { criteria: {} };
   const prev = last || { criteria: {} };
+
+  const tempoNoteValue = today.tempoNoteValue || "quarter";
+  const goalTempo = today.goalTempo || "";
+  const currentTempo = today.currentTempo || "";
+  const minutesInClass = today.minutesInClass ?? "";
 
   const afterIsPass = Number(percent) >= PASS_THRESHOLD;
   const lastIsPass = Number(lastWeekPercent) >= PASS_THRESHOLD;
@@ -177,6 +187,101 @@ export default function PieceCard({
           </span>{" "}
         </div>
       </div>
+      <div className="pc__lessonMeta">
+        <div className="pc__metaHeader pc__metaHeader--tempo">TEMPO</div>
+        <div className="pc__metaHeader pc__metaHeader--time">
+          MINUTES SPENT IN CLASS
+        </div>
+
+        <div className="pc__miniField pc__noteValueBlock">
+          <span className="pc__miniLabel">Note Value</span>
+          <div className="pc__noteValuePicker">
+            {[
+              { value: "quarter", label: "♩" },
+              { value: "dottedQuarter", label: "♩." },
+              { value: "eighth", label: "♪" },
+            ].map((option) => (
+              <button
+                key={option.value}
+                type="button"
+                className={`pc__noteValueBtn ${
+                  tempoNoteValue === option.value
+                    ? "pc__noteValueBtn--active"
+                    : ""
+                }`}
+                onClick={() => onSetTempoNoteValue?.(option.value)}
+                disabled={disabled}
+              >
+                {option.label}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <div className="pc__miniField">
+          <span className="pc__miniLabel">Goal BPM</span>
+          <input
+            className="pc__smallInput"
+            type="number"
+            min="0"
+            max="500"
+            value={goalTempo}
+            onChange={(e) => onSetGoalTempo?.(e.target.value)}
+            disabled={disabled}
+          />
+        </div>
+
+        <div className="pc__miniField">
+          <span className="pc__miniLabel">Current BPM</span>
+          <input
+            className="pc__smallInput"
+            type="number"
+            min="0"
+            max="500"
+            value={currentTempo}
+            onChange={(e) => onSetCurrentTempo?.(e.target.value)}
+            disabled={disabled}
+          />
+        </div>
+
+        <div className="pc__metaSpacer" />
+
+        <div className="pc__miniField">
+          <span className="pc__miniLabel">Suggested</span>
+          <input
+            className="pc__smallInput pc__smallInput--readonly"
+            type="number"
+            value={today.suggestedMinutesInClass ?? ""}
+            placeholder="10-15"
+            disabled
+          />
+        </div>
+
+        <div className="pc__miniField">
+          <span className="pc__miniLabel">Actual</span>
+          <input
+            className="pc__smallInput"
+            type="number"
+            min="0"
+            max="300"
+            value={minutesInClass}
+            onChange={(e) => onSetMinutesInClass?.(e.target.value)}
+            disabled={disabled}
+          />
+        </div>
+
+        <div className="pc__homeworkBlock">
+          <label className="pc__metaLabel">NOTES / HOMEWORK</label>{" "}
+          <textarea
+            className="pc__homeworkInput"
+            placeholder="e.g. Practise bars 12–16 hands separately..."
+            value={today.homework || ""}
+            onChange={(e) => onSetHomework?.(e.target.value)}
+            disabled={disabled}
+          />
+        </div>
+      </div>
+
       <div className="pc__actions">
         {canCopyLastLesson && (
           <button
