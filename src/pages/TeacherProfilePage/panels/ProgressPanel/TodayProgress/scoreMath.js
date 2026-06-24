@@ -1,7 +1,14 @@
 export function initPieces(PIECES) {
   const out = {};
   for (const p of PIECES) {
-    out[p.id] = { criteria: {} };
+    out[p.id] = {
+      criteria: {},
+      tempoNoteValue: "quarter",
+      goalTempo: "",
+      currentTempo: "",
+      minutesInClass: "",
+      homework: "",
+    };
     for (const c of p.criteria) {
       out[p.id].criteria[c.id] = { score: null, note: "" };
     }
@@ -160,6 +167,11 @@ export function buildLessonPayload({
     pieces: Object.entries(pieces || {}).map(([pieceId, pv]) => ({
       pieceId,
       percent: piecePercents?.[pieceId] ?? 0,
+      tempoNoteValue: pv?.tempoNoteValue || "quarter",
+      goalTempo: normalizeNumberOrNull(pv?.goalTempo),
+      currentTempo: normalizeNumberOrNull(pv?.currentTempo),
+      minutesInClass: normalizeNumberOrNull(pv?.minutesInClass),
+      homework: pv?.homework?.trim() || null,
       criteria: Object.entries(pv?.criteria || {})
         .filter(
           ([, cv]) =>
@@ -186,6 +198,20 @@ export function buildLessonPayload({
     auralTraining: isPerformanceCycle ? null : normalizeNoteBlock(aural),
     teacherNarrative: teacherNarrative?.trim() || null,
   };
+}
+
+function normalizeNumberOrNull(value, min = 0, max = 300) {
+  if (value === "" || value === null || value === undefined) {
+    return null;
+  }
+
+  const n = Number(value);
+
+  if (!Number.isFinite(n)) {
+    return null;
+  }
+
+  return Math.max(min, Math.min(max, n));
 }
 
 export function normalizeNoteBlock(obj) {
