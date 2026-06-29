@@ -338,7 +338,126 @@
 }
 
 .pd-practice-date-chevron {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   color: var(--ink-muted);
+
+  transform: rotate(0deg);
+  transform-origin: center;
+  transition: transform 460ms ease;
+}
+
+.pd-practice-date-chevron--open {
+  transform: rotate(180deg);
+}
+
+.pd-practice-date-chevron svg {
+  display: block;
+}
+
+/* --- Calendar popover --- */
+.pd-practice-calendar {
+  position: absolute;
+  top: calc(100% + 14px);
+  left: 0;
+  right: 0;
+  z-index: 20;
+
+  background: white;
+  border: 1px solid rgba(28, 26, 23, 0.08);
+  border-radius: 22px;
+
+  padding: 16px 16px;
+
+  box-shadow: 0 18px 40px rgba(28, 26, 23, 0.12);
+}
+
+.pd-practice-calendar-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  margin-bottom: 24px;
+}
+
+.pd-practice-calendar-title {
+  font-family: "Cormorant Garamond", serif;
+  font-size: 18px;
+  font-weight: 600;
+
+  color: var(--ink);
+}
+
+.pd-practice-calendar-nav {
+  width: 38px;
+  height: 38px;
+
+  border: 1px solid rgba(28, 26, 23, 0.1);
+  border-radius: 8px;
+
+  background: white;
+  color: var(--ink);
+
+  font-size: 20px;
+  line-height: 1;
+
+  cursor: pointer;
+}
+
+.pd-practice-calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 10px 4px;
+}
+
+.pd-practice-calendar-dow {
+  text-align: center;
+
+  font-size: 10px;
+  font-weight: 700;
+
+  color: rgba(54, 52, 50, 0.5);
+}
+
+.pd-practice-calendar-day {
+  height: 48px;
+
+  border: none;
+  border-radius: 12px;
+
+  background: transparent;
+  color: rgba(54, 52, 50, 0.8);
+
+  font-family: var(--font-sans);
+  font-size: 14px;
+  font-weight: 500;
+
+  cursor: pointer;
+}
+
+.pd-practice-calendar-day:hover {
+  background: var(--gold-pale);
+}
+
+.pd-practice-calendar-day--selected {
+  background: var(--gold);
+  color: white;
+  font-weight: 700;
+  border-radius: 8px;
+}
+
+.pd-practice-calendar-day--selected:hover {
+  background: var(--gold);
+}
+
+.pd-practice-calendar-day--today:not(.pd-practice-calendar-day--selected) {
+  border: 1px solid var(--gold);
+  color: var(--gold);
+}
+
+.pd-practice-calendar-day--empty {
+  pointer-events: none;
 }
 
 /* ─── Section title ─────────────────────────────────────── */

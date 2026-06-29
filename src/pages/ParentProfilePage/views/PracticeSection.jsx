@@ -198,7 +198,11 @@ export default function PracticeSection({
   // { "YYYY-MM-DD": { pieceA: { status, minutes, taskOutcome, note }, ... } }
   const [tasksByDay, setTasksByDay] = useState({});
 
-  const [selectedDate] = useState(today);
+  const [selectedDate, setSelectedDate] = useState(today);
+  const [calendarOpen, setCalendarOpen] = useState(false);
+  const [calendarMonth, setCalendarMonth] = useState(
+    new Date(today.getFullYear(), today.getMonth(), 1),
+  );
 
   const selectedDateKey = useMemo(() => dateKey(selectedDate), [selectedDate]);
 
@@ -408,7 +412,119 @@ export default function PracticeSection({
   return (
     <div className="pd-card pd-card--pad">
       <div className="pd-practice-date-bar">
-        <button type="button" className="pd-practice-date-btn">
+        <button
+          type="button"
+          className="pd-practice-date-btn"
+          onClick={() => setCalendarOpen((open) => !open)}
+        >
+          {calendarOpen && (
+            <div
+              className="pd-practice-calendar"
+              onClick={(event) => event.stopPropagation()}
+            >
+              <div className="pd-practice-calendar-head">
+                <button
+                  type="button"
+                  className="pd-practice-calendar-nav"
+                  onClick={(event) => {
+                    event.stopPropagation();
+                    setCalendarMonth(
+                      new Date(
+                        calendarMonth.getFullYear(),
+                        calendarMonth.getMonth() - 1,
+                        1,
+                      ),
+                    );
+                  }}
+                >
+                  ‹
+                </button>
+
+                <div className="pd-practice-calendar-title">
+                  {calendarMonth.toLocaleDateString("en-US", {
+                    month: "long",
+                    year: "numeric",
+                  })}
+                </div>
+
+                <button
+                  type="button"
+                  className="pd-practice-calendar-nav"
+                  onClick={(event) => {
+                    event.stopPropagation();
+                    setCalendarMonth(
+                      new Date(
+                        calendarMonth.getFullYear(),
+                        calendarMonth.getMonth() + 1,
+                        1,
+                      ),
+                    );
+                  }}
+                >
+                  ›
+                </button>
+              </div>
+
+              <div className="pd-practice-calendar-grid">
+                {["S", "M", "T", "W", "T", "F", "S"].map((day) => (
+                  <div className="pd-practice-calendar-dow" key={day}>
+                    {day}
+                  </div>
+                ))}
+
+                {Array.from({
+                  length: new Date(
+                    calendarMonth.getFullYear(),
+                    calendarMonth.getMonth(),
+                    1,
+                  ).getDay(),
+                }).map((_, index) => (
+                  <div
+                    className="pd-practice-calendar-day pd-practice-calendar-day--empty"
+                    key={`empty-${index}`}
+                  />
+                ))}
+
+                {Array.from({
+                  length: new Date(
+                    calendarMonth.getFullYear(),
+                    calendarMonth.getMonth() + 1,
+                    0,
+                  ).getDate(),
+                }).map((_, index) => {
+                  const dayNumber = index + 1;
+                  const date = new Date(
+                    calendarMonth.getFullYear(),
+                    calendarMonth.getMonth(),
+                    dayNumber,
+                  );
+
+                  const selected = isSameDay(date, selectedDate);
+                  const current = isSameDay(date, today);
+
+                  return (
+                    <button
+                      type="button"
+                      key={dayNumber}
+                      className={[
+                        "pd-practice-calendar-day",
+                        selected && "pd-practice-calendar-day--selected",
+                        current && "pd-practice-calendar-day--today",
+                      ]
+                        .filter(Boolean)
+                        .join(" ")}
+                      onClick={() => {
+                        setSelectedDate(date);
+                        setCalendarOpen(false);
+                      }}
+                    >
+                      {dayNumber}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          )}
           <div className="pd-practice-date-left">
             <div className="pd-practice-date-icon">
               {" "}
@@ -440,7 +556,27 @@ export default function PracticeSection({
             </div>
           </div>
 
-          <span className="pd-practice-date-chevron">⌄</span>
+          <span
+            className={[
+              "pd-practice-date-chevron",
+              calendarOpen && "pd-practice-date-chevron--open",
+            ]
+              .filter(Boolean)
+              .join(" ")}
+          >
+            <svg
+              width="18"
+              height="18"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <polyline points="6 9 12 15 18 9" />
+            </svg>
+          </span>
         </button>
       </div>
 
