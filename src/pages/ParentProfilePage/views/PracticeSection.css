@@ -486,3 +486,56 @@
 
   color: rgba(28, 26, 23, 0.35);
 }
+
+/* ==========================================================
+   ENRICHED PRACTICE LOG — MINUTES PANEL
+   ========================================================== */
+
+.pd-practice-min-cell {
+  flex-shrink: 0;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+
+  border-left: 1px solid var(--border, rgba(28, 26, 23, 0.1));
+  padding-left: 14px;
+}
+
+.pd-practice-min-input {
+  width: 58px;
+  height: 50px;
+
+  border: 1px solid var(--border, rgba(28, 26, 23, 0.1));
+  border-radius: 10px;
+
+  background: var(--cream, #faf7f2);
+
+  text-align: center;
+
+  font-family: "Cormorant Garamond", serif;
+  font-size: 21px;
+  font-weight: 600;
+
+  color: var(--ink, #1c1a17);
+}
+
+.pd-practice-min-input::-webkit-outer-spin-button,
+.pd-practice-min-input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.pd-practice-min-input {
+  -moz-appearance: textfield;
+}
+
+.pd-practice-min-label {
+  font-size: 9px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+
+  color: var(--ink-muted, #7a766d);
+}
