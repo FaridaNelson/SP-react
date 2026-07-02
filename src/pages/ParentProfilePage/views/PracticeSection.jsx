@@ -410,7 +410,7 @@ export default function PracticeSection({
   // ── Render ────────────────────────────────────────────────────
 
   return (
-    <div className="pd-card pd-card--pad">
+    <div className="pd-card__practice pd-card--pad">
       <div className="pd-practice-date-bar">
         <button
           type="button"

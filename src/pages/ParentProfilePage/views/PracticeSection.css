@@ -405,6 +405,12 @@
   cursor: pointer;
 }
 
+.pd-practice-calendar-nav:hover {
+  background: var(--gold-pale);
+  border-color: var(--gold);
+  color: var(--gold);
+}
+
 .pd-practice-calendar-grid {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
