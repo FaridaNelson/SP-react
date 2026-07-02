@@ -385,27 +385,27 @@ export default function PracticeSection({
   //   });
   // }, []);
 
-  // const updateTaskMinutes = useCallback((dayKey, taskId, value) => {
-  //   const minutes = Math.max(0, Math.min(300, Number(value) || 0));
+  const updateTaskMinutes = useCallback((dayKey, taskId, value) => {
+    const minutes = Math.max(0, Math.min(300, Number(value) || 0));
 
-  //   setSavePracticeLogStatus("idle");
+    setSavePracticeLogStatus("idle");
 
-  //   setTasksByDay((prev) => {
-  //     const current = prev[dayKey] ?? {};
-  //     const currentTask = current[taskId] ?? createPracticedTaskRecord();
+    setTasksByDay((prev) => {
+      const current = prev[dayKey] ?? {};
+      const currentTask = current[taskId] ?? createPracticedTaskRecord();
 
-  //     return {
-  //       ...prev,
-  //       [dayKey]: {
-  //         ...current,
-  //         [taskId]: {
-  //           ...createPracticedTaskRecord(currentTask),
-  //           minutes,
-  //         },
-  //       },
-  //     };
-  //   });
-  // }, []);
+      return {
+        ...prev,
+        [dayKey]: {
+          ...current,
+          [taskId]: {
+            ...createPracticedTaskRecord(currentTask),
+            minutes,
+          },
+        },
+      };
+    });
+  }, []);
 
   // ── Render ────────────────────────────────────────────────────
 
@@ -625,7 +625,13 @@ export default function PracticeSection({
                 min="0"
                 max="300"
                 value={selectedDayTasks[assignment.id]?.minutes ?? 0}
-                readOnly
+                onChange={(e) =>
+                  updateTaskMinutes(
+                    selectedDateKey,
+                    assignment.id,
+                    e.target.value,
+                  )
+                }
               />
               <span className="pd-practice-min-label">Min</span>
             </div>
