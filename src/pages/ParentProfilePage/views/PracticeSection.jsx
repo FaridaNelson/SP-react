@@ -86,6 +86,12 @@ const MOCK_ASSIGNMENTS = [
     homework: "",
   },
   {
+    id: "pieceD",
+    pill: "Piece D",
+    name: "Performance Piece D",
+    homework: "",
+  },
+  {
     id: "scales",
     pill: "Technique",
     name: "Scales & Arpeggios",
@@ -138,13 +144,13 @@ function isTaskPracticed(taskRecord) {
   return taskRecord?.status === "practiced";
 }
 
-function normalizeTasksByDayForSave(snapshot, tasks) {
+function normalizeTasksByDayForSave(snapshot, visibleTasks) {
   const result = {};
 
   for (const [dayKey, dayTasks] of Object.entries(snapshot)) {
     result[dayKey] = {};
 
-    for (const task of tasks) {
+    for (const task of visibleTasks) {
       const taskRecord = dayTasks[task.id];
 
       result[dayKey][task.id] = isTaskPracticed(taskRecord)
@@ -192,6 +198,34 @@ export default function PracticeSection({
     [examType],
   );
 
+  const visibleAssignments = useMemo(() => {
+    if (examType === "Performance") {
+      return MOCK_ASSIGNMENTS.filter((assignment) =>
+        ["pieceA", "pieceB", "pieceC", "pieceD"].includes(assignment.id),
+      );
+    }
+
+    return MOCK_ASSIGNMENTS.filter((assignment) =>
+      [
+        "pieceA",
+        "pieceB",
+        "pieceC",
+        "scales",
+        "sightReading",
+        "auralTraining",
+      ].includes(assignment.id),
+    );
+  }, [examType]);
+
+  const visibleTasks = useMemo(
+    () =>
+      visibleAssignments.map(({ id, pill }) => ({
+        id,
+        label: pill,
+      })),
+    [visibleAssignments],
+  );
+
   // const todayKey = useMemo(() => dateKey(today), [today]);
   // const days = useMemo(() => buildWeek(today), [today]);
 
@@ -233,7 +267,7 @@ export default function PracticeSection({
 
     const homeworkTaskList = {};
 
-    tasks.forEach((task) => {
+    visibleTasks.forEach((task) => {
       const practicedEntries = Object.entries(snapshot).filter(([, dayTasks]) =>
         isTaskPracticed(dayTasks[task.id]),
       );
@@ -306,7 +340,7 @@ export default function PracticeSection({
       console.error("Failed to save practice log:", error);
       setSavePracticeLogStatus("error");
     }
-  }, [studentId, cycle?._id, tasks, today]);
+  }, [studentId, cycle?._id, visibleTasks, today]);
 
   useEffect(() => {
     async function loadPracticeLog() {
@@ -591,7 +625,7 @@ export default function PracticeSection({
       </div>
 
       <div className="pd-practice-piece-list">
-        {MOCK_ASSIGNMENTS.map((assignment) => (
+        {visibleAssignments.map((assignment) => (
           <div className="pd-practice-piece-card" key={assignment.id}>
             <div className="pd-practice-piece-info">
               <div className="pd-practice-piece-top">
@@ -637,6 +671,33 @@ export default function PracticeSection({
             </div>
           </div>
         ))}
+      </div>
+      <div className="pd-practice-actions">
+        <button
+          className="pd-practice-save-btn"
+          onClick={savePracticeLog}
+          disabled={savePracticeLogStatus === "saving"}
+        >
+          {savePracticeLogStatus === "saving"
+            ? "Saving..."
+            : "Save Practice Log"}
+        </button>
+
+        {savePracticeLogStatus !== "idle" && (
+          <span
+            className={
+              savePracticeLogStatus === "error"
+                ? "pd-practice-save-status pd-practice-save-status--error"
+                : "pd-practice-save-status"
+            }
+          >
+            {savePracticeLogStatus === "saved"
+              ? "Saved"
+              : savePracticeLogStatus === "error"
+                ? "Error"
+                : ""}
+          </span>
+        )}
       </div>
     </div>
   );
