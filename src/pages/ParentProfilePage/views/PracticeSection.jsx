@@ -1,6 +1,7 @@
 import "./PracticeSection.css";
 import { useState, useEffect, useRef, useMemo, useCallback } from "react";
 import { API_BASE } from "../../../lib/api";
+import { useLatestLesson } from "../../../hooks/useLatestLesson";
 
 // ─── Task definitions ─────────────────────────────────────────────
 
@@ -198,24 +199,28 @@ export default function PracticeSection({
     [examType],
   );
 
-  const visibleAssignments = useMemo(() => {
-    if (examType === "Performance") {
-      return MOCK_ASSIGNMENTS.filter((assignment) =>
-        ["pieceA", "pieceB", "pieceC", "pieceD"].includes(assignment.id),
-      );
-    }
+  const { latestLesson } = useLatestLesson(studentId, {
+    examPreparationCycleId: cycle?._id,
+    instrument: cycle?.instrument,
+    enabled: Boolean(studentId && cycle?._id && cycle?.instrument),
+  });
 
-    return MOCK_ASSIGNMENTS.filter((assignment) =>
-      [
-        "pieceA",
-        "pieceB",
-        "pieceC",
-        "scales",
-        "sightReading",
-        "auralTraining",
-      ].includes(assignment.id),
+  const visibleAssignments = useMemo(() => {
+    const lessonPiecesById = new Map(
+      (latestLesson?.pieces || []).map((piece) => [piece.pieceId, piece]),
     );
-  }, [examType]);
+
+    return tasks.map((task) => {
+      const lessonPiece = lessonPiecesById.get(task.id);
+
+      return {
+        id: task.id,
+        pill: task.label,
+        name: task.label,
+        homework: lessonPiece?.homework ?? "",
+      };
+    });
+  }, [tasks, latestLesson]);
 
   const visibleTasks = useMemo(
     () =>

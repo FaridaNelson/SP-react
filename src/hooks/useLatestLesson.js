@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { getLatestLesson } from "../../../lib/lessons.js";
+import { getLatestLesson } from "../lib/lessons.js";
 
 export function useLatestLesson(
   studentId,
