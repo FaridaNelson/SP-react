@@ -1,6 +1,7 @@
 import "./PracticeSection.css";
 import { useState, useEffect, useRef, useMemo, useCallback } from "react";
 import { API_BASE } from "../../../lib/api";
+import { useLatestLesson } from "../../../hooks/useLatestLesson";
 
 // ─── Task definitions ─────────────────────────────────────────────
 
@@ -20,7 +21,7 @@ const PERF_TASKS = [
   { id: "pieceD", label: "Piece D" },
 ];
 
-const DAY_ABBR = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+// const DAY_ABBR = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
 // ─── Date helpers ─────────────────────────────────────────────────
 
@@ -37,22 +38,73 @@ function getToday() {
   return d;
 }
 
-function buildWeek(today) {
-  const sunday = new Date(today);
-  sunday.setDate(today.getDate() - today.getDay()); // rewind to Sunday
-  return Array.from({ length: 7 }, (_, i) => {
-    const d = new Date(sunday);
-    d.setDate(sunday.getDate() + i);
-    return d;
+// function buildWeek(today) {
+//   const sunday = new Date(today);
+//   sunday.setDate(today.getDate() - today.getDay()); // rewind to Sunday
+//   return Array.from({ length: 7 }, (_, i) => {
+//     const d = new Date(sunday);
+//     d.setDate(sunday.getDate() + i);
+//     return d;
+//   });
+// }
+
+// function summaryThemeFor(count) {
+//   if (count >= 6) return "green";
+//   if (count >= 4) return "sage";
+//   if (count >= 2) return "yellow";
+//   return "rose";
+// }
+
+function formatPracticeDate(date) {
+  return date.toLocaleDateString("en-US", {
+    weekday: "short",
+    month: "long",
+    day: "numeric",
   });
 }
 
-function summaryThemeFor(count) {
-  if (count >= 6) return "green";
-  if (count >= 4) return "sage";
-  if (count >= 2) return "yellow";
-  return "rose";
+function isSameDay(a, b) {
+  return dateKey(a) === dateKey(b);
 }
+
+const MOCK_ASSIGNMENTS = [
+  {
+    id: "pieceA",
+    pill: "Piece A",
+    name: "Sonatina in G — Clementi",
+    homework: "Hands separate, bars 1–20. Even left-hand quavers. 10 min/day.",
+  },
+  {
+    id: "pieceB",
+    pill: "Piece B",
+    name: "Arabesque — Burgmüller",
+    homework: "Slow practice for the semiquaver runs. Metronome at 60.",
+  },
+  {
+    id: "pieceC",
+    pill: "Piece C",
+    name: "Romance — Schumann",
+    homework: "",
+  },
+  {
+    id: "pieceD",
+    pill: "Piece D",
+    name: "Performance Piece D",
+    homework: "",
+  },
+  {
+    id: "scales",
+    pill: "Technique",
+    name: "Scales & Arpeggios",
+    homework: "G, D and A major — two octaves, hands together.",
+  },
+  {
+    id: "sightReading",
+    pill: "Sight-read",
+    name: "",
+    homework: "One new 4-bar example daily, workbook p.12–14.",
+  },
+];
 
 // Csrf token helper:
 async function getCsrfToken() {
@@ -93,13 +145,13 @@ function isTaskPracticed(taskRecord) {
   return taskRecord?.status === "practiced";
 }
 
-function normalizeTasksByDayForSave(snapshot, tasks) {
+function normalizeTasksByDayForSave(snapshot, visibleTasks) {
   const result = {};
 
   for (const [dayKey, dayTasks] of Object.entries(snapshot)) {
     result[dayKey] = {};
 
-    for (const task of tasks) {
+    for (const task of visibleTasks) {
       const taskRecord = dayTasks[task.id];
 
       result[dayKey][task.id] = isTaskPracticed(taskRecord)
@@ -134,7 +186,7 @@ function normalizeTasksByDayFromServer(serverTasksByDay) {
 // ─── Component ────────────────────────────────────────────────────
 
 export default function PracticeSection({
-  studentName,
+  // studentName,
   examType,
   studentId,
   cycle,
@@ -147,11 +199,65 @@ export default function PracticeSection({
     [examType],
   );
 
-  const todayKey = useMemo(() => dateKey(today), [today]);
-  const days = useMemo(() => buildWeek(today), [today]);
+  const { latestLesson } = useLatestLesson(studentId, {
+    examPreparationCycleId: cycle?._id,
+    instrument: cycle?.instrument,
+    enabled: Boolean(studentId && cycle?._id && cycle?.instrument),
+  });
+
+  const visibleAssignments = useMemo(() => {
+    const lessonPiecesById = new Map(
+      (latestLesson?.pieces || []).map((piece) => [piece.pieceId, piece]),
+    );
+
+    return tasks.map((task) => {
+      const lessonPiece = lessonPiecesById.get(task.id);
+
+      return {
+        id: task.id,
+        pill: task.label,
+        name: task.label,
+        homework: lessonPiece?.homework ?? "",
+      };
+    });
+  }, [tasks, latestLesson]);
+
+  const visibleTasks = useMemo(
+    () =>
+      visibleAssignments.map(({ id, pill }) => ({
+        id,
+        label: pill,
+      })),
+    [visibleAssignments],
+  );
+
+  // const todayKey = useMemo(() => dateKey(today), [today]);
+  // const days = useMemo(() => buildWeek(today), [today]);
+
   // { "YYYY-MM-DD": { pieceA: { status, minutes, taskOutcome, note }, ... } }
   const [tasksByDay, setTasksByDay] = useState({});
+
+  const [selectedDate, setSelectedDate] = useState(today);
+  const [calendarOpen, setCalendarOpen] = useState(false);
+  const [calendarMonth, setCalendarMonth] = useState(
+    new Date(today.getFullYear(), today.getMonth(), 1),
+  );
+
+  const selectedDateKey = useMemo(() => dateKey(selectedDate), [selectedDate]);
+
+  const selectedDayTasks = tasksByDay[selectedDateKey] || {};
+
+  const dailyTotal = useMemo(() => {
+    const dayTasks = tasksByDay[selectedDateKey] ?? {};
+
+    return Object.values(dayTasks).reduce(
+      (sum, task) => sum + (Number(task?.minutes) || 0),
+      0,
+    );
+  }, [tasksByDay, selectedDateKey]);
+  // Keep a ref to latest tasksByDay for the unmount save
   const [savePracticeLogStatus, setSavePracticeLogStatus] = useState("idle"); // "idle" | "saving" | "saved" | "error"
+
   // Keep a ref to latest tasksByDay for the unmount save
   const tasksByDayRef = useRef(tasksByDay);
   useEffect(() => {
@@ -166,7 +272,7 @@ export default function PracticeSection({
 
     const homeworkTaskList = {};
 
-    tasks.forEach((task) => {
+    visibleTasks.forEach((task) => {
       const practicedEntries = Object.entries(snapshot).filter(([, dayTasks]) =>
         isTaskPracticed(dayTasks[task.id]),
       );
@@ -239,7 +345,7 @@ export default function PracticeSection({
       console.error("Failed to save practice log:", error);
       setSavePracticeLogStatus("error");
     }
-  }, [studentId, cycle?._id, tasks, today]);
+  }, [studentId, cycle?._id, visibleTasks, today]);
 
   useEffect(() => {
     async function loadPracticeLog() {
@@ -281,41 +387,42 @@ export default function PracticeSection({
 
   // ── Single source of truth: which days have any task done ─────
   // Derived directly from tasksByDay — no closures, no stale reads.
-  const practicedDays = useMemo(() => {
-    const set = new Set();
-    for (const [day, dayTasks] of Object.entries(tasksByDay)) {
-      if (Object.values(dayTasks).some(isTaskPracticed)) set.add(day);
-    }
-    return set;
-  }, [tasksByDay]);
+  //
+  // const practicedDays = useMemo(() => {
+  //   const set = new Set();
+  //   for (const [day, dayTasks] of Object.entries(tasksByDay)) {
+  //     if (Object.values(dayTasks).some(isTaskPracticed)) set.add(day);
+  //   }
+  //   return set;
+  // }, [tasksByDay]);
 
-  const practicedCount = useMemo(
-    () => days.filter((d) => practicedDays.has(dateKey(d))).length,
-    [days, practicedDays],
-  );
+  // const practicedCount = useMemo(
+  //   () => days.filter((d) => practicedDays.has(dateKey(d))).length,
+  //   [days, practicedDays],
+  // );
 
-  const summaryTheme = summaryThemeFor(practicedCount);
+  // const summaryTheme = summaryThemeFor(practicedCount);
 
   // ── Toggle a task for any day ───────────────────────────────────
-  const toggleTaskForDay = useCallback((dayKey, taskId) => {
-    setSavePracticeLogStatus("idle");
+  // const toggleTaskForDay = useCallback((dayKey, taskId) => {
+  //   setSavePracticeLogStatus("idle");
 
-    setTasksByDay((prev) => {
-      const current = prev[dayKey] ?? {};
-      const currentTask = current[taskId];
-      const currentlyPracticed = isTaskPracticed(currentTask);
+  //   setTasksByDay((prev) => {
+  //     const current = prev[dayKey] ?? {};
+  //     const currentTask = current[taskId];
+  //     const currentlyPracticed = isTaskPracticed(currentTask);
 
-      return {
-        ...prev,
-        [dayKey]: {
-          ...current,
-          [taskId]: currentlyPracticed
-            ? createEmptyTaskRecord(currentTask)
-            : createPracticedTaskRecord(currentTask),
-        },
-      };
-    });
-  }, []);
+  //     return {
+  //       ...prev,
+  //       [dayKey]: {
+  //         ...current,
+  //         [taskId]: currentlyPracticed
+  //           ? createEmptyTaskRecord(currentTask)
+  //           : createPracticedTaskRecord(currentTask),
+  //       },
+  //     };
+  //   });
+  // }, []);
 
   const updateTaskMinutes = useCallback((dayKey, taskId, value) => {
     const minutes = Math.max(0, Math.min(300, Number(value) || 0));
@@ -342,110 +449,260 @@ export default function PracticeSection({
   // ── Render ────────────────────────────────────────────────────
 
   return (
-    <div className="pd-card pd-card--pad">
-      <div className="pd-practice-header">
-        <div className="pd-practice-title">Practice Record</div>
-        <div className="pd-practice-sub">
-          Track {studentName}&apos;s practice sessions this week
-        </div>
-      </div>
-
-      {/* Summary — colour coded by days practiced */}
-      <div
-        className={`pd-practice-summary pd-practice-summary--${summaryTheme}`}
-      >
-        <div className="pd-practice-summary-label">This Week</div>
-        <div className="pd-practice-summary-count">{practicedCount} / 7</div>
-        <div className="pd-practice-summary-sub">days practiced</div>
-      </div>
-
-      {/* Action row: Save button + status */}
-      <div className="pd-practice-actions">
+    <div className="pd-card__practice pd-card--pad">
+      <div className="pd-practice-date-bar">
         <button
           type="button"
+          className="pd-practice-date-btn"
+          onClick={() => setCalendarOpen((open) => !open)}
+        >
+          {calendarOpen && (
+            <div
+              className="pd-practice-calendar"
+              onClick={(event) => event.stopPropagation()}
+            >
+              <div className="pd-practice-calendar-head">
+                <button
+                  type="button"
+                  className="pd-practice-calendar-nav"
+                  onClick={(event) => {
+                    event.stopPropagation();
+                    setCalendarMonth(
+                      new Date(
+                        calendarMonth.getFullYear(),
+                        calendarMonth.getMonth() - 1,
+                        1,
+                      ),
+                    );
+                  }}
+                >
+                  ‹
+                </button>
+
+                <div className="pd-practice-calendar-title">
+                  {calendarMonth.toLocaleDateString("en-US", {
+                    month: "long",
+                    year: "numeric",
+                  })}
+                </div>
+
+                <button
+                  type="button"
+                  className="pd-practice-calendar-nav"
+                  onClick={(event) => {
+                    event.stopPropagation();
+                    setCalendarMonth(
+                      new Date(
+                        calendarMonth.getFullYear(),
+                        calendarMonth.getMonth() + 1,
+                        1,
+                      ),
+                    );
+                  }}
+                >
+                  ›
+                </button>
+              </div>
+
+              <div className="pd-practice-calendar-grid">
+                {["S", "M", "T", "W", "T", "F", "S"].map((day) => (
+                  <div className="pd-practice-calendar-dow" key={day}>
+                    {day}
+                  </div>
+                ))}
+
+                {Array.from({
+                  length: new Date(
+                    calendarMonth.getFullYear(),
+                    calendarMonth.getMonth(),
+                    1,
+                  ).getDay(),
+                }).map((_, index) => (
+                  <div
+                    className="pd-practice-calendar-day pd-practice-calendar-day--empty"
+                    key={`empty-${index}`}
+                  />
+                ))}
+
+                {Array.from({
+                  length: new Date(
+                    calendarMonth.getFullYear(),
+                    calendarMonth.getMonth() + 1,
+                    0,
+                  ).getDate(),
+                }).map((_, index) => {
+                  const dayNumber = index + 1;
+                  const date = new Date(
+                    calendarMonth.getFullYear(),
+                    calendarMonth.getMonth(),
+                    dayNumber,
+                  );
+
+                  const selected = isSameDay(date, selectedDate);
+                  const current = isSameDay(date, today);
+
+                  return (
+                    <button
+                      type="button"
+                      key={dayNumber}
+                      className={[
+                        "pd-practice-calendar-day",
+                        selected && "pd-practice-calendar-day--selected",
+                        current && "pd-practice-calendar-day--today",
+                      ]
+                        .filter(Boolean)
+                        .join(" ")}
+                      onClick={() => {
+                        setSelectedDate(date);
+                        setCalendarOpen(false);
+                      }}
+                    >
+                      {dayNumber}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+          <div className="pd-practice-date-left">
+            <div className="pd-practice-date-icon">
+              {" "}
+              <svg
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <rect x="3" y="4" width="18" height="18" rx="2" />
+                <line x1="16" y1="2" x2="16" y2="6" />
+                <line x1="8" y1="2" x2="8" y2="6" />
+                <line x1="3" y1="10" x2="21" y2="10" />
+              </svg>
+            </div>
+
+            <div className="pd-practice-date-texts">
+              <span className="pd-practice-date-label">Practice day</span>
+              <span className="pd-practice-date-value">
+                {formatPracticeDate(selectedDate)}
+                {isSameDay(selectedDate, today) && (
+                  <span className="pd-practice-today-tag">Today</span>
+                )}
+              </span>
+            </div>
+          </div>
+
+          <span
+            className={[
+              "pd-practice-date-chevron",
+              calendarOpen && "pd-practice-date-chevron--open",
+            ]
+              .filter(Boolean)
+              .join(" ")}
+          >
+            <svg
+              width="18"
+              height="18"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <polyline points="6 9 12 15 18 9" />
+            </svg>
+          </span>
+        </button>
+      </div>
+
+      <div className="pd-practice-section-title">Today&apos;s practice</div>
+
+      <div className="pd-practice-total-card">
+        <span className="pd-practice-total-label">Total practiced today</span>
+        <span className="pd-practice-total-value">
+          {dailyTotal}
+          <small>min</small>
+        </span>
+      </div>
+
+      <div className="pd-practice-piece-list">
+        {visibleAssignments.map((assignment) => (
+          <div className="pd-practice-piece-card" key={assignment.id}>
+            <div className="pd-practice-piece-info">
+              <div className="pd-practice-piece-top">
+                <span className="pd-practice-piece-pill">
+                  {assignment.pill}
+                </span>
+
+                {assignment.name && (
+                  <span className="pd-practice-piece-name">
+                    {assignment.name}
+                  </span>
+                )}
+              </div>
+
+              {assignment.homework ? (
+                <div className="pd-practice-homework-text">
+                  {assignment.homework}
+                </div>
+              ) : (
+                <div className="pd-practice-homework-empty">
+                  Nothing assigned
+                </div>
+              )}
+            </div>
+
+            <div className="pd-practice-min-cell">
+              <input
+                className="pd-practice-min-input"
+                type="number"
+                inputMode="numeric"
+                min="0"
+                max="300"
+                value={selectedDayTasks[assignment.id]?.minutes ?? 0}
+                onChange={(e) =>
+                  updateTaskMinutes(
+                    selectedDateKey,
+                    assignment.id,
+                    e.target.value,
+                  )
+                }
+              />
+              <span className="pd-practice-min-label">Min</span>
+            </div>
+          </div>
+        ))}
+      </div>
+      <div className="pd-practice-actions">
+        <button
           className="pd-practice-save-btn"
           onClick={savePracticeLog}
           disabled={savePracticeLogStatus === "saving"}
         >
           {savePracticeLogStatus === "saving"
             ? "Saving..."
-            : "Save Practice Record"}
+            : "Save Practice Log"}
         </button>
 
-        {savePracticeLogStatus === "saved" && (
-          <span className="pd-practice-save-status">Saved</span>
-        )}
-
-        {savePracticeLogStatus === "error" && (
-          <span className="pd-practice-save-status pd-practice-save-status--error">
-            Could not save
+        {savePracticeLogStatus !== "idle" && (
+          <span
+            className={
+              savePracticeLogStatus === "error"
+                ? "pd-practice-save-status pd-practice-save-status--error"
+                : "pd-practice-save-status"
+            }
+          >
+            {savePracticeLogStatus === "saved"
+              ? "Saved"
+              : savePracticeLogStatus === "error"
+                ? "Error"
+                : ""}
           </span>
         )}
-      </div>
-      {/* Week list — one row per day */}
-      <div className="pd-week-list">
-        {days.map((d) => {
-          const key = dateKey(d);
-          const isToday = key === todayKey;
-          const isFuture = d > today;
-          const dayTasks = tasksByDay[key] ?? {};
-          const practicedItems = tasks.filter((t) =>
-            isTaskPracticed(dayTasks[t.id]),
-          );
-          return (
-            <div
-              key={key}
-              className={[
-                "pd-week-row",
-                isToday && "pd-week-row--today",
-                isFuture && "pd-week-row--future",
-                practicedItems.length > 0 && "pd-week-row--done",
-              ]
-                .filter(Boolean)
-                .join(" ")}
-            >
-              <div className="pd-week-day-label">
-                <span className="pd-week-abbr">{DAY_ABBR[d.getDay()]}</span>
-                <span className="pd-week-num">{d.getDate()}</span>
-              </div>
-              <div className="pd-week-tasks">
-                {isFuture ? (
-                  <span className="pd-week-no-practice">—</span>
-                ) : (
-                  tasks.map((task) => {
-                    const done = isTaskPracticed(tasksByDay[key]?.[task.id]);
-                    return (
-                      <div key={task.id} className="pd-practice-task">
-                        <button
-                          type="button"
-                          className={`pd-week-pill${done ? " pd-week-pill--done" : ""}`}
-                          onClick={() => toggleTaskForDay(key, task.id)}
-                        >
-                          {task.label}
-                        </button>
-
-                        {done && (
-                          <label className="pd-minutes-field">
-                            <span>Min</span>
-                            <input
-                              type="number"
-                              min="0"
-                              max="300"
-                              value={tasksByDay[key]?.[task.id]?.minutes ?? 0}
-                              onChange={(e) =>
-                                updateTaskMinutes(key, task.id, e.target.value)
-                              }
-                            />
-                          </label>
-                        )}
-                      </div>
-                    );
-                  })
-                )}
-              </div>
-            </div>
-          );
-        })}
       </div>
     </div>
   );

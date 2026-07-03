@@ -6,7 +6,7 @@ export default function Footer() {
     <footer className="sitefooter" role="contentinfo">
       <div className="container sitefooter__row">
         <nav className="sitefooter__nav" aria-label="Footer">
-          <NavLink
+          {/* <NavLink
             to="/about"
             className={({ isActive }) =>
               `sitefooter__link ${isActive ? "sitefooter__link--disabled" : ""}`
@@ -21,13 +21,13 @@ export default function Footer() {
             }}
           >
             About
-          </NavLink>
+          </NavLink> */}
         </nav>
 
-        <p className="sitefooter__text">
+        {/* <p className="sitefooter__text">
           Developed by <span className="sitefooter__by">Farida Nelson</span> •{" "}
           {new Date().getFullYear()}
-        </p>
+        </p> */}
       </div>
     </footer>
   );

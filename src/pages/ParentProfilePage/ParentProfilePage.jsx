@@ -186,6 +186,7 @@ export default function ParentProfilePage({ currentUser, onSignOut }) {
                 examType={cycle?.examType}
                 studentId={selectedId}
                 cycle={cycle}
+                items={items}
                 saveRef={practiceSaveRef}
               />
             </div>

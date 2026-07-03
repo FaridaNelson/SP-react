@@ -3,7 +3,7 @@ import { useTeacherStudents } from "../../hooks/useTeacherStudents";
 import { useProgress } from "../../hooks/useProgress";
 import { computeReadiness } from "../../lib/progress";
 import { api } from "../../lib/api";
-import { useLatestLesson } from "./hooks/useLatestLesson";
+import { useLatestLesson } from "../../hooks/useLatestLesson";
 import TeacherStudentInfo from "./views/TeacherStudentInfo";
 import ProgressPanel from "./panels/ProgressPanel/ProgressPanel";
 import AddStudentModal from "./modals/AddStudentModal";
