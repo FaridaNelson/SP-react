@@ -17,6 +17,7 @@ export function useAuth(user) {
     isAuthed: !!user,
     isTeacher: roles.includes("teacher") || roles.includes("admin"),
     isParent: roles.includes("parent") || roles.includes("admin"),
+    isStudent: roles.includes("student") || roles.includes("admin"),
     isAdmin: roles.includes("admin"),
   };
 }
