@@ -10,6 +10,7 @@ const firstDashboardPath = (user) => {
   if (roles.includes("admin")) return "/teacher";
   if (roles.includes("teacher")) return "/teacher";
   if (roles.includes("parent")) return "/parent";
+  if (roles.includes("student")) return "/student";
   return "/profile";
 };
 

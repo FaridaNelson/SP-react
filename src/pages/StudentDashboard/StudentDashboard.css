@@ -1,0 +1,162 @@
+.student-dashboard {
+  min-height: 100vh;
+  padding: 56px clamp(20px, 6vw, 72px);
+  background: #f7f8fa;
+  color: var(--ink);
+}
+
+.student-dashboard--centered {
+  display: grid;
+  place-items: center;
+}
+
+.student-dashboard__hero,
+.student-dashboard__section,
+.student-dashboard__placeholder {
+  width: min(100%, 920px);
+}
+
+.student-dashboard__hero {
+  margin-bottom: 44px;
+}
+
+.student-dashboard__eyebrow {
+  margin: 0 0 10px;
+  color: var(--ink-muted);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+
+.student-dashboard h1,
+.student-dashboard h2 {
+  margin: 0;
+  color: var(--ink);
+  font-family: var(--font-serif);
+  font-weight: 600;
+  line-height: 1.05;
+}
+
+.student-dashboard h1 {
+  max-width: 760px;
+  font-size: 4.5rem;
+}
+
+.student-dashboard h2 {
+  font-size: 2.75rem;
+}
+
+.student-dashboard__intro {
+  max-width: 620px;
+  margin: 18px 0 0;
+  color: var(--ink-soft);
+  font-size: 1.05rem;
+}
+
+.student-dashboard__sectionHeader {
+  margin-bottom: 18px;
+}
+
+.student-dashboard__toolCard {
+  width: min(100%, 420px);
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 20px;
+  border: 1px solid var(--border-soft);
+  border-radius: 8px;
+  background: #ffffff;
+  color: inherit;
+  text-align: left;
+  box-shadow: 0 14px 32px rgba(28, 26, 23, 0.08);
+  cursor: pointer;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    transform 0.2s ease;
+}
+
+.student-dashboard__toolCard:hover {
+  border-color: rgba(201, 168, 76, 0.55);
+  box-shadow: 0 18px 40px rgba(28, 26, 23, 0.12);
+  transform: translateY(-2px);
+}
+
+.student-dashboard__toolCard:focus-visible,
+.student-dashboard__backLink:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 4px;
+}
+
+.student-dashboard__toolIcon {
+  width: 52px;
+  height: 52px;
+  flex: 0 0 auto;
+  display: grid;
+  place-items: center;
+  border-radius: 8px;
+  background: var(--sage-pale);
+  color: var(--sage);
+}
+
+.student-dashboard__toolCopy {
+  min-width: 0;
+  display: grid;
+  gap: 4px;
+}
+
+.student-dashboard__toolTitle {
+  color: var(--ink);
+  font-size: 1.15rem;
+  font-weight: 700;
+}
+
+.student-dashboard__toolText {
+  color: var(--ink-muted);
+  font-size: 0.95rem;
+  line-height: 1.35;
+}
+
+.student-dashboard__placeholder {
+  padding: 48px;
+  border: 1px solid var(--border-soft);
+  border-radius: 8px;
+  background: #ffffff;
+  box-shadow: 0 14px 32px rgba(28, 26, 23, 0.08);
+}
+
+.student-dashboard__backLink {
+  display: inline-flex;
+  margin-top: 28px;
+  color: var(--ink);
+  font-weight: 700;
+  text-decoration-color: var(--gold);
+  text-underline-offset: 4px;
+}
+
+@media (max-width: 640px) {
+  .student-dashboard {
+    padding: 36px 18px;
+  }
+
+  .student-dashboard h1 {
+    font-size: 2.6rem;
+  }
+
+  .student-dashboard h2 {
+    font-size: 2rem;
+  }
+
+  .student-dashboard__hero {
+    margin-bottom: 34px;
+  }
+
+  .student-dashboard__toolCard {
+    align-items: flex-start;
+  }
+
+  .student-dashboard__placeholder {
+    padding: 32px 22px;
+  }
+}

@@ -13,6 +13,8 @@ import HomePage from "../../pages/HomePage";
 import AboutPage from "../../pages/AboutPage";
 import ProfilePage from "../../pages/ProfilePage/ProfilePage";
 import ParentProfilePage from "../../pages/ParentProfilePage/ParentProfilePage.jsx";
+import StudentDashboard from "../../pages/StudentDashboard/StudentDashboard.jsx";
+import NoteDetectiveHost from "../../pages/StudentDashboard/NoteDetectiveHost.jsx";
 import TeacherDashboard from "../../pages/TeacherProfilePage/TeacherDashboard.jsx";
 import PrivacyPolicyPage from "../../pages/PrivacyPolicyPage.jsx";
 import TermsOfServicePage from "../../pages/TermsOfServicePage.jsx";
@@ -35,6 +37,7 @@ const firstDashboardPath = (user) => {
   if (r.includes("admin")) return "/teacher";
   if (r.includes("teacher")) return "/teacher";
   if (r.includes("parent")) return "/parent";
+  if (r.includes("student")) return "/student";
   return "/profile";
 };
 
@@ -59,13 +62,15 @@ export default function App() {
 
   const isTeacherView = pathname.startsWith("/teacher");
   const isParentView = pathname.startsWith("/parent");
-  const hideFooter = isTeacherView || isParentView;
+  const isStudentView = pathname.startsWith("/student");
+  const hideFooter = isTeacherView || isParentView || isStudentView;
 
   const BARE_ROUTES = [
     "/privacy-policy",
     "/terms-of-service",
     "/reset-password",
     "/parent",
+    "/student",
   ];
   const hideHeader = BARE_ROUTES.some((r) => pathname.startsWith(r));
 
@@ -93,7 +98,7 @@ export default function App() {
 
     const target = firstDashboardPath(user);
     if (
-      ["/teacher", "/parent", "/profile"].includes(pathname) &&
+      ["/teacher", "/parent", "/student", "/profile"].includes(pathname) &&
       pathname !== target
     ) {
       navigate(target, { replace: true });
@@ -216,6 +221,28 @@ export default function App() {
                     onSelectStudent={setSelectedStudentId}
                   />
                 }
+              />
+            }
+          />
+
+          <Route
+            path="/student"
+            element={
+              <RoleRoute
+                user={user}
+                allowedRoles={["student", "admin"]}
+                element={<StudentDashboard user={user} />}
+              />
+            }
+          />
+
+          <Route
+            path="/student/marketplace/note-detective"
+            element={
+              <RoleRoute
+                user={user}
+                allowedRoles={["student", "admin"]}
+                element={<NoteDetectiveHost />}
               />
             }
           />
