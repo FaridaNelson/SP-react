@@ -58,7 +58,7 @@ export default function App() {
   const [confirmSignOutOpen, setConfirmSignOutOpen] = useState(false);
 
   const navigate = useNavigate();
-  const { pathname, state } = useLocation();
+  const { pathname, search, state } = useLocation();
 
   const isTeacherView = pathname.startsWith("/teacher");
   const isParentView = pathname.startsWith("/parent");
@@ -107,9 +107,41 @@ export default function App() {
 
   useEffect(() => {
     if (!booted) return;
-    if (state?.openAuth === "signin") openSignIn();
-    if (state?.openAuth === "signup") openSignUp();
-  }, [booted, state]);
+
+    const searchParams = new URLSearchParams(search);
+    const queryAuthMode = searchParams.get("openAuth");
+    const requestedAuthMode = queryAuthMode || state?.openAuth;
+
+    if (requestedAuthMode === "signin") {
+      openSignIn();
+    }
+
+    if (requestedAuthMode === "signup") {
+      openSignUp();
+    }
+
+    if (
+      queryAuthMode === "signin" ||
+      queryAuthMode === "signup" ||
+      state?.openAuth === "signin" ||
+      state?.openAuth === "signup"
+    ) {
+      searchParams.delete("openAuth");
+
+      const remainingSearch = searchParams.toString();
+
+      navigate(
+        {
+          pathname,
+          search: remainingSearch ? `?${remainingSearch}` : "",
+        },
+        {
+          replace: true,
+          state: null,
+        },
+      );
+    }
+  }, [booted, pathname, search, state, navigate]);
 
   useEffect(() => {
     (async () => {
