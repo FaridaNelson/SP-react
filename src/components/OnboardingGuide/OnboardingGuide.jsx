@@ -2,7 +2,6 @@ import "./OnboardingGuide.css";
 import PanelHeader from "../PanelHeader/PanelHeader";
 
 export default function OnboardingGuide({
-  onAddStudent,
   onStepHover,
   onStepLeave,
   obHoveredStep,

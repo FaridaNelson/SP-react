@@ -47,23 +47,12 @@ export default function ProfilePage({ user }) {
       <div className="profile__toolbar-spacer" aria-hidden="true" />
       {/* Shared modal for all items */}
       <Modal
-        open={!!active && active.source !== "tool"}
+        open={!!active}
         onClose={() => setActive(null)}
         title={active ? active.title : ""}
       >
         <div className="profile__modal-body">
-          {active?.source === "tool" ? (
-            (() => {
-              const Tool = getToolComponent(active.key);
-              return Tool ? (
-                <Suspense fallback={<p>Loading tool…</p>}>
-                  <Tool />
-                </Suspense>
-              ) : (
-                <p>Unknown tool.</p>
-              );
-            })()
-          ) : active?.source === "current" && active.key === "sight-reading" ? (
+          {active?.source === "current" && active.key === "sight-reading" ? (
             <div className="profile__placeholder">
               <h3>Sight Reading</h3>
               <p>

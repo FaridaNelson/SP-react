@@ -20,7 +20,6 @@ function getY(score, chartHeight, topPad, bottomPad) {
 export default function ProgressScoreOverTime({
   title = "Progress Score Over Time",
   history = [],
-  currentScore = null,
 }) {
   if (!history.length) {
     return (

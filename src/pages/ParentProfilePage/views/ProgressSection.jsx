@@ -32,7 +32,6 @@ function ProgressBarChart({ history }) {
     32,
     (GRAPH_W - (history.length - 1) * 6) / history.length,
   );
-  const step = history.length > 1 ? (GRAPH_W - barW) / (history.length - 1) : 0;
 
   const yOf = (pct) => TOP + GRAPH_H - (pct / 100) * GRAPH_H;
 
@@ -79,7 +78,6 @@ function ProgressBarChart({ history }) {
 
         {/* Bars */}
         {history.map((pt, i) => {
-          const x = LEFT + i * (barW + step / (history.length - 1 || 1));
           const bh = Math.max(2, (pt.score / 100) * GRAPH_H);
           const y = TOP + GRAPH_H - bh;
           const c = barColor(pt.score);

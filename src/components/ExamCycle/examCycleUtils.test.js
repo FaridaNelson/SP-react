@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { sortCycles, buildLessonReadiness, DEFAULT_WEIGHTS } from "./examCycleUtils";
+import { sortCycles, buildLessonReadiness } from "./examCycleUtils";
 
 describe("sortCycles", () => {
   it('active cycle (status "current") sorts before completed', () => {
@@ -59,75 +59,76 @@ describe("buildLessonReadiness", () => {
     expect(buildLessonReadiness([])).toEqual([]);
   });
 
-  it("single lesson with all elements returns one readiness point", () => {
+  it("single scored lesson returns one readiness point", () => {
     const lessons = [
       {
         lessonDate: "2026-03-10T10:00:00Z",
-        pieces: [
-          { pieceId: "pieceA", percent: 60 },
-          { pieceId: "pieceB", percent: 80 },
-          { pieceId: "pieceC", percent: 70 },
-        ],
-        scales: { percent: 75 },
-        sightReading: { score: 50 },
-        auralTraining: { score: 65 },
+        lessonTotalScore: 72,
       },
     ];
+
     const result = buildLessonReadiness(lessons);
+
     expect(result).toHaveLength(1);
     expect(result[0].date).toBe("2026-03-10");
+    expect(result[0].readiness).toBe(72);
+    expect(result[0].lessonLabel).toBe("L1");
   });
 
-  it("two different dates produce two points, ordered chronologically", () => {
+  it("orders scored lessons chronologically", () => {
     const lessons = [
       {
         lessonDate: "2026-03-15T10:00:00Z",
-        pieces: [{ pieceId: "pieceA", percent: 70 }],
-        scales: { percent: 60 },
+        lessonTotalScore: 80,
       },
       {
         lessonDate: "2026-03-10T10:00:00Z",
-        pieces: [{ pieceId: "pieceB", percent: 50 }],
-        scales: { percent: 40 },
+        lessonTotalScore: 65,
       },
     ];
+
     const result = buildLessonReadiness(lessons);
+
     expect(result).toHaveLength(2);
     expect(result[0].date).toBe("2026-03-10");
+    expect(result[0].lessonLabel).toBe("L1");
     expect(result[1].date).toBe("2026-03-15");
+    expect(result[1].lessonLabel).toBe("L2");
   });
 
-  it("readiness value is a number between 0 and 100 inclusive", () => {
+  it("rounds lessonTotalScore to the nearest integer", () => {
     const lessons = [
       {
         lessonDate: "2026-03-10T10:00:00Z",
-        pieces: [{ pieceId: "pieceA", percent: 45 }],
-        scales: { percent: 90 },
+        lessonTotalScore: 74.6,
       },
     ];
+
     const result = buildLessonReadiness(lessons);
-    expect(result[0].readiness).toBeGreaterThanOrEqual(0);
-    expect(result[0].readiness).toBeLessThanOrEqual(100);
+
+    expect(result[0].readiness).toBe(75);
     expect(typeof result[0].readiness).toBe("number");
   });
 
-  it("lesson with null sightReading and auralTraining computes readiness from pieces and scales only", () => {
+  it("excludes lessons without lessonTotalScore", () => {
     const lessons = [
       {
         lessonDate: "2026-03-10T10:00:00Z",
-        pieces: [
-          { pieceId: "pieceA", percent: 80 },
-          { pieceId: "pieceB", percent: 70 },
-        ],
-        scales: { percent: 60 },
-        sightReading: null,
-        auralTraining: null,
+        lessonTotalScore: null,
+      },
+      {
+        lessonDate: "2026-03-11T10:00:00Z",
+      },
+      {
+        lessonDate: "2026-03-12T10:00:00Z",
+        lessonTotalScore: 68,
       },
     ];
+
     const result = buildLessonReadiness(lessons);
+
     expect(result).toHaveLength(1);
-    expect(typeof result[0].readiness).toBe("number");
-    expect(result[0].readiness).toBeGreaterThanOrEqual(0);
-    expect(result[0].readiness).toBeLessThanOrEqual(100);
+    expect(result[0].date).toBe("2026-03-12");
+    expect(result[0].readiness).toBe(68);
   });
 });
