@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { ALL_PIECES, PIECES } from "./TodayProgress/progressConfig";
 import "./ProgressPanel.css";
 import { getMissingPieceCriteria } from "./TodayProgress/scoreMath";
@@ -26,6 +26,13 @@ import {
   lessonScalesToDraftMap,
 } from "./TodayProgress/lessonMerge";
 import ValidationAlert from "../../../../components/ui/ValidationAlert/ValidationAlert";
+import {
+  LATEST_LESSON_STATUS,
+  buildLessonContextKey,
+  canSaveWithLatestLessonLookup,
+  getCarryForwardLesson,
+  shouldApplyLatestLessonResponse,
+} from "./progressPanelState";
 
 function isPieceTouched(pieceValue) {
   if (!pieceValue) return false;
@@ -95,7 +102,21 @@ export default function ProgressPanel({
   const [lessonStartTime, setLessonStartTime] = useState("");
   const [lessonEndTime, setLessonEndTime] = useState("");
   const studentId = student?._id || student?.id;
+  const activeCycleId = activeCycle?._id;
+  const activeCycleInstrument = activeCycle?.instrument;
+  const latestLessonContext = useMemo(
+    () => ({ _id: activeCycleId, instrument: activeCycleInstrument }),
+    [activeCycleId, activeCycleInstrument],
+  );
   const [latestLesson, setLatestLesson] = useState(null);
+  const [latestLessonStatus, setLatestLessonStatus] = useState(
+    LATEST_LESSON_STATUS.IDLE,
+  );
+  const latestLessonContextKey = buildLessonContextKey(
+    studentId,
+    latestLessonContext,
+  );
+  const latestLessonContextKeyRef = useRef(latestLessonContextKey);
   const [pieceErrors, setPieceErrors] = useState({});
   const [timeError, setTimeError] = useState("");
   // { [pieceId]: string[] missingCriterionIds } - used to show validation errors if user tries to save without filling all criteria scores
@@ -195,6 +216,8 @@ export default function ProgressPanel({
     setLessonStartTime("");
     setLessonEndTime("");
     setErr("");
+    setLatestLesson(null);
+    setLatestLessonStatus(LATEST_LESSON_STATUS.IDLE);
   };
 
   const draftKey = `studiopulse:draft:${student?._id || student?.id}:${lessonDate}`;
@@ -278,26 +301,70 @@ export default function ProgressPanel({
   }, [open, isEditing, draftKey]);
 
   useEffect(() => {
+    latestLessonContextKeyRef.current = latestLessonContextKey;
+  }, [latestLessonContextKey]);
+
+  useEffect(() => {
+    latestLessonContextKeyRef.current = latestLessonContextKey;
+
     if (!open) return;
-    if (!studentId) return;
-    if (!activeCycle?._id) {
+    if (!studentId) {
       setLatestLesson(null);
+      setLatestLessonStatus(LATEST_LESSON_STATUS.IDLE);
       return;
     }
+    if (!activeCycleId) {
+      setLatestLesson(null);
+      setLatestLessonStatus(LATEST_LESSON_STATUS.IDLE);
+      return;
+    }
+
+    let cancelled = false;
+    const requestKey = latestLessonContextKey;
+    setLatestLesson(null);
+    setLatestLessonStatus(LATEST_LESSON_STATUS.LOADING);
 
     (async () => {
       try {
         const latest = await getLatestLesson(studentId, {
-          examPreparationCycleId: activeCycle._id,
-          instrument: activeCycle.instrument,
+          examPreparationCycleId: activeCycleId,
+          instrument: activeCycleInstrument,
         });
-        setLatestLesson(latest || null);
+        if (
+          !cancelled &&
+          shouldApplyLatestLessonResponse({
+            requestKey,
+            currentKey: latestLessonContextKeyRef.current,
+            latestLesson: latest,
+            context: { studentId, activeCycle: latestLessonContext },
+          })
+        ) {
+          setLatestLesson(latest || null);
+          setLatestLessonStatus(LATEST_LESSON_STATUS.LOADED);
+        }
       } catch (e) {
         console.warn("Failed to load latest lesson:", e);
-        setLatestLesson(null);
+        if (
+          !cancelled &&
+          requestKey === latestLessonContextKeyRef.current
+        ) {
+          setLatestLesson(null);
+          setLatestLessonStatus(LATEST_LESSON_STATUS.ERROR);
+        }
       }
     })();
-  }, [open, studentId, activeCycle?._id, activeCycle?.instrument]);
+
+    return () => {
+      cancelled = true;
+    };
+  }, [
+    open,
+    studentId,
+    activeCycleId,
+    activeCycleInstrument,
+    latestLessonContext,
+    latestLessonContextKey,
+  ]);
 
   useEffect(() => {
     if (!open || isEditing) return;
@@ -393,6 +460,16 @@ export default function ProgressPanel({
     if (endMinutes <= startMinutes) {
       setTimeError("invalidRange");
       setErr("Lesson end time must be later than lesson start time.");
+      return;
+    }
+
+    if (
+      !canSaveWithLatestLessonLookup({
+        isEditing,
+        latestLessonStatus,
+      })
+    ) {
+      setErr("Please wait for the latest lesson to finish loading.");
       return;
     }
 
@@ -543,8 +620,6 @@ export default function ProgressPanel({
         });
       }
       const normalizedSavedLesson = savedLesson?.lesson || savedLesson;
-
-      setLatestLesson(normalizedSavedLesson);
       onLessonSaved?.(normalizedSavedLesson);
       localStorage.removeItem(draftKey);
       resetForm();
@@ -592,22 +667,31 @@ export default function ProgressPanel({
     return Number.isFinite(p?.percent) ? p.percent : 0;
   }
 
+  const carryForwardLesson = useMemo(
+    () =>
+      getCarryForwardLesson(latestLesson, {
+        studentId,
+        activeCycle: latestLessonContext,
+      }),
+    [latestLesson, studentId, latestLessonContext],
+  );
+
   const lastPiecesMap = useMemo(
-    () => piecesArrayToMap(latestLesson?.pieces || []),
-    [latestLesson],
+    () => piecesArrayToMap(carryForwardLesson?.pieces || []),
+    [carryForwardLesson],
   );
 
   const lastScalesMap = useMemo(
-    () => scalesItemsToMap(latestLesson?.scales || {}),
-    [latestLesson],
+    () => scalesItemsToMap(carryForwardLesson?.scales || {}),
+    [carryForwardLesson],
   );
 
-  const lastScalesPercent = Number.isFinite(latestLesson?.scales?.percent)
-    ? latestLesson.scales.percent
+  const lastScalesPercent = Number.isFinite(carryForwardLesson?.scales?.percent)
+    ? carryForwardLesson.scales.percent
     : 0;
 
-  const lastSight = latestLesson?.sightReading || {};
-  const lastAural = latestLesson?.auralTraining || {};
+  const lastSight = carryForwardLesson?.sightReading || {};
+  const lastAural = carryForwardLesson?.auralTraining || {};
 
   if (!open) return null;
 
@@ -726,7 +810,10 @@ export default function ProgressPanel({
                 onFocusCriterion={() =>
                   setPieceErrors((prev) => ({ ...prev, [p.id]: [] }))
                 } // clear errors for this piece when user focuses any criterion
-                lastWeekPercent={piecePercentFromLesson(latestLesson, p.id)}
+                lastWeekPercent={piecePercentFromLesson(
+                  carryForwardLesson,
+                  p.id,
+                )}
                 disabled={busy}
                 onSetScore={(criterionId, score) => {
                   if (err) setErr("");
