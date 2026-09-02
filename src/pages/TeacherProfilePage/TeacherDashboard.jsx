@@ -17,6 +17,11 @@ import StudentInformationView from "./views/StudentInformationView";
 import StudentDropdownMenu from "./components/StudentDropdownMenu";
 import OnboardingGuide from "../../components/OnboardingGuide/OnboardingGuide";
 import { useStudentLessons } from "../../components/ExamCycle/examCycleUtils";
+import {
+  cycleIsActive,
+  normalizeCycleList,
+  resolveCycleAfterRefresh,
+} from "./teacherDashboardState";
 
 /** Compose a display name from whichever fields are available. */
 function studentDisplayName(s) {
@@ -105,11 +110,6 @@ function formatTeacherDisplayName(user) {
   return `${base}.`;
 }
 
-function cycleIsActive(c) {
-  const s = c.cycleStatus || c.status;
-  return s === "current" || s === "registered";
-}
-
 function SelectedStudentPane({
   student,
   progressOpen,
@@ -145,14 +145,13 @@ function SelectedStudentPane({
 
     try {
       const data = await listExamCycles(studentId);
-      const cycles = Array.isArray(data) ? data : (data?.cycles ?? []);
-      const active = cycles.find(cycleIsActive);
+      const cycles = normalizeCycleList(data);
 
-      setFetchedCycle(active || null);
+      setFetchedCycle(resolveCycleAfterRefresh(cycles, resolvedCycle));
     } catch (err) {
       console.error("Failed to refresh active cycle", err);
     }
-  }, [studentId]);
+  }, [studentId, resolvedCycle]);
 
   const {
     latestLesson,
@@ -164,12 +163,14 @@ function SelectedStudentPane({
     enabled: !!studentId && !!currentCycleId,
   });
 
-  const { lessons: allLessons } = useStudentLessons(studentId);
+  const { lessons: allLessons, refetch: refetchLessons } =
+    useStudentLessons(studentId);
 
   useEffect(() => {
     if (!studentId) return;
-    // Don't fetch if parent already provided a cycle from history view
-    if (initialCycle) {
+    // Historical selections are intentionally stable when absent from the
+    // refreshed list; active selections should still be refreshed by ID.
+    if (initialCycle && !cycleIsActive(initialCycle)) {
       setFetchedCycle(null);
       setCyclesFetched(true);
       return;
@@ -179,9 +180,8 @@ function SelectedStudentPane({
     listExamCycles(studentId)
       .then((data) => {
         if (cancelled) return;
-        const cycles = Array.isArray(data) ? data : (data?.cycles ?? []);
-        const active = cycles.find(cycleIsActive);
-        setFetchedCycle(active || null);
+        const cycles = normalizeCycleList(data);
+        setFetchedCycle(resolveCycleAfterRefresh(cycles, initialCycle));
         setCyclesFetched(true);
       })
       .catch(() => {
@@ -199,14 +199,13 @@ function SelectedStudentPane({
     if (studentId) {
       listExamCycles(studentId)
         .then((data) => {
-          const cycles = Array.isArray(data) ? data : (data?.cycles ?? []);
-          const active = cycles.find(cycleIsActive);
-          setFetchedCycle(active || null);
+          const cycles = normalizeCycleList(data);
+          setFetchedCycle(resolveCycleAfterRefresh(cycles, resolvedCycle));
         })
         .catch(() => {});
     }
     onToast?.("Exam cycle created", "success");
-  }, [onToast, studentId]);
+  }, [onToast, resolvedCycle, studentId]);
 
   const handleExamCycleAction = useCallback(
     (message, variant) => {
@@ -215,21 +214,20 @@ function SelectedStudentPane({
       if (studentId) {
         listExamCycles(studentId)
           .then((data) => {
-            const cycles = Array.isArray(data) ? data : (data?.cycles ?? []);
-            const active = cycles.find(cycleIsActive);
-            setFetchedCycle(active || null);
+            const cycles = normalizeCycleList(data);
+            setFetchedCycle(resolveCycleAfterRefresh(cycles, resolvedCycle));
           })
           .catch(() => {});
       }
       onToast?.(message, variant);
     },
-    [onToast, studentId],
+    [onToast, resolvedCycle, studentId],
   );
 
   const handleNewExamCycle = useCallback(async () => {
     try {
       const data = await listExamCycles(studentId);
-      const cycles = Array.isArray(data) ? data : (data?.cycles ?? []);
+      const cycles = normalizeCycleList(data);
       const instrument = student?.instrument || "Piano";
       const active = cycles.find(
         (c) => cycleIsActive(c) && c.instrument === instrument,
@@ -284,7 +282,9 @@ function SelectedStudentPane({
           const normalizedSavedLesson = saved?.lesson || saved;
 
           setLatestLesson(normalizedSavedLesson);
+
           await refreshActiveCycle();
+          await refetchLessons();
 
           setExamCycleRefreshKey((k) => k + 1);
           onRosterRefresh?.();
