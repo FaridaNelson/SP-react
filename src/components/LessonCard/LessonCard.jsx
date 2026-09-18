@@ -64,6 +64,10 @@ function percentBarColor(pct) {
   return { fill: "var(--rose)", text: "#C05040" };
 }
 
+function hasNumericScore(score) {
+  return typeof score === "number";
+}
+
 function PercentBar({ pct, label }) {
   const { fill, text } = percentBarColor(pct);
   return (
@@ -408,7 +412,7 @@ function LessonBody({ lesson, cycle }) {
       )}
 
       {/* Sight Reading */}
-      {sightScore > 0 && (
+      {hasNumericScore(sightScore) && (
         <div className="lesson-section">
           <div className="lesson-section-title">Sight Reading</div>
           <PercentBar pct={Math.round(sightScore)} label="Sight Reading" />
@@ -416,7 +420,7 @@ function LessonBody({ lesson, cycle }) {
       )}
 
       {/* Aural Training */}
-      {auralScore > 0 && (
+      {hasNumericScore(auralScore) && (
         <div className="lesson-section">
           <div className="lesson-section-title">Aural Training</div>
           <PercentBar pct={Math.round(auralScore)} label="Aural" />
