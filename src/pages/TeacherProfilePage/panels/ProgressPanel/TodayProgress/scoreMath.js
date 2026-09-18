@@ -112,10 +112,10 @@ export function mergeIntoProgressItems(items, scores) {
   const byId = new Map(next.map((it) => [it.id, it]));
 
   for (const [id, value] of Object.entries(scores)) {
-    if (value == null) continue;
     const existing = byId.get(id);
     if (existing) existing.score = value;
-    else next.push({ id, label: id, weight: 0, score: value });
+    else if (value != null)
+      next.push({ id, label: id, weight: 0, score: value });
   }
   return next;
 }

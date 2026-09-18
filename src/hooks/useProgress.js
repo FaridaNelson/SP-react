@@ -10,6 +10,10 @@ const DEFAULT_ITEMS = [
   { id: "auralTraining", label: "Aural Training", weight: 12, score: 0 },
 ];
 
+export function getSubmittableScoreItems(items) {
+  return items.filter((it) => it.score != null && it.score >= 0);
+}
+
 export function useProgress(studentId, { scope = "teacher" } = {}) {
   const [items, setItems] = useState(DEFAULT_ITEMS);
   const [isLoading, setIsLoading] = useState(true);
@@ -80,8 +84,7 @@ export function useProgress(studentId, { scope = "teacher" } = {}) {
       try {
         if (!studentId) return;
 
-        const promises = nextItems
-          .filter((it) => it.score != null && it.score > 0)
+        const promises = getSubmittableScoreItems(nextItems)
           .map((it) => {
             const body = {
               studentId,
